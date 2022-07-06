@@ -10,7 +10,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     ###########################GENERATED SECTION BELOW############################
-    ${ADD_INPUT_ARGS}
+    ${PY_ADD_ARGUMENT}
     ###########################GENERATED SECTION ABOVE############################
 
     args = parser.parse_args()

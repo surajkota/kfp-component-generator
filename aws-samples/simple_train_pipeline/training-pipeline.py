@@ -12,12 +12,14 @@ from kfp import dsl
 from kfp.aws import use_aws_secret
 
 
-cur_file_dir = os.path.dirname(__file__)
-components_dir = os.path.join(cur_file_dir, "../../../../components/aws/sagemaker/")
+# cur_file_dir = os.path.dirname(__file__)
+# components_dir = os.path.join(cur_file_dir, "../../../../components/aws/sagemaker/")
 
-sagemaker_train_op = components.load_component_from_file(
-    components_dir + "/train/component.yaml"
-)
+# sagemaker_train_op = components.load_component_from_file(
+#     components_dir + "/train/component.yaml"
+# )
+
+sagemaker_train_op = components.load_component_from_file("../../train/component.yaml")
 
 channelObjList = []
 

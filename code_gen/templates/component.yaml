@@ -1,161 +1,159 @@
 name: "Sagemaker - TrainingJob"
 description: Train Machine Learning and Deep Learning Models using SageMaker
 inputs:
-
   ###########################GENERATED SECTION BELOW############################
-  
+
   - {
-    name: algorithmSpecification,
-    type: JsonObject,
-    description: "The registry path of the Docker image that contain"
-  }
+      name: algorithmSpecification,
+      type: JsonObject,
+      description: "The registry path of the Docker image that contain",
+    }
   - {
-    name: checkpointConfig,
-    type: JsonObject,
-    description: "Contains information about the output location for"
-  }
+      name: checkpointConfig,
+      type: JsonObject,
+      description: "Contains information about the output location for",
+    }
   - {
-    name: debugHookConfig,
-    type: JsonObject,
-    description: "Configuration information for the Debugger hook pa"
-  }
+      name: debugHookConfig,
+      type: JsonObject,
+      description: "Configuration information for the Debugger hook pa",
+    }
   - {
-    name: debugRuleConfigurations,
-    type: JsonArray,
-    description: "Configuration information for Debugger rules for d"
-  }
+      name: debugRuleConfigurations,
+      type: JsonArray,
+      description: "Configuration information for Debugger rules for d",
+    }
   - {
-    name: enableInterContainerTrafficEncryption,
-    type: Bool,
-    description: "To encrypt all communications between ML compute i"
-  }
+      name: enableInterContainerTrafficEncryption,
+      type: Bool,
+      description: "To encrypt all communications between ML compute i",
+    }
   - {
-    name: enableManagedSpotTraining,
-    type: Bool,
-    description: "To train models using managed spot training, choos"
-  }
+      name: enableManagedSpotTraining,
+      type: Bool,
+      description: "To train models using managed spot training, choos",
+    }
   - {
-    name: enableNetworkIsolation,
-    type: Bool,
-    description: "Isolates the training container. No inbound or out"
-  }
+      name: enableNetworkIsolation,
+      type: Bool,
+      description: "Isolates the training container. No inbound or out",
+    }
   - {
-    name: environment,
-    type: JsonObject,
-    description: "The environment variables to set in the Docker con"
-  }
+      name: environment,
+      type: JsonObject,
+      description: "The environment variables to set in the Docker con",
+    }
   - {
-    name: experimentConfig,
-    type: JsonObject,
-    description: "Associates a SageMaker job as a trial component wi"
-  }
+      name: experimentConfig,
+      type: JsonObject,
+      description: "Associates a SageMaker job as a trial component wi",
+    }
   - {
-    name: hyperParameters,
-    type: JsonObject,
-    description: "Algorithm-specific parameters that influence the q"
-  }
+      name: hyperParameters,
+      type: JsonObject,
+      description: "Algorithm-specific parameters that influence the q",
+    }
   - {
-    name: inputDataConfig,
-    type: JsonArray,
-    description: "An array of Channel objects. Each channel is a nam"
-  }
+      name: inputDataConfig,
+      type: JsonArray,
+      description: "An array of Channel objects. Each channel is a nam",
+    }
   - {
-    name: outputDataConfig,
-    type: JsonObject,
-    description: "Specifies the path to the S3 location where you wa"
-  }
+      name: outputDataConfig,
+      type: JsonObject,
+      description: "Specifies the path to the S3 location where you wa",
+    }
   - {
-    name: profilerConfig,
-    type: JsonObject,
-    description: "Configuration information for Debugger system moni"
-  }
+      name: profilerConfig,
+      type: JsonObject,
+      description: "Configuration information for Debugger system moni",
+    }
   - {
-    name: profilerRuleConfigurations,
-    type: JsonArray,
-    description: "Configuration information for Debugger rules for p"
-  }
+      name: profilerRuleConfigurations,
+      type: JsonArray,
+      description: "Configuration information for Debugger rules for p",
+    }
   - {
-    name: resourceConfig,
-    type: JsonObject,
-    description: "The resources, including the ML compute instances "
-  }
+      name: resourceConfig,
+      type: JsonObject,
+      description: "The resources, including the ML compute instances ",
+    }
   - {
-    name: roleARN,
-    type: String,
-    description: "The Amazon Resource Name (ARN) of an IAM role that"
-  }
+      name: roleARN,
+      type: String,
+      description: "The Amazon Resource Name (ARN) of an IAM role that",
+    }
   - {
-    name: stoppingCondition,
-    type: JsonObject,
-    description: "Specifies a limit to how long a model training job"
-  }
+      name: stoppingCondition,
+      type: JsonObject,
+      description: "Specifies a limit to how long a model training job",
+    }
   - {
-    name: tags,
-    type: JsonArray,
-    description: "An array of key-value pairs. You can use tags to c"
-  }
+      name: tags,
+      type: JsonArray,
+      description: "An array of key-value pairs. You can use tags to c",
+    }
   - {
-    name: tensorBoardOutputConfig,
-    type: JsonObject,
-    description: "Configuration of storage locations for the Debugge"
-  }
+      name: tensorBoardOutputConfig,
+      type: JsonObject,
+      description: "Configuration of storage locations for the Debugge",
+    }
   - {
-    name: trainingJobName,
-    type: String,
-    description: "The name of the training job. The name must be uni"
-  }
+      name: trainingJobName,
+      type: String,
+      description: "The name of the training job. The name must be uni",
+    }
   - {
-    name: vpcConfig,
-    type: JsonObject,
-    description: "A VpcConfig object that specifies the VPC that you"
-  }
+      name: vpcConfig,
+      type: JsonObject,
+      description: "A VpcConfig object that specifies the VPC that you",
+    }
   ###########################GENERATED SECTION ABOVE############################
 
 outputs:
-
   ###########################GENERATED SECTION BELOW############################
-  
+
   - {
-    name: ackResourceMetadata,
-    type: JsonObject,
-    description: "All CRs managed by ACK have a common `Status.ACKRe"
-  }
+      name: ackResourceMetadata,
+      type: JsonObject,
+      description: "All CRs managed by ACK have a common `Status.ACKRe",
+    }
   - {
-    name: conditions,
-    type: JsonArray,
-    description: "All CRS managed by ACK have a common `Status.Condi"
-  }
+      name: conditions,
+      type: JsonArray,
+      description: "All CRS managed by ACK have a common `Status.Condi",
+    }
   - {
-    name: debugRuleEvaluationStatuses,
-    type: JsonArray,
-    description: "Evaluation status of Debugger rules for debugging "
-  }
+      name: debugRuleEvaluationStatuses,
+      type: JsonArray,
+      description: "Evaluation status of Debugger rules for debugging ",
+    }
   - {
-    name: failureReason,
-    type: String,
-    description: "If the training job failed, the reason it failed."
-  }
+      name: failureReason,
+      type: String,
+      description: "If the training job failed, the reason it failed.",
+    }
   - {
-    name: modelArtifacts,
-    type: JsonObject,
-    description: "Information about the Amazon S3 location that is c"
-  }
+      name: modelArtifacts,
+      type: JsonObject,
+      description: "Information about the Amazon S3 location that is c",
+    }
   - {
-    name: profilerRuleEvaluationStatuses,
-    type: JsonArray,
-    description: "Evaluation status of Debugger rules for profiling "
-  }
+      name: profilerRuleEvaluationStatuses,
+      type: JsonArray,
+      description: "Evaluation status of Debugger rules for profiling ",
+    }
   - {
-    name: secondaryStatus,
-    type: String,
-    description: "Provides detailed information about the state of t"
-  }
+      name: secondaryStatus,
+      type: String,
+      description: "Provides detailed information about the state of t",
+    }
   - {
-    name: trainingJobStatus,
-    type: String,
-    description: "The status of the training job. 
- Amazon SageMaker"
-  }
+      name: trainingJobStatus,
+      type: String,
+      description: "The status of the training job.
+        Amazon SageMaker",
+    }
   ###########################GENERATED SECTION ABOVE############################
 
 implementation:
@@ -164,9 +162,8 @@ implementation:
     command: [python3]
     args:
       - code_gen/train/src/train.py
-
       ###########################GENERATED SECTION BELOW############################
-      
+
       - --algorithmSpecification
       - { inputValue: algorithmSpecification }
       - --checkpointConfig
@@ -210,4 +207,3 @@ implementation:
       - --vpcConfig
       - { inputValue: vpcConfig }
       ###########################GENERATED SECTION ABOVE############################
-
