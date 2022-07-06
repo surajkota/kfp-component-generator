@@ -142,6 +142,10 @@ def get_yaml_outputs(_output_statuses):
     return yaml_outputs_buffer
 
 def get_pipeline_user_inputs(_input_spec_all):
+    """
+    Populate user input section in a sample pipeline
+    Return a code snippet waiting to be written to pipeline.py.tpl template
+    """
     pipeline_user_inputs_buffer = ""
 
     for key in _input_spec_all:
@@ -150,6 +154,10 @@ def get_pipeline_user_inputs(_input_spec_all):
     return pipeline_user_inputs_buffer
 
 def get_pipeline_args_assign(_input_spec_all):
+    """
+    Populate args section in a sample pipeline
+    Return a code snippet waiting to be written to pipeline.py.tpl template
+    """
     pipeline_args_assign_buffer = ""
 
     for key in _input_spec_all:
@@ -158,6 +166,12 @@ def get_pipeline_args_assign(_input_spec_all):
     return pipeline_args_assign_buffer
 
 def write_buffer_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file_dir):
+    """
+    Open template file at _template_loc
+    Substite placeholders in templates following mapping _replace_dict
+    Create a dir _out_file_dir, if does not exist
+    Write output file stream to file _out_file_loc
+    """
 
     # replace placeholders in templates
     with open(_template_loc) as t:
@@ -176,16 +190,10 @@ def write_buffer_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file_
 
 if __name__ == "__main__":
 
+    # From ACK CRD YAML, parse fields needed
     input_spec_required, input_spec_all, output_statuses, crd_name = parse_crd(ACK_CRD_YAML_LOCATION)
 
-    # testing: use only first key
-    # key = next(iter(input_spec_all.keys()))
-    # print(key+ ' ' +input_spec_all[key]['type']+ ' ' + input_spec_all[key]['description'][0:50])
-
-    # From ACK CRD YAML, parse top level spec (input_spec_all), then
-    # in component.py, add all the parser.add_argument
-    # in component.yaml, populate inputs section
-    # in component.yaml, populate implementation.args section
+    # get code snippet (buffer) to be filled in templates
     py_add_argument_buffer = get_py_add_argument(input_spec_all, input_spec_required)
     yaml_inputs_buffer = get_yaml_inputs(input_spec_all)
     yaml_args_buffer = get_yaml_args(input_spec_all)
@@ -193,73 +201,16 @@ if __name__ == "__main__":
     pipeline_user_inputs_buffer = get_pipeline_user_inputs(input_spec_all)
     pipeline_args_assign_buffer = get_pipeline_args_assign(input_spec_all)
 
+    # set up output file directory/location
     output_component_dir = 'code_gen/components/' + crd_name + '/'
     output_yaml_location = output_component_dir + 'component.yaml'
     output_py_dir =  output_component_dir + 'src/'
     output_py_location = output_py_dir + crd_name + '.py'
     output_pipeline_dir = output_component_dir + 'pipeline/'
     output_pipeline_location = output_pipeline_dir + crd_name + '-pipeline'+ '.py'
-    
-    # # pipeline.py: replace placeholders in templates
-    # with open("code_gen/templates/pipeline.py.tpl") as t:
-    #     template = string.Template(t.read())
-    #     d = {
-    #         'PIPELINE_USER_INPUTS' : pipeline_user_inputs_buffer,
-    #         'PIPELINE_ARGS_ASSIGN': pipeline_args_assign_buffer,
-    #         'CRD_NAME': crd_name
-    #     }
-    #     file_draft = template.safe_substitute(d)
 
-    # # if output dir not exist, create one and write to file
-    # if not os.path.exists(output_pipeline_dir):
-    #     os.makedirs(output_pipeline_dir)
-    # with open(output_pipeline_location, 'w+') as f:
-    #     f.write(file_draft)
-
-    pipeline_replace = {
-            'PIPELINE_USER_INPUTS' : pipeline_user_inputs_buffer,
-            'PIPELINE_ARGS_ASSIGN': pipeline_args_assign_buffer,
-            'CRD_NAME': crd_name
-        }
-
-    write_buffer_to_file(pipeline_replace, "code_gen/templates/pipeline.py.tpl", output_pipeline_location, output_pipeline_dir)
-
-    # # component.py: replace placeholders in templates
-    # with open("code_gen/templates/component.py.tpl") as t:
-    #     template = string.Template(t.read())
-    #     d = {
-    #         'PY_ADD_ARGUMENT': py_add_argument_buffer,
-    #     }
-    #     file_draft = template.safe_substitute(d)
-
-    # # if output dir not exist, create one and write to file
-    # if not os.path.exists(output_py_dir):
-    #     os.makedirs(output_py_dir)
-    # with open(output_py_location, 'w+') as f:
-    #     f.write(file_draft)
-    
-    py_replace = {
-            'PY_ADD_ARGUMENT': py_add_argument_buffer,
-        }
-
-    write_buffer_to_file(py_replace, "code_gen/templates/component.py.tpl", output_py_location, output_py_dir)
-
-    # # component.yaml: replace placeholders in templates, then write to file
-    # with open("code_gen/templates/component.yaml.tpl") as t:
-    #     template = string.Template(t.read())
-    #     d = {
-    #         'CRD_NAME': crd_name,
-    #         'YAML_INPUTS': yaml_inputs_buffer,
-    #         'YAML_OUTPUTS': yaml_outputs_buffer,
-    #         'YAML_ARGS': yaml_args_buffer,
-    #         'COMPONENT_CONTAINER_IMAGE': COMPONENT_CONTAINER_IMAGE
-    #     }
-    #     file_draft = template.safe_substitute(d)
-
-    # # write to yaml location, no need to create dir again, done in os.makedirs(output_py_dir)
-    # with open(output_yaml_location, 'w+') as f:
-    #     f.write(file_draft)
-
+    # replace template placeholders with buffer, then write to file 
+    # (don't change the order, yaml comes first, create the /component dir first)
     yaml_replace = {
             'CRD_NAME': crd_name,
             'YAML_INPUTS': yaml_inputs_buffer,
@@ -267,6 +218,19 @@ if __name__ == "__main__":
             'YAML_ARGS': yaml_args_buffer,
             'COMPONENT_CONTAINER_IMAGE': COMPONENT_CONTAINER_IMAGE
         }
-    
     write_buffer_to_file(yaml_replace, "code_gen/templates/component.yaml.tpl", output_yaml_location, output_component_dir)
+
+    pipeline_replace = {
+            'PIPELINE_USER_INPUTS' : pipeline_user_inputs_buffer,
+            'PIPELINE_ARGS_ASSIGN': pipeline_args_assign_buffer,
+            'CRD_NAME': crd_name
+        }
+    write_buffer_to_file(pipeline_replace, "code_gen/templates/pipeline.py.tpl", output_pipeline_location, output_pipeline_dir)
+    
+    py_replace = {
+            'PY_ADD_ARGUMENT': py_add_argument_buffer,
+        }
+    write_buffer_to_file(py_replace, "code_gen/templates/component.py.tpl", output_py_location, output_py_dir)
+
+    
 
