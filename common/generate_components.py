@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# In kfp-component-generator, run python -m common.generate_components --tag 1.1.1
 """A command line tool for generating component specification files."""
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,19 +20,19 @@ import common.sagemaker_component as component_module
 
 
 COMPONENT_DIRECTORIES = [
-    "batch_transform",
-    "create_simulation_app",
-    "delete_simulation_app",
-    "deploy",
-    "ground_truth",
-    "hyperparameter_tuning",
-    "model",
-    "process",
-    "rlestimator",
-    "simulation_job",
-    "simulation_job_batch",
+    # "batch_transform",
+    # "create_simulation_app",
+    # "delete_simulation_app",
+    # "deploy",
+    # "ground_truth",
+    # "hyperparameter_tuning",
+    # "model",
+    # "process",
+    # "rlestimator",
+    # "simulation_job",
+    # "simulation_job_batch",
     "train",
-    "workteam",
+    # "workteam",
 ]
 
 
@@ -131,14 +132,13 @@ if __name__ == "__main__":
 
     args = parse_arguments()
 
-    cwd = Path(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    cwd = Path(os.path.join(os.getcwd(), os.path.dirname(__file__))) # current working directory
     root = cwd.parent
 
     for component in COMPONENT_DIRECTORIES:
         component_dir = Path(root, component)
         component_src_dir = Path(component_dir, "src")
-        components = sorted(component_src_dir.glob("*_component.py"))
-
+        components = sorted(component_src_dir.glob("*_component.py")) # get all file matching "*_component.py" in component_src_dir
         if len(components) < 1:
             raise ValueError(f"Unable to find _component.py file for {component}")
         elif len(components) > 1:
