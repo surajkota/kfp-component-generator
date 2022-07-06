@@ -4,7 +4,7 @@ from string import Template
 import string
 from typing import Callable, Dict, Type, Union, List, NamedTuple, cast
 from spec_input_parsers import SpecInputParsers
-import re
+
 
 # type conversion table
 
@@ -69,7 +69,7 @@ def get_py_add_argument(_input_spec_all, _input_spec_required):
         type = %s,
         help = "%s",
         required = %r
-    )""" % (camel_to_snake(key), 
+    )""" % (key, 
                 CRD_TYPE_TO_ARGS_TYPE.get(_input_spec_all[key]['type']),
                 _input_spec_all[key]['description'][0:50], 
                 key in _input_spec_required)
@@ -86,7 +86,7 @@ def get_yaml_inputs(_input_spec_all):
       name: %s,
       type: %s,
       description: "%s",
-    }""" % (camel_to_snake(key), 
+    }""" % (key, 
         CRD_TYPE_TO_KFP_TYPE.get(_input_spec_all[key]['type']), 
         _input_spec_all[key]['description'][0:50])
 
@@ -97,7 +97,6 @@ def get_yaml_args(_input_spec_all):
     yaml_args_buffer = ""
 
     for key in _input_spec_all:
-        key = camel_to_snake(key)
         yaml_args_buffer += ("""
       - --%s
       - { inputValue: %s }""" % (key, key))
@@ -114,7 +113,7 @@ def get_yaml_outputs(_input_spec_all):
       name: %s,
       type: %s,
       description: "%s",
-    }""" % (camel_to_snake(key), 
+    }""" % (key, 
             CRD_TYPE_TO_KFP_TYPE.get(output_statuses[key]['type']), 
             output_statuses[key]['description'][0:50])
     

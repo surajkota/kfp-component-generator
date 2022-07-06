@@ -3,7 +3,7 @@
 # Uncomment the apply(use_aws_secret()) below if you are not using OIDC
 # more info : https://github.com/kubeflow/pipelines/tree/master/samples/contrib/aws-samples/README.md
 
-# RUN in code_gen/train/pipeline/
+# RUN in code_gen/components/train/pipeline/
 # dsl-compile --py training-pipeline.py --output training-pipeline.tar.gz
 
 import kfp
