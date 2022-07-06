@@ -6,31 +6,37 @@ inputs:
   - {
       name: hyper_parameter_tuning_job_config,
       type: JsonObject,
+      default: '{}',
       description: "The HyperParameterTuningJobConfig object that desc",
     }
   - {
       name: hyper_parameter_tuning_job_name,
       type: String,
+      default: '',
       description: "The name of the tuning job. This name is the prefi",
     }
   - {
       name: tags,
       type: JsonArray,
+      default: '[]',
       description: "An array of key-value pairs. You can use tags to c",
     }
   - {
       name: training_job_definition,
       type: JsonObject,
+      default: '{}',
       description: "The HyperParameterTrainingJobDefinition object tha",
     }
   - {
       name: training_job_definitions,
       type: JsonArray,
+      default: '[]',
       description: "A list of the HyperParameterTrainingJobDefinition ",
     }
   - {
       name: warm_start_config,
       type: JsonObject,
+      default: '{}',
       description: "Specifies the configuration for starting the hyper",
     }
   ###########################GENERATED SECTION ABOVE############################
@@ -75,9 +81,8 @@ implementation:
     image: rdpen/kfp-component-sagemaker:latest
     command: [python3]
     args:
-      - code_gen/train/src/train.py
+      - code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob.py
       ###########################GENERATED SECTION BELOW############################
-      
       - --hyper_parameter_tuning_job_config
       - { inputValue: hyper_parameter_tuning_job_config }
       - --hyper_parameter_tuning_job_name
@@ -90,5 +95,6 @@ implementation:
       - { inputValue: training_job_definitions }
       - --warm_start_config
       - { inputValue: warm_start_config }
+      
       ###########################GENERATED SECTION ABOVE############################
 

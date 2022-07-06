@@ -12,10 +12,10 @@ outputs:
 
 implementation:
   container:
-    image: rdpen/kfp-component-sagemaker:latest
+    image: ${COMPONENT_CONTAINER_IMAGE}
     command: [python3]
     args:
-      - code_gen/train/src/train.py
+      - code_gen/components/${CRD_NAME}/src/${CRD_NAME}.py
       ###########################GENERATED SECTION BELOW############################
       ${YAML_ARGS}
       ###########################GENERATED SECTION ABOVE############################

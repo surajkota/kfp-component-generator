@@ -20,7 +20,7 @@ sagemaker_train_op = components.load_component_from_file(
 )
 
 
-# input args
+# prepare complex input args
 
 with open('ack.yaml', 'r') as f:
     yaml_file = yaml.safe_load(f)
@@ -50,12 +50,12 @@ channelObjList.append(copy.deepcopy(channelObj))
 ##############
 @dsl.pipeline(name="Hyperparameter tuning pipeline", description="SageMaker hyperparameter tuning job test")
 def training(
-    hyper_parameter_tuning_job_config = [], # JsonObject
+    hyper_parameter_tuning_job_config = "{}", # JsonObject
     hyper_parameter_tuning_job_name = "Job Name Example", #String
-    tags = "{}", #JsonArray
+    tags = "[]", #JsonArray
     training_job_definition = channelObj, #JsonObject
     training_job_definitions = channelObjList, # JsonArray
-    warm_start_config = channelObj, # JsonObject
+    warm_start_config = "{}", # JsonObject
 ):
     training = sagemaker_train_op(
         hyper_parameter_tuning_job_config = hyper_parameter_tuning_job_config,
