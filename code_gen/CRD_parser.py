@@ -1,4 +1,4 @@
-import json, yaml, re, os
+import yaml, re, os
 from string import Template
 import string
 from typing import Callable, Dict, Type, Union, List, NamedTuple, cast
@@ -13,28 +13,30 @@ COMPONENT_CONTAINER_IMAGE = "rdpen/kfp-component-sagemaker:latest"
 
 # type conversion table (reference: KFP_TYPE_FROM_ARGS)
 CRD_TYPE_TO_KFP_TYPE: Dict[str, str] = {
-        "string": "String",
-        "integer": "Integer",
-        "boolean": "Bool",
-        # SpecInputParsers.nullable_string_argument: "String", # todo
-        "object": "JsonObject",
-        "array": "JsonArray",
-        # SpecInputParsers.str_to_bool: "Bool",
-    }
+    "string": "String",
+    "integer": "Integer",
+    "boolean": "Bool",
+    # SpecInputParsers.nullable_string_argument: "String", # todo
+    "object": "JsonObject",
+    "array": "JsonArray",
+    # SpecInputParsers.str_to_bool: "Bool",
+}
 
 CRD_TYPE_TO_ARGS_TYPE: Dict[str, str] = {
-        "string": "str",
-        "integer": "int",
-        # "boolean": bool,
-        # "string": SpecInputParsers.nullable_string_argument,
-        "object": "SpecInputParsers.yaml_or_json_dict",
-        "array": "SpecInputParsers.yaml_or_json_list",
-        "boolean": "SpecInputParsers.str_to_bool",
-    }
+    "string": "str",
+    "integer": "int",
+    # "boolean": bool,
+    # "string": SpecInputParsers.nullable_string_argument,
+    "object": "SpecInputParsers.yaml_or_json_dict",
+    "array": "SpecInputParsers.yaml_or_json_list",
+    "boolean": "SpecInputParsers.str_to_bool",
+}
+
 
 def camel_to_snake(name):
     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+
 
 def parse_crd(_file_name):
     """
@@ -46,12 +48,13 @@ def parse_crd(_file_name):
     crd_file = open(_file_name, 'r')
     crd_dict = yaml.load(crd_file, Loader=yaml.FullLoader)
 
-    input_spec_required = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['spec']['required']
-    input_spec_all = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['spec']['properties']
-    output_statuses = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['status']['properties']
-    crd_name = crd_dict['spec']['names']['kind']
+    _input_spec_required = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['spec']['required']
+    _input_spec_all = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['spec']['properties']
+    _output_statuses = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['status']['properties']
+    _crd_name = crd_dict['spec']['names']['kind']
 
-    return input_spec_required, input_spec_all, output_statuses, crd_name
+    return _input_spec_required, _input_spec_all, _output_statuses, _crd_name
+
 
 def get_py_add_argument(_input_spec_all, _input_spec_required):
     """
@@ -59,21 +62,22 @@ def get_py_add_argument(_input_spec_all, _input_spec_required):
     Return a code snippet waiting to be written to component.py.tpl template
     """
 
-    py_add_argument_buffer = ""
+    _py_add_argument_buffer = ""
 
     for key in _input_spec_all:
-        py_add_argument_buffer += """
+        _py_add_argument_buffer += """
     parser.add_argument(
         "--%s",
-        type = %s,
-        help = "%s",
-        required = %r
-    )""" % (camel_to_snake(key), 
-                CRD_TYPE_TO_ARGS_TYPE.get(_input_spec_all[key]['type']),
-                _input_spec_all[key]['description'][0:50], 
-                key in _input_spec_required)
+        type=%s,
+        help="%s",
+        required=%r
+    )""" % (camel_to_snake(key),
+            CRD_TYPE_TO_ARGS_TYPE.get(_input_spec_all[key]['type']),
+            _input_spec_all[key]['description'][0:50],
+            key in _input_spec_required)
 
-    return py_add_argument_buffer
+    return _py_add_argument_buffer
+
 
 def get_yaml_inputs(_input_spec_all):
     """
@@ -81,30 +85,31 @@ def get_yaml_inputs(_input_spec_all):
     Return a code snippet waiting to be written to component.yaml.tpl template
     """
     CRD_TYPE_TO_DEFAULT_VALUE: Dict[str, str] = {
-        "string":  """''""",
+        "string": """''""",
         "integer": 0,
         "boolean": """False""",
         # SpecInputParsers.nullable_string_argument: "String", # todo
         "object": """'{}'""",
-        "array":  """'[]'""",
+        "array": """'[]'""",
         # SpecInputParsers.str_to_bool: "Bool",
     }
 
-    yaml_inputs_buffer = ""
+    _yaml_inputs_buffer = ""
 
     for key in _input_spec_all:
-        yaml_inputs_buffer += """
+        _yaml_inputs_buffer += """
   - {
       name: %s,
       type: %s,
       default: %s,
       description: "%s",
-    }""" % (camel_to_snake(key), 
-        CRD_TYPE_TO_KFP_TYPE.get(_input_spec_all[key]['type']), 
-        CRD_TYPE_TO_DEFAULT_VALUE.get(_input_spec_all[key]['type']), 
-        _input_spec_all[key]['description'][0:50])
+    }""" % (camel_to_snake(key),
+            CRD_TYPE_TO_KFP_TYPE.get(_input_spec_all[key]['type']),
+            CRD_TYPE_TO_DEFAULT_VALUE.get(_input_spec_all[key]['type']),
+            _input_spec_all[key]['description'][0:50])
 
-    return yaml_inputs_buffer
+    return _yaml_inputs_buffer
+
 
 def get_yaml_args(_input_spec_all):
     """
@@ -112,14 +117,15 @@ def get_yaml_args(_input_spec_all):
     Return a code snippet waiting to be written to component.yaml.tpl template
     """
 
-    yaml_args_buffer = ""
+    _yaml_args_buffer = ""
 
     for key in _input_spec_all:
         key = camel_to_snake(key)
-        yaml_args_buffer += ("""- --%s\n      - { inputValue: %s }
+        _yaml_args_buffer += ("""- --%s\n      - { inputValue: %s }
       """ % (key, key))
 
-    return yaml_args_buffer
+    return _yaml_args_buffer
+
 
 def get_yaml_outputs(_output_statuses):
     """
@@ -127,43 +133,46 @@ def get_yaml_outputs(_output_statuses):
     Return a code snippet waiting to be written to component.yaml.tpl template
     """
 
-    yaml_outputs_buffer = ""
+    _yaml_outputs_buffer = ""
 
     for key in _output_statuses:
-        yaml_outputs_buffer += """
-  - {
-      name: %s,
-      type: %s,
-      description: "%s",
-    }""" % (camel_to_snake(key), 
-            CRD_TYPE_TO_KFP_TYPE.get(output_statuses[key]['type']), 
-            output_statuses[key]['description'][0:50])
-    
-    return yaml_outputs_buffer
+        _yaml_outputs_buffer += """
+#  - {
+#      name: %s,
+#      type: %s,
+#      description: "%s",
+#    }""" % (camel_to_snake(key),
+             CRD_TYPE_TO_KFP_TYPE.get(output_statuses[key]['type']),
+             output_statuses[key]['description'][0:50])
+
+    return _yaml_outputs_buffer
+
 
 def get_pipeline_user_inputs(_input_spec_all):
     """
     Populate user input section in a sample pipeline
     Return a code snippet waiting to be written to pipeline.py.tpl template
     """
-    pipeline_user_inputs_buffer = ""
+    _pipeline_user_inputs_buffer = ""
 
     for key in _input_spec_all:
-        pipeline_user_inputs_buffer += """\t%s = ,\n""" % camel_to_snake(key)
-        
-    return pipeline_user_inputs_buffer
+        _pipeline_user_inputs_buffer += """\t%s = ,\n""" % camel_to_snake(key)
+
+    return _pipeline_user_inputs_buffer
+
 
 def get_pipeline_args_assign(_input_spec_all):
     """
     Populate args section in a sample pipeline
     Return a code snippet waiting to be written to pipeline.py.tpl template
     """
-    pipeline_args_assign_buffer = ""
+    _pipeline_args_assign_buffer = ""
 
     for key in _input_spec_all:
-        pipeline_args_assign_buffer += """\t\t%s = %s,\n""" % (camel_to_snake(key), camel_to_snake(key))
-    
-    return pipeline_args_assign_buffer
+        _pipeline_args_assign_buffer += """\t\t%s = %s,\n""" % (camel_to_snake(key), camel_to_snake(key))
+
+    return _pipeline_args_assign_buffer
+
 
 def write_buffer_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file_dir):
     """
@@ -186,10 +195,10 @@ def write_buffer_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file_
 
     print("CREATED: " + _out_file_loc)
 
+
 ##############################
 
 if __name__ == "__main__":
-
     # From ACK CRD YAML, parse fields needed
     input_spec_required, input_spec_all, output_statuses, crd_name = parse_crd(ACK_CRD_YAML_LOCATION)
 
@@ -204,33 +213,32 @@ if __name__ == "__main__":
     # set up output file directory/location
     output_component_dir = 'code_gen/components/' + crd_name + '/'
     output_yaml_location = output_component_dir + 'component.yaml'
-    output_py_dir =  output_component_dir + 'src/'
+    output_py_dir = output_component_dir + 'src/'
     output_py_location = output_py_dir + crd_name + '.py'
     output_pipeline_dir = output_component_dir + 'pipeline/'
-    output_pipeline_location = output_pipeline_dir + crd_name + '-pipeline'+ '.py'
+    output_pipeline_location = output_pipeline_dir + crd_name + '-pipeline' + '.py'
 
     # replace template placeholders with buffer, then write to file 
     # (don't change the order, yaml comes first, create the /component dir first)
     yaml_replace = {
-            'CRD_NAME': crd_name,
-            'YAML_INPUTS': yaml_inputs_buffer,
-            'YAML_OUTPUTS': yaml_outputs_buffer,
-            'YAML_ARGS': yaml_args_buffer,
-            'COMPONENT_CONTAINER_IMAGE': COMPONENT_CONTAINER_IMAGE
-        }
-    write_buffer_to_file(yaml_replace, "code_gen/templates/component.yaml.tpl", output_yaml_location, output_component_dir)
+        'CRD_NAME': crd_name,
+        'YAML_INPUTS': yaml_inputs_buffer,
+        'YAML_OUTPUTS': yaml_outputs_buffer,
+        'YAML_ARGS': yaml_args_buffer,
+        'COMPONENT_CONTAINER_IMAGE': COMPONENT_CONTAINER_IMAGE
+    }
+    write_buffer_to_file(yaml_replace, "code_gen/templates/component.yaml.tpl", output_yaml_location,
+                         output_component_dir)
 
     pipeline_replace = {
-            'PIPELINE_USER_INPUTS' : pipeline_user_inputs_buffer,
-            'PIPELINE_ARGS_ASSIGN': pipeline_args_assign_buffer,
-            'CRD_NAME': crd_name
-        }
-    write_buffer_to_file(pipeline_replace, "code_gen/templates/pipeline.py.tpl", output_pipeline_location, output_pipeline_dir)
-    
+        'PIPELINE_USER_INPUTS': pipeline_user_inputs_buffer,
+        'PIPELINE_ARGS_ASSIGN': pipeline_args_assign_buffer,
+        'CRD_NAME': crd_name
+    }
+    write_buffer_to_file(pipeline_replace, "code_gen/templates/pipeline.py.tpl", output_pipeline_location,
+                         output_pipeline_dir)
+
     py_replace = {
-            'PY_ADD_ARGUMENT': py_add_argument_buffer,
-        }
+        'PY_ADD_ARGUMENT': py_add_argument_buffer,
+    }
     write_buffer_to_file(py_replace, "code_gen/templates/component.py.tpl", output_py_location, output_py_dir)
-
-    
-

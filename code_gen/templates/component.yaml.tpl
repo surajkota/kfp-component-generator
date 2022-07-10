@@ -1,5 +1,5 @@
 name: "Sagemaker - ${CRD_NAME}"
-description: Train Machine Learning and Deep Learning Models using SageMaker
+description: Create ${CRD_NAME}
 inputs:
   ###########################GENERATED SECTION BELOW############################
   ${YAML_INPUTS}

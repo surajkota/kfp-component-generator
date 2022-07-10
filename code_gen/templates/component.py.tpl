@@ -4,7 +4,7 @@ import logging
 import boto3
 import os
 from kubernetes import client, config, utils
-from spec_input_parsers import SpecInputParsers
+from common.spec_input_parsers import SpecInputParsers
 
 def main():
     parser = argparse.ArgumentParser()
