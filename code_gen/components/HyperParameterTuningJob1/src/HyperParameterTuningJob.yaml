@@ -1,0 +1,32 @@
+apiVersion: sagemaker.services.k8s.aws/v1alpha1
+kind: HyperParameterTuningJob
+metadata:
+  name: example job name
+spec:
+  hyperParameterTuningJobConfig:
+    S3DataDistributionType: FullyReplicated
+    S3DataType: S3Prefix
+    S3Uri: s3://fake-bucket/data
+  hyperParameterTuningJobName: job name example
+  tags: []
+  trainingJobDefinition: {}
+  trainingJobDefinitions:
+  - ChannelName: train
+    CompressionType: None
+    ContentType: ''
+    DataSource:
+      S3DataSource:
+        S3DataDistributionType: FullyReplicated
+        S3DataType: S3Prefix
+        S3Uri: s3://fake-bucket/data
+    InputMode: File
+    RecordWrapperType: None
+  warmStartConfig:
+    ChannelName: null
+    CompressionType: None
+    DataSource:
+      S3DataSource:
+        S3DataDistributionType: FullyReplicated
+        S3DataType: S3Prefix
+        S3Uri: null
+    RecordWrapperType: None

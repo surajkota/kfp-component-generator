@@ -6,6 +6,7 @@ import os
 from kubernetes import client, config, utils
 from common.spec_input_parsers import SpecInputParsers
 
+
 def main():
     parser = argparse.ArgumentParser()
 

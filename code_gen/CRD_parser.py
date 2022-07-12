@@ -8,7 +8,9 @@ from spec_input_parsers import SpecInputParsers
 
 ##############User inputs##############
 ACK_CRD_YAML_LOCATION = "code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
+# ACK_CRD_YAML_LOCATION = "code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_trainingjobs.yaml"
 COMPONENT_CONTAINER_IMAGE = "rdpen/kfp-component-sagemaker:latest"
+ACK_JOB_NAME = "example job name" # used as name in ACK yaml-> metadata-> name
 ##############User inputs##############
 
 # type conversion table (reference: KFP_TYPE_FROM_ARGS)
@@ -32,26 +34,35 @@ CRD_TYPE_TO_ARGS_TYPE: Dict[str, str] = {
     "boolean": "SpecInputParsers.str_to_bool",
 }
 
+CRD_TYPE_TO_DEFAULT_VALUE: Dict[str, str] = {
+    "string": """''""",
+    "integer": 0,
+    "boolean": """False""",
+    "object": """'{}'""",
+    "array": """'[]'""",
+}
 
 def camel_to_snake(name):
     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
-
+def snake_to_camel(name):
+    temp = name.split('_')
+    return temp[0] + ''.join(ele.title() for ele in temp[1:])
+    
 def parse_crd(_file_name):
     """
     Read in ACK CRD YAML file from file location
     Parse file and get fields
     """
 
-    # crd_file = open("code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_trainingjobs.yaml", 'r')
-    crd_file = open(_file_name, 'r')
-    crd_dict = yaml.load(crd_file, Loader=yaml.FullLoader)
+    with open(_file_name, 'r') as crd_file:
+        crd_dict = yaml.load(crd_file, Loader=yaml.FullLoader)
 
-    _input_spec_required = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['spec']['required']
-    _input_spec_all = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['spec']['properties']
-    _output_statuses = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['status']['properties']
-    _crd_name = crd_dict['spec']['names']['kind']
+        _input_spec_required = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['spec']['required']
+        _input_spec_all = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['spec']['properties']
+        _output_statuses = crd_dict['spec']['versions'][0]['schema']['openAPIV3Schema']['properties']['status']['properties']
+        _crd_name = crd_dict['spec']['names']['kind']
 
     return _input_spec_required, _input_spec_all, _output_statuses, _crd_name
 
@@ -84,15 +95,6 @@ def get_yaml_inputs(_input_spec_all):
     Populate input section with name, type, description, ..
     Return a code snippet waiting to be written to component.yaml.tpl template
     """
-    CRD_TYPE_TO_DEFAULT_VALUE: Dict[str, str] = {
-        "string": """''""",
-        "integer": 0,
-        "boolean": """False""",
-        # SpecInputParsers.nullable_string_argument: "String", # todo
-        "object": """'{}'""",
-        "array": """'[]'""",
-        # SpecInputParsers.str_to_bool: "Bool",
-    }
 
     _yaml_inputs_buffer = ""
 
@@ -160,7 +162,6 @@ def get_pipeline_user_inputs(_input_spec_all):
 
     return _pipeline_user_inputs_buffer
 
-
 def get_pipeline_args_assign(_input_spec_all):
     """
     Populate args section in a sample pipeline
@@ -173,6 +174,17 @@ def get_pipeline_args_assign(_input_spec_all):
 
     return _pipeline_args_assign_buffer
 
+def get_ack_job_request_spec(_input_spec_all):
+    """
+    Populate spec section in a ACK job request YAML
+    Return a code snippet waiting to be written to ack_job_request.yaml.tpl template
+    """
+    _ack_job_request_tpl_spec_buffer = ""
+
+    for key in _input_spec_all:
+        _ack_job_request_tpl_spec_buffer += """  %s: \n""" % snake_to_camel(key)
+
+    return _ack_job_request_tpl_spec_buffer
 
 def write_buffer_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file_dir):
     """
@@ -209,12 +221,15 @@ if __name__ == "__main__":
     yaml_outputs_buffer = get_yaml_outputs(output_statuses)
     pipeline_user_inputs_buffer = get_pipeline_user_inputs(input_spec_all)
     pipeline_args_assign_buffer = get_pipeline_args_assign(input_spec_all)
+    ack_job_request_tpl_spec_buffer = get_ack_job_request_spec(input_spec_all)
+    print(ack_job_request_tpl_spec_buffer)
 
     # set up output file directory/location
     output_component_dir = 'code_gen/components/' + crd_name + '/'
     output_yaml_location = output_component_dir + 'component.yaml'
-    output_py_dir = output_component_dir + 'src/'
-    output_py_location = output_py_dir + crd_name + '.py'
+    output_src_dir = output_component_dir + 'src/'
+    output_py_location = output_src_dir + crd_name + '.py'
+    output_job_request_location = output_src_dir + crd_name + '.tpl.yaml'
     output_pipeline_dir = output_component_dir + 'pipeline/'
     output_pipeline_location = output_pipeline_dir + crd_name + '-pipeline' + '.py'
 
@@ -225,7 +240,7 @@ if __name__ == "__main__":
         'YAML_INPUTS': yaml_inputs_buffer,
         'YAML_OUTPUTS': yaml_outputs_buffer,
         'YAML_ARGS': yaml_args_buffer,
-        'COMPONENT_CONTAINER_IMAGE': COMPONENT_CONTAINER_IMAGE
+        'COMPONENT_CONTAINER_IMAGE': COMPONENT_CONTAINER_IMAGE,
     }
     write_buffer_to_file(yaml_replace, "code_gen/templates/component.yaml.tpl", output_yaml_location,
                          output_component_dir)
@@ -233,7 +248,7 @@ if __name__ == "__main__":
     pipeline_replace = {
         'PIPELINE_USER_INPUTS': pipeline_user_inputs_buffer,
         'PIPELINE_ARGS_ASSIGN': pipeline_args_assign_buffer,
-        'CRD_NAME': crd_name
+        'CRD_NAME': crd_name,
     }
     write_buffer_to_file(pipeline_replace, "code_gen/templates/pipeline.py.tpl", output_pipeline_location,
                          output_pipeline_dir)
@@ -241,4 +256,11 @@ if __name__ == "__main__":
     py_replace = {
         'PY_ADD_ARGUMENT': py_add_argument_buffer,
     }
-    write_buffer_to_file(py_replace, "code_gen/templates/component.py.tpl", output_py_location, output_py_dir)
+    write_buffer_to_file(py_replace, "code_gen/templates/component.py.tpl", output_py_location, output_src_dir)
+
+    ack_job_request_replace = {
+        'CRD_NAME': crd_name,
+        'ACK_JOB_NAME': ACK_JOB_NAME,
+        'JOB_REQUEST_SPEC': ack_job_request_tpl_spec_buffer,
+    }
+    write_buffer_to_file(ack_job_request_replace, "code_gen/templates/ack_job_request.yaml.tpl", output_job_request_location, output_src_dir)
