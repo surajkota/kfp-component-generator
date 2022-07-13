@@ -1,6 +1,6 @@
 apiVersion: sagemaker.services.k8s.aws/v1alpha1
 kind: ${CRD_NAME}
 metadata:
-  name: ${ACK_JOB_NAME}
+  name: ack-${CRD_NAME_LOWER}-${RAND_NUM}
 spec:
-${JOB_REQUEST_SPEC}
+${JOB_REQUEST_OUTLINE_SPEC}

@@ -81,7 +81,7 @@ implementation:
     image: rdpen/kfp-component-sagemaker:5
     command: [python3]
     args:
-      - code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob.py
+      - code_gen/components/HyperParameterTuningJob1/src/HyperParameterTuningJob.py
       ###########################GENERATED SECTION BELOW############################
       - --hyper_parameter_tuning_job_config
       - { inputValue: hyper_parameter_tuning_job_config }

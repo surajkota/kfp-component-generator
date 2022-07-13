@@ -9,24 +9,44 @@ spec:
     S3Uri: s3://fake-bucket/data
   hyperParameterTuningJobName: job name example
   tags: []
-  trainingJobDefinition: {}
-  trainingJobDefinitions:
-  - ChannelName: train
-    CompressionType: None
-    ContentType: ''
-    DataSource:
-      S3DataSource:
-        S3DataDistributionType: FullyReplicated
-        S3DataType: S3Prefix
-        S3Uri: s3://fake-bucket/data
-    InputMode: File
-    RecordWrapperType: None
+  trainingJobDefinition:
+    AlgorithmSpecification:
+      TrainingImage: training_image
+      TrainingInputMode: File
+    InputDataConfig:
+    - ChannelName: train
+      CompressionType: None
+      ContentType: csv
+      DataSource:
+        S3DataSource:
+          S3DataDistributionType: FullyReplicated
+          S3DataType: S3Prefix
+          S3Uri: s3://xxx/xxx/output
+    - ChannelName: validation
+      CompressionType: None
+      ContentType: csv
+      DataSource:
+        S3DataSource:
+          S3DataDistributionType: FullyReplicated
+          S3DataType: S3Prefix
+          S3Uri: s3://xxx/xxx/output
+    OutputDataConfig:
+      S3OutputPath: s3://xxx/xxx/output
+    ResourceConfig:
+      InstanceCount: 2
+      InstanceType: ml.c4.2xlarge
+      VolumeSizeInGB: 10
+    RoleArn: role
+    StaticHyperParameters:
+      eval_metric: auc
+      num_round: 100
+      objective: binary:logistic
+      rate_drop: 0.3
+      tweedie_variance_power: 1.4
+    StoppingCondition:
+      MaxRuntimeInSeconds: 43200
+  trainingJobDefinitions: []
   warmStartConfig:
-    ChannelName: null
-    CompressionType: None
-    DataSource:
-      S3DataSource:
-        S3DataDistributionType: FullyReplicated
-        S3DataType: S3Prefix
-        S3Uri: null
-    RecordWrapperType: None
+    ParentHyperParameterTuningJobs:
+    - HyperParameterTuningJobName: MyParentTuningJob
+    WarmStartType: IdenticalDataAndAlgorithm

@@ -1,20 +1,16 @@
 import argparse
-import string
 import yaml
 import logging
-import boto3
 import os
 from kubernetes import client, config, utils
 from common.spec_input_parsers import SpecInputParsers
-# from code_gen.CRD_parser import snake_to_camel
 
 def snake_to_camel(name):
     temp = name.split('_')
     return temp[0] + ''.join(ele.title() for ele in temp[1:])
 
 def build_job_yaml(_args):
-    
-    with open("code_gen/components/HyperParameterTuningJob1/src/HyperParameterTuningJob.tpl.yaml", 'r') as job_request_template:
+    with open("code_gen/components/HyperParameterTuningJob1/src/HyperParameterTuningJob.yaml.tpl", 'r') as job_request_template:
         job_request_dict = yaml.load(job_request_template, Loader=yaml.FullLoader)
         job_request_spec = job_request_dict['spec']
         for para in vars(_args):
@@ -22,15 +18,16 @@ def build_job_yaml(_args):
             if camel_para in job_request_spec:
                 job_request_spec[camel_para] = getattr(_args, para)
         
-        print(job_request_spec)
+        # print(job_request_spec)
 
         job_request_dict['spec'] = job_request_spec
 
-        print(job_request_dict)
+        # print(job_request_dict)
 
         out_loc = "code_gen/components/HyperParameterTuningJob1/src/HyperParameterTuningJob.yaml"
         with open(out_loc, 'w+') as f:
             yaml.dump(job_request_dict, f, default_flow_style=False)
+        print("CREATED: " + out_loc)
 
 def main():
     parser = argparse.ArgumentParser()
