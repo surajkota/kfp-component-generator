@@ -9,5 +9,5 @@ for key in crd_dict['spec']:
     print(key)
     
 
-with open("test.yaml", 'w+') as f:
-    yaml.dump(crd_dict, f, default_flow_style=False)
+# with open("test.yaml", 'w+') as f:
+#     yaml.dump(crd_dict, f, default_flow_style=False)

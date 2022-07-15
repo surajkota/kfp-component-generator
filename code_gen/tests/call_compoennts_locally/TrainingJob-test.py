@@ -7,7 +7,7 @@ import yaml
 """
 Call component implementation src/TrainingJob.py locally. 
 
-Imitate how the component calls the implementation script: (snippet from component.yaml)
+Imitate how the component calls the implementation script in a container image: (snippet from component.yaml)
 
 implementation:
   container:

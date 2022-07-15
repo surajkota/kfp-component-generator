@@ -7,6 +7,9 @@ from common.spec_input_parsers import SpecInputParsers
 
 
 def snake_to_camel(name):
+    """
+    Convert snake case string to camel Case
+    """
     if name == "role_arn":
         return "roleARN"
     temp = name.split('_')
@@ -14,6 +17,11 @@ def snake_to_camel(name):
 
 
 def build_job_yaml(_args):
+    """
+    Read the outline file src/component-request.yaml.tpl 
+    Build an ack job (custom object) yaml file with user input args.
+    Write the yaml file to src/component-request.yaml.
+    """
     with open(
         "${JOB_REQUEST_OUTLINE_LOC}", 'r'
     ) as job_request_outline:
@@ -44,6 +52,10 @@ def main():
     ###########################GENERATED SECTION ABOVE############################
 
     args = parser.parse_args()
+
+    # logging.critical("----------------Print args below...-----------------")
+    # logging.critical("Parsed args: %s", vars(args))
+    # logging.critical("----------------------------------------------------")
 
     build_job_yaml(args)
 

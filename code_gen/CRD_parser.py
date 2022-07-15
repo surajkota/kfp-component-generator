@@ -204,7 +204,7 @@ def get_pipeline_args_assign(_input_spec_all):
     return _pipeline_args_assign_buffer
 
 
-## Generate src/component.yaml.tpl content
+## Generate src/component-request.yaml.tpl content
 def get_ack_job_request_outline_spec(_input_spec_all):
     """
     Populate spec section in a ACK job request YAML
@@ -250,11 +250,14 @@ if __name__ == "__main__":
 
     # get code snippet (buffer) to be filled in templates
     py_add_argument_buffer = get_py_add_argument(input_spec_all, input_spec_required)
+    
     yaml_inputs_buffer = get_yaml_inputs(input_spec_all)
     yaml_args_buffer = get_yaml_args(input_spec_all)
     yaml_outputs_buffer = get_yaml_outputs(output_statuses)
+
     pipeline_user_inputs_buffer = get_pipeline_user_inputs(input_spec_all)
     pipeline_args_assign_buffer = get_pipeline_args_assign(input_spec_all)
+    
     ack_job_request_outline_spec_buffer = get_ack_job_request_outline_spec(
         input_spec_all
     )
