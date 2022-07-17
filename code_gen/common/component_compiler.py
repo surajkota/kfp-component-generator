@@ -24,13 +24,13 @@ from kfp.components.structures import (
     ContainerSpec,
 )
 
-from .sagemaker_component import SageMakerComponent
-from .sagemaker_component_spec import (
+from code_gen.common.sagemaker_component import SageMakerComponent
+from code_gen.common.sagemaker_component_spec import (
     SageMakerComponentSpec,
     SageMakerComponentInputValidator,
     SageMakerComponentOutputValidator,
 )
-from .spec_input_parsers import SpecInputParsers
+from code_gen.common.spec_input_parsers import SpecInputParsers
 
 CommandlineArgumentType = Union[
     str, InputValuePlaceholder, OutputPathPlaceholder,

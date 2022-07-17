@@ -1,16 +1,16 @@
-import random
-import yaml, re, os
+import random, yaml, re, os, string
 from string import Template
-import string
 from typing import Callable, Dict, Type, Union, List, NamedTuple, cast
-from spec_input_parsers import SpecInputParsers
+
+from code_gen.common.spec_input_parsers import SpecInputParsers
+
 
 # Run this script in /kfp-component-generator
 
 ##############User inputs##############
 ACK_CRD_YAML_LOCATION = (
-    # "code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
-    "code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_trainingjobs.yaml"
+    "code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
+    # "code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_trainingjobs.yaml"
 )
 COMPONENT_CONTAINER_IMAGE = "rdpen/kfp-component-sagemaker:latest"
 ##############User inputs##############
@@ -167,8 +167,8 @@ def get_yaml_outputs(_output_statuses):
 #      description: "%s",
 #    }""" % (
             camel_to_snake(key),
-            CRD_TYPE_TO_KFP_TYPE.get(output_statuses[key]["type"]),
-            output_statuses[key]["description"][0:50],
+            CRD_TYPE_TO_KFP_TYPE.get(_output_statuses[key]["type"]),
+            _output_statuses[key]["description"][0:50],
         )
 
     return _yaml_outputs_buffer

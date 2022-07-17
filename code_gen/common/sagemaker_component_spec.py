@@ -23,7 +23,7 @@ from typing import (
     Any,
 )
 
-from .common_inputs import (
+from code_gen.common.common_inputs import (
     SageMakerComponentBaseInputs,
     SageMakerComponentBaseOutputs,
     SageMakerComponentInputValidator,

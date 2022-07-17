@@ -27,9 +27,9 @@ from time import sleep, strftime, gmtime
 from abc import abstractmethod
 from typing import Any, Type, Dict, List, NamedTuple, Optional
 
-from .sagemaker_component_spec import SageMakerComponentSpec
-from .boto3_manager import Boto3Manager
-from .common_inputs import (
+from code_gen.common.sagemaker_component_spec import SageMakerComponentSpec
+from code_gen.common.boto3_manager import Boto3Manager
+from code_gen.common.common_inputs import (
     SageMakerComponentBaseOutputs,
     SageMakerComponentCommonInputs,
     SpotInstanceInputs,

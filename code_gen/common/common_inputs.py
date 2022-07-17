@@ -20,7 +20,7 @@ from typing import (
     Optional,
     Union,
 )
-from .spec_input_parsers import SpecInputParsers
+from code_gen.common.spec_input_parsers import SpecInputParsers
 
 
 @dataclass(frozen=True)

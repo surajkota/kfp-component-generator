@@ -15,8 +15,8 @@
 
 import argparse
 
-from common.component_compiler import SageMakerComponentCompiler
-import common.sagemaker_component as component_module
+from code_gen.common.component_compiler import SageMakerComponentCompiler
+import code_gen.common.sagemaker_component as component_module
 
 
 COMPONENT_DIRECTORIES = [
