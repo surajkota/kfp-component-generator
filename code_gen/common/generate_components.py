@@ -31,7 +31,7 @@ COMPONENT_DIRECTORIES = [
     # "rlestimator",
     # "simulation_job",
     # "simulation_job_batch",
-    "train",
+    "TrainingJob",
     # "workteam",
 ]
 
@@ -133,10 +133,10 @@ if __name__ == "__main__":
     args = parse_arguments()
 
     cwd = Path(os.path.join(os.getcwd(), os.path.dirname(__file__))) # current working directory
-    root = cwd.parent
+    root = cwd.parent.parent
 
     for component in COMPONENT_DIRECTORIES:
-        component_dir = Path(root, component)
+        component_dir = Path(root, "code_gen/components", component)
         component_src_dir = Path(component_dir, "src")
         components = sorted(component_src_dir.glob("*_component.py")) # get all file matching "*_component.py" in component_src_dir
         if len(components) < 1:

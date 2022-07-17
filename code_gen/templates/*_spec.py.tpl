@@ -1,4 +1,3 @@
-
 """Specification for the SageMaker - ${CRD_NAME}"""
 
 from dataclasses import dataclass
@@ -10,16 +9,15 @@ from code_gen.common.sagemaker_component_spec import (
 )
 from code_gen.common.spec_input_parsers import SpecInputParsers
 from code_gen.common.common_inputs import (
-    COMMON_INPUTS,
-    SPOT_INSTANCE_INPUTS,
     SageMakerComponentInput as Input,
     SageMakerComponentOutput as Output,
     SageMakerComponentInputValidator as InputValidator,
     SageMakerComponentOutputValidator as OutputValidator,
 )
 
+
 @dataclass(frozen=True)
-class ${INPUT_CLASS_NAME}():
+class ${INPUT_CLASS_NAME}:
     """Defines the set of inputs for the ${CRD_NAME} component."""
     ${SPEC_INPUT_DEFINITIONS}
 
