@@ -1,5 +1,5 @@
 from typing import Dict
-from code_gen.generator.gen_utils import camel_to_snake, snake_to_camel
+from code_gen.generator.utils import camel_to_snake, snake_to_camel
 
 CRD_TYPE_TO_ARGS_TYPE: Dict[str, str] = {
     "string": "str",

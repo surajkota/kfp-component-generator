@@ -1,6 +1,6 @@
 from telnetlib import STATUS
 from typing import Dict
-from code_gen.generator.gen_utils import (
+from code_gen.generator.utils import (
     camel_to_snake,
     parse_crd,
     snake_to_camel,

@@ -1,7 +1,7 @@
 apiVersion: sagemaker.services.k8s.aws/v1alpha1
 kind: TrainingJob
 metadata:
-  name: ack-trainingjob-31146
+  name: ack-trainingjob-91046
 spec:
   algorithmSpecification: 
   checkpointConfig: 

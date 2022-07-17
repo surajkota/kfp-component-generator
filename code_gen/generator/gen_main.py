@@ -1,5 +1,5 @@
 import random
-from code_gen.generator.gen_utils import (
+from code_gen.generator.utils import (
     parse_crd,
     write_buffer_to_file,
 )

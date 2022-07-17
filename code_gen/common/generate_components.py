@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# In kfp-component-generator, run python -m common.generate_components --tag 1.1.1
+# In kfp-component-generator, run python -m code_gen.common.generate_components --tag 1.1.1
 """A command line tool for generating component specification files."""
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
