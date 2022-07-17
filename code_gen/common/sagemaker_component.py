@@ -263,7 +263,7 @@ class SageMakerComponent:
         inputs: SageMakerComponentCommonInputs,
         outputs: SageMakerComponentBaseOutputs,
     ) -> Dict:
-        """Creates the boto3 request object to execute the component.
+        """Creates the ACK request object to execute the component.
 
         Args:
             inputs: A populated list of user inputs.
@@ -289,7 +289,7 @@ class SageMakerComponent:
             out_loc = self.job_request_location
             with open(out_loc, "w+") as f:
                 yaml.dump(job_request_dict, f, default_flow_style=False)
-            print("CREATED: " + out_loc)
+            print("FILE CREATED: " + out_loc)
 
         return job_request_dict
 

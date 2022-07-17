@@ -3,6 +3,8 @@ from typing import Dict
 from enum import Enum, auto
 from sagemaker.image_uris import retrieve
 import yaml
+from kubernetes import client, config, utils
+
 
 from code_gen.components.TrainingJob.src.TrainingJob_spec import (
     SageMakerTrainingJobInputs,
@@ -19,18 +21,27 @@ from code_gen.generator.utils import snake_to_camel
 
 
 @ComponentMetadata(
-    name="SageMaker - Training Job",
-    description="Train Machine Learning and Deep Learning Models using SageMaker",
+    name="SageMaker - TrainingJob",
+    description="",
     spec=SageMakerTrainingJobSpec,
 )
 class SageMakerTrainingJobComponent(SageMakerComponent):
     """SageMaker component for training."""
 
     def Do(self, spec: SageMakerTrainingJobSpec):
-        self.ACK_JOB_NAME = SageMakerComponent._generate_unique_timestamped_id(
-            prefix="ACK-TrainingJob"
+        # set parameters
+        self.ack_job_name = SageMakerComponent._generate_unique_timestamped_id(
+            prefix="ack-trainingjob"
         )
-        print(self.ACK_JOB_NAME)
+        self.group_name = "sagemaker.services.k8s.aws"
+        self.version_name = "v1alpha1"
+        self.plural_name = "trainingjobs"
+        self.component_dir = "code_gen/components/TrainingJob/"
+        self.job_request_outline_location = (
+            self.component_dir + "src/TrainingJob-request.yaml.tpl"
+        )
+        self.job_request_location = self.component_dir + "src/TrainingJob-request.yaml"
+
         super().Do(spec.inputs, spec.outputs, spec.output_paths)
 
     def _create_job_request(
@@ -39,26 +50,29 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         outputs: SageMakerTrainingJobOutputs,
     ) -> Dict:
 
-        with open(
-            "code_gen/components/TrainingJob/src/TrainingJob-request.yaml.tpl", "r"
-        ) as job_request_outline:
-            job_request_dict = yaml.load(job_request_outline, Loader=yaml.FullLoader)
-            job_request_spec = job_request_dict["spec"]
+        return super()._create_job_request(inputs, outputs)
 
-            for para in vars(inputs):
-                camel_para = snake_to_camel(para)
-                if camel_para in job_request_spec:
-                    job_request_spec[camel_para] = getattr(inputs, para)
+    def _submit_job_request(self, request: Dict) -> object:
+        # list pods test
+        # ret = self._k8s_api_client.list_pod_for_all_namespaces(watch=False)
+        # for i in ret.items:
+        #     print(
+        #         "%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name)
+        #     )
+        # jobs = list()
+        # jobs.append(request)
 
-            # job_request_dict["spec"] = job_request_spec
-            job_request_dict["metadata"]["name"] = self.ACK_JOB_NAME
+        # print("ack job name: " + request["metadata"]["name"])
+        # print("Sagemaker name: " + request["spec"]["trainingJobName"])
 
-            print(job_request_dict)
+        # utils.create_from_yaml(
+        #     k8s_client=self._k8s_api_client, yaml_objects=jobs, verbose=True
+        # )
 
-            out_loc = "code_gen/components/TrainingJob/src/TrainingJob-request.yaml"
-            with open(out_loc, "w+") as f:
-                yaml.dump(job_request_dict, f, default_flow_style=False)
-            print("CREATED: " + out_loc)
+    def _get_job_status(self):
+
+        job_statuses = super()._get_job_status()
+        print(job_statuses["trainingJobStatus"])
 
 
 if __name__ == "__main__":

@@ -59,11 +59,11 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         #     print(
         #         "%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name)
         #     )
-        jobs = list()
-        jobs.append(request)
+        # jobs = list()
+        # jobs.append(request)
 
-        print("ack job name: " + request["metadata"]["name"])
-        print("Sagemaker name: " + request["spec"]["trainingJobName"])
+        # print("ack job name: " + request["metadata"]["name"])
+        # print("Sagemaker name: " + request["spec"]["trainingJobName"])
 
         # utils.create_from_yaml(
         #     k8s_client=self._k8s_api_client, yaml_objects=jobs, verbose=True
