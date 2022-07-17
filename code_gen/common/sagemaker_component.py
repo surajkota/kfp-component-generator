@@ -35,6 +35,7 @@ from code_gen.common.common_inputs import (
     SageMakerComponentCommonInputs,
     SpotInstanceInputs,
 )
+from code_gen.generator.utils import snake_to_camel
 
 # This handler is called whenever the @ComponentMetadata is applied.
 # It allows the command line compiler to detect every component spec class.
@@ -118,9 +119,15 @@ class SageMakerComponent:
     COMPONENT_DESCRIPTION = ""
     COMPONENT_SPEC = SageMakerComponentSpec
 
-    ACK_JOB_NAME = ""
-
     STATUS_POLL_INTERVAL = 30
+
+    # parameters that will be filled by Do().
+    # assignment statements in Do() will be genereated
+    ack_job_name = ""
+    group_name = ""
+    version_name = ""
+    plural_name = ""
+    component_dir = ""
 
     def __init__(self):
         """Initialize a new component."""
@@ -251,7 +258,6 @@ class SageMakerComponent:
 
         return job_statuses_all["status"]
 
-    @abstractmethod
     def _create_job_request(
         self,
         inputs: SageMakerComponentCommonInputs,
@@ -266,7 +272,26 @@ class SageMakerComponent:
         Returns:
             dict: A dictionary object representing the request.
         """
-        pass
+        with open(self.job_request_outline_location) as job_request_outline:
+            job_request_dict = yaml.load(job_request_outline, Loader=yaml.FullLoader)
+            job_request_spec = job_request_dict["spec"]
+
+            for para in vars(inputs):
+                camel_para = snake_to_camel(para)
+                if camel_para in job_request_spec:
+                    job_request_spec[camel_para] = getattr(inputs, para)
+
+            # job_request_dict["spec"] = job_request_spec
+            job_request_dict["metadata"]["name"] = self.ack_job_name
+
+            # print(job_request_dict)
+
+            out_loc = self.job_request_location
+            with open(out_loc, "w+") as f:
+                yaml.dump(job_request_dict, f, default_flow_style=False)
+            print("CREATED: " + out_loc)
+
+        return job_request_dict
 
     @abstractmethod
     def _submit_job_request(self, request: Dict) -> Dict:

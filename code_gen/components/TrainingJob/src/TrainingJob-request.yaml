@@ -1,7 +1,7 @@
 apiVersion: sagemaker.services.k8s.aws/v1alpha1
 kind: TrainingJob
 metadata:
-  name: ack-trainingjob-20220717223414-hvxf
+  name: ack-trainingjob-20220717230038-5d9m
 spec:
   algorithmSpecification:
     trainingImage: 746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2-1
@@ -52,5 +52,5 @@ spec:
     maxRuntimeInSeconds: 86400
   tags: null
   tensorBoardOutputConfig: null
-  trainingJobName: training-job-from-ack-kfp-26
+  trainingJobName: training-job-from-ack-kfp-15
   vpcConfig: null
