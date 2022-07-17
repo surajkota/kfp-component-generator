@@ -26,6 +26,7 @@ from pathlib import Path
 from time import sleep, strftime, gmtime
 from abc import abstractmethod
 from typing import Any, Type, Dict, List, NamedTuple, Optional
+from kubernetes import client, config, utils
 
 from code_gen.common.sagemaker_component_spec import SageMakerComponentSpec
 from code_gen.common.boto3_manager import Boto3Manager
@@ -117,6 +118,8 @@ class SageMakerComponent:
     COMPONENT_DESCRIPTION = ""
     COMPONENT_SPEC = SageMakerComponentSpec
 
+    ACK_JOB_NAME = ""
+
     STATUS_POLL_INTERVAL = 30
 
     def __init__(self):
@@ -142,7 +145,7 @@ class SageMakerComponent:
         """
         # Global try-catch in order to allow for safe abort
         try:
-            # self._configure_aws_clients(inputs)
+            self._configure_aws_clients(inputs)
             pass
             # Successful execution
             if not self._do(inputs, outputs, output_paths):
@@ -157,15 +160,20 @@ class SageMakerComponent:
         Args:
             inputs: A populated list of user inputs.
         """
-        self._sm_client = Boto3Manager.get_sagemaker_client(
-            self._get_component_version(),
-            inputs.region,
-            endpoint_url=inputs.endpoint_url,
-            assume_role_arn=inputs.assume_role,
-        )
-        self._cw_client = Boto3Manager.get_cloudwatch_client(
-            inputs.region, assume_role_arn=inputs.assume_role
-        )
+        # self._sm_client = Boto3Manager.get_sagemaker_client(
+        #     self._get_component_version(),
+        #     inputs.region,
+        #     endpoint_url=inputs.endpoint_url,
+        #     assume_role_arn=inputs.assume_role,
+        # )
+        # self._cw_client = Boto3Manager.get_cloudwatch_client(
+        #     inputs.region, assume_role_arn=inputs.assume_role
+        # )
+
+        ## configure kubectl client
+        config.load_kube_config()
+        self._k8s_api_client = client.ApiClient()
+        self._k8s_custom_client = client.CustomObjectsApi()
 
     def _do(
         self,
@@ -180,13 +188,15 @@ class SageMakerComponent:
         signal.signal(signal.SIGTERM, signal_term_handler)
 
         request = self._create_job_request(inputs, outputs)
-        # try:
-        #     job = self._submit_job_request(request)
-        # except Exception as e:
-        #     logging.exception(
-        #         "An error occurred while attempting to submit the request"
-        #     )
-        #     return False
+        try:
+            job = self._submit_job_request(request)
+        except Exception as e:
+            logging.exception(
+                "An error occurred while attempting to submit the request"
+            )
+            return False
+
+        self._get_job_status()
 
         # self._after_submit_job_request(job, request, inputs, outputs)
 
@@ -217,14 +227,29 @@ class SageMakerComponent:
 
         return True
 
-    @abstractmethod
-    def _get_job_status(self) -> SageMakerJobStatus:
-        """Waits for the current job to complete.
+    def _get_job_status(self):
+        """Gets the status of the job."""
 
-        Returns:
-            SageMakerJobStatus: A status object.
-        """
-        pass
+        # # get all training jobs
+        # api_response = self._k8s_custom_client.list_cluster_custom_object(
+        #     group=self.group_name,
+        #     version=self.version_name,
+        #     plural=self.plural_name,
+        # )
+        # for job in api_response["items"]:
+        #     print("ACK name: " + job["metadata"]["name"])
+        #     # print("Sagemaker name: " + job["spec"]["trainingJobName"])
+        #     print(job["status"]["trainingJobStatus"])
+
+        job_statuses_all = self._k8s_custom_client.get_namespaced_custom_object_status(
+            group=self.group_name,
+            version=self.version_name,
+            plural=self.plural_name,
+            namespace="default",
+            name="ack-trainingjob-20220717213435-8jf9",
+        )
+
+        return job_statuses_all["status"]
 
     @abstractmethod
     def _create_job_request(
@@ -330,14 +355,15 @@ class SageMakerComponent:
         Returns:
             string: A pseudo-random string with included timestamp and prefix.
         """
-        unique = "".join(random.choice(chars) for _ in range(size))
+        unique = "".join(random.choice(chars) for _ in range(size)).lower()
         return f'{prefix}{"-" if prefix else ""}{strftime("%Y%m%d%H%M%S", gmtime())}-{unique}'[
             -max_length:
         ]
 
     @staticmethod
     def _enable_spot_instance_support(
-        request: Dict, inputs: SpotInstanceInputs,
+        request: Dict,
+        inputs: SpotInstanceInputs,
     ) -> Dict:
         """Modifies a request object to add support for spot instance fields.
 

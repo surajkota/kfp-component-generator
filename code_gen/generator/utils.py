@@ -40,6 +40,13 @@ def parse_crd(_file_name):
 
     return _input_spec_required, _input_spec_all, _output_statuses, _crd_name
 
+def get_class_names(_crd_name):
+    _input_class_name = "SageMaker" + _crd_name + "Inputs"
+    _output_class_name = "SageMaker" + _crd_name + "Outputs"
+    _spec_class_name = "SageMaker" + _crd_name + "Spec"
+    _component_class_name = "SageMaker" + _crd_name + "Component" 
+
+    return (_input_class_name, _output_class_name, _spec_class_name, _component_class_name)
 
 def write_buffer_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file_dir):
     """

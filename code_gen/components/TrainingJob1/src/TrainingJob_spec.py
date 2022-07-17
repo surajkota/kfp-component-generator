@@ -19,7 +19,7 @@ from code_gen.common.common_inputs import (
 @dataclass(frozen=True)
 class SageMakerTrainingJobInputs:
     """Defines the set of inputs for the TrainingJob component."""
-    
+
     algorithm_specification: Input
     checkpoint_config: Input
     debug_hook_config: Input
@@ -46,7 +46,7 @@ class SageMakerTrainingJobInputs:
 @dataclass
 class SageMakerTrainingJobOutputs(SageMakerComponentBaseOutputs):
     """Defines the set of outputs for the TrainingJob component."""
-    
+
     ack_resource_metadata: Output
     conditions: Output
     debug_rule_evaluation_statuses: Output
@@ -61,144 +61,140 @@ class SageMakerTrainingJobSpec(
     SageMakerComponentSpec[SageMakerTrainingJobInputs, SageMakerTrainingJobOutputs]
 ):
     INPUTS: SageMakerTrainingJobInputs = SageMakerTrainingJobInputs(
-        
         algorithm_specification=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="The registry path of the Docke",
-            required=True
-        ), 
+            required=True,
+        ),
         checkpoint_config=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="Contains information about the",
-            required=False
-        ), 
+            required=False,
+        ),
         debug_hook_config=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="Configuration information for ",
-            required=False
-        ), 
+            required=False,
+        ),
         debug_rule_configurations=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_list,
             description="Configuration information for ",
-            required=False
-        ), 
+            required=False,
+        ),
         enable_inter_container_traffic_encryption=InputValidator(
             input_type=SpecInputParsers.str_to_bool,
             description="To encrypt all communications ",
-            required=False
-        ), 
+            required=False,
+        ),
         enable_managed_spot_training=InputValidator(
             input_type=SpecInputParsers.str_to_bool,
             description="To train models using managed ",
-            required=False
-        ), 
+            required=False,
+        ),
         enable_network_isolation=InputValidator(
             input_type=SpecInputParsers.str_to_bool,
             description="Isolates the training containe",
-            required=False
-        ), 
+            required=False,
+        ),
         environment=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="The environment variables to s",
-            required=False
-        ), 
+            required=False,
+        ),
         experiment_config=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="Associates a SageMaker job as ",
-            required=False
-        ), 
+            required=False,
+        ),
         hyper_parameters=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="Algorithm-specific parameters ",
-            required=False
-        ), 
+            required=False,
+        ),
         input_data_config=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_list,
             description="An array of Channel objects. E",
-            required=False
-        ), 
+            required=False,
+        ),
         output_data_config=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="Specifies the path to the S3 l",
-            required=True
-        ), 
+            required=True,
+        ),
         profiler_config=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="Configuration information for ",
-            required=False
-        ), 
+            required=False,
+        ),
         profiler_rule_configurations=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_list,
             description="Configuration information for ",
-            required=False
-        ), 
+            required=False,
+        ),
         resource_config=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="The resources, including the M",
-            required=True
-        ), 
+            required=True,
+        ),
         role_arn=InputValidator(
-            input_type=str,
-            description="The Amazon Resource Name (ARN)",
-            required=True
-        ), 
+            input_type=str, description="The Amazon Resource Name (ARN)", required=True
+        ),
         stopping_condition=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="Specifies a limit to how long ",
-            required=True
-        ), 
+            required=True,
+        ),
         tags=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_list,
             description="An array of key-value pairs. Y",
-            required=False
-        ), 
+            required=False,
+        ),
         tensor_board_output_config=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="Configuration of storage locat",
-            required=False
-        ), 
+            required=False,
+        ),
         training_job_name=InputValidator(
-            input_type=str,
-            description="The name of the training job. ",
-            required=True
-        ), 
+            input_type=str, description="The name of the training job. ", required=True
+        ),
         vpc_config=InputValidator(
             input_type=SpecInputParsers.yaml_or_json_dict,
             description="A VpcConfig object that specif",
-            required=False
-        ), 
+            required=False,
+        ),
     )
-    
+
     OUTPUTS = SageMakerTrainingJobOutputs(
-        
         ack_resource_metadata=OutputValidator(
             description="All CRs managed by ACK have a ",
-        ), 
+        ),
         conditions=OutputValidator(
             description="All CRS managed by ACK have a ",
-        ), 
+        ),
         debug_rule_evaluation_statuses=OutputValidator(
             description="Evaluation status of Debugger ",
-        ), 
+        ),
         failure_reason=OutputValidator(
             description="If the training job failed, th",
-        ), 
+        ),
         model_artifacts=OutputValidator(
             description="Information about the Amazon S",
-        ), 
+        ),
         profiler_rule_evaluation_statuses=OutputValidator(
             description="Evaluation status of Debugger ",
-        ), 
+        ),
         secondary_status=OutputValidator(
             description="Provides detailed information ",
-        ), 
+        ),
         training_job_status=OutputValidator(
             description="The status of the training job",
-        ), 
+        ),
     )
 
     def __init__(self, arguments: List[str]):
-        super().__init__(arguments, SageMakerTrainingJobInputs, SageMakerTrainingJobOutputs)
+        super().__init__(
+            arguments, SageMakerTrainingJobInputs, SageMakerTrainingJobOutputs
+        )
 
     @property
     def inputs(self) -> SageMakerTrainingJobInputs:
@@ -211,4 +207,3 @@ class SageMakerTrainingJobSpec(
     @property
     def output_paths(self) -> SageMakerTrainingJobOutputs:
         return self._output_paths
-

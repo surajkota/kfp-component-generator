@@ -3,6 +3,9 @@ import random
 
 from numpy import argsort
 import yaml
+from code_gen.components.TrainingJob.src.TrainingJob_component import (
+    SageMakerTrainingJobComponent,
+)
 
 """
 Call component implementation src/TrainingJob.py locally. 
@@ -29,11 +32,11 @@ https://aws-controllers-k8s.github.io/community/docs/tutorials/sagemaker-example
 
 # set up input values
 
-with open("code_gen/components/TrainingJob/src/TrainingJob-request.yaml.tpl", "r") as f:
-    yaml_dict = yaml.load(f, Loader=yaml.FullLoader)
-    job_num = yaml_dict["metadata"]["name"].split("-")[-1]
+# with open("code_gen/components/TrainingJob/src/TrainingJob-request.yaml.tpl", "r") as f:
+#     yaml_dict = yaml.load(f, Loader=yaml.FullLoader)
+#     job_num = yaml_dict["metadata"]["name"].split("-")[-1]
 
-    trainingJobName = "ack-training-job-from-kfp-" + job_num
+trainingJobName = "training-job-from-ack-kfp-" + str(random.randint(0, 100))
 
 hyperParameters = {
     "max_depth": "5",

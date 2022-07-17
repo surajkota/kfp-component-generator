@@ -2,6 +2,7 @@ from telnetlib import STATUS
 from typing import Dict
 from code_gen.generator.utils import (
     camel_to_snake,
+    get_class_names,
     parse_crd,
     snake_to_camel,
     write_buffer_to_file,
@@ -72,14 +73,6 @@ def get_spec_output_snippets(_output_statuses):
     )
 
 
-def get_class_names(_crd_name):
-    _input_class_name = "SageMaker" + _crd_name + "Inputs"
-    _output_class_name = "SageMaker" + _crd_name + "Outputs"
-    _spec_class_name = "SageMaker" + _crd_name + "Spec"
-
-    return (_input_class_name, _output_class_name, _spec_class_name)
-
-
 if __name__ == "__main__":
 
     ##############User inputs##############
@@ -106,7 +99,12 @@ if __name__ == "__main__":
         spec_outputs_validators_buffer,
     ) = get_spec_output_snippets(output_statuses)
 
-    (input_class_name, output_class_name, spec_class_name) = get_class_names(crd_name)
+    (
+        input_class_name,
+        output_class_name,
+        spec_class_name,
+        component_class_name,
+    ) = get_class_names(crd_name)
 
     ## set up output file directory
     output_component_dir = "code_gen/components/" + crd_name + "/"
