@@ -118,7 +118,8 @@ for key in REQUIRED_ARGS:
     arguments = arguments + " " + key + " " + REQUIRED_ARGS[key]
 # print(arguments)
 
-file_loc = "code_gen/components/TrainingJob/src/TrainingJob.py"
+# file_loc = "code_gen/components/TrainingJob/src/TrainingJob.py"
+file_loc = "code_gen/components/TrainingJob/src/TrainingJob_component.py"
 # file_loc = "code_gen/components/TrainingJob1/src/TrainingJob1.py"
 
 os.system("python " + file_loc + arguments)

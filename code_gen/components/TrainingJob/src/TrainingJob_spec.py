@@ -11,8 +11,6 @@ from code_gen.common.sagemaker_component_spec import (
 from code_gen.common.spec_input_parsers import SpecInputParsers
 from code_gen.common.common_inputs import (
     COMMON_INPUTS,
-    SageMakerComponentCommonInputs,
-    SpotInstanceInputs,
     SPOT_INSTANCE_INPUTS,
     SageMakerComponentInput as Input,
     SageMakerComponentOutput as Output,
@@ -21,7 +19,7 @@ from code_gen.common.common_inputs import (
 )
 
 @dataclass(frozen=True)
-class SageMakerTrainingJobInputs(SageMakerComponentCommonInputs, SpotInstanceInputs):
+class SageMakerTrainingJobInputs():
     """Defines the set of inputs for the TrainingJob component."""
     
     algorithm_specification: Input
@@ -171,8 +169,6 @@ class SageMakerTrainingJobSpec(
             description="A VpcConfig object that specif",
             required=False
         ), 
-        **vars(COMMON_INPUTS),
-        **vars(SPOT_INSTANCE_INPUTS)
     )
     
     OUTPUTS = SageMakerTrainingJobOutputs(

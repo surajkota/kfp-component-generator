@@ -11,8 +11,6 @@ from code_gen.common.sagemaker_component_spec import (
 from code_gen.common.spec_input_parsers import SpecInputParsers
 from code_gen.common.common_inputs import (
     COMMON_INPUTS,
-    SageMakerComponentCommonInputs,
-    SpotInstanceInputs,
     SPOT_INSTANCE_INPUTS,
     SageMakerComponentInput as Input,
     SageMakerComponentOutput as Output,
@@ -21,7 +19,7 @@ from code_gen.common.common_inputs import (
 )
 
 @dataclass(frozen=True)
-class ${INPUT_CLASS_NAME}(SageMakerComponentCommonInputs, SpotInstanceInputs):
+class ${INPUT_CLASS_NAME}():
     """Defines the set of inputs for the ${CRD_NAME} component."""
     ${SPEC_INPUT_DEFINITIONS}
 
@@ -37,8 +35,6 @@ class ${SPEC_CLASS_NAME}(
 ):
     INPUTS: ${INPUT_CLASS_NAME} = ${INPUT_CLASS_NAME}(
         ${SPEC_INPUT_VALIDATORS}
-        **vars(COMMON_INPUTS),
-        **vars(SPOT_INSTANCE_INPUTS)
     )
     
     OUTPUTS = ${OUTPUT_CLASS_NAME}(

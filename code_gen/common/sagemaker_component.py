@@ -142,8 +142,8 @@ class SageMakerComponent:
         """
         # Global try-catch in order to allow for safe abort
         try:
-            self._configure_aws_clients(inputs)
-
+            # self._configure_aws_clients(inputs)
+            pass
             # Successful execution
             if not self._do(inputs, outputs, output_paths):
                 sys.exit(1)
@@ -180,40 +180,40 @@ class SageMakerComponent:
         signal.signal(signal.SIGTERM, signal_term_handler)
 
         request = self._create_job_request(inputs, outputs)
-        try:
-            job = self._submit_job_request(request)
-        except Exception as e:
-            logging.exception(
-                "An error occurred while attempting to submit the request"
-            )
-            return False
+        # try:
+        #     job = self._submit_job_request(request)
+        # except Exception as e:
+        #     logging.exception(
+        #         "An error occurred while attempting to submit the request"
+        #     )
+        #     return False
 
-        self._after_submit_job_request(job, request, inputs, outputs)
+        # self._after_submit_job_request(job, request, inputs, outputs)
 
-        status: SageMakerJobStatus = SageMakerJobStatus(
-            is_completed=False, raw_status="No Status"
-        )
-        try:
-            while True:
-                status = self._get_job_status()
-                # Continue until complete
-                if status and status.is_completed:
-                    break
+        # status: SageMakerJobStatus = SageMakerJobStatus(
+        #     is_completed=False, raw_status="No Status"
+        # )
+        # try:
+        #     while True:
+        #         status = self._get_job_status()
+        #         # Continue until complete
+        #         if status and status.is_completed:
+        #             break
 
-                sleep(self.STATUS_POLL_INTERVAL)
-                logging.info(f"Job is in status: {status.raw_status}")
-        except Exception as e:
-            logging.exception("An error occurred while polling for job status")
-            return False
-        finally:
-            self._print_logs_for_job()
+        #         sleep(self.STATUS_POLL_INTERVAL)
+        #         logging.info(f"Job is in status: {status.raw_status}")
+        # except Exception as e:
+        #     logging.exception("An error occurred while polling for job status")
+        #     return False
+        # finally:
+        #     self._print_logs_for_job()
 
-        if status.has_error:
-            logging.error(status.error_message)
-            return False
+        # if status.has_error:
+        #     logging.error(status.error_message)
+        #     return False
 
-        self._after_job_complete(job, request, inputs, outputs)
-        self._write_all_outputs(output_paths, outputs)
+        # self._after_job_complete(job, request, inputs, outputs)
+        # self._write_all_outputs(output_paths, outputs)
 
         return True
 
