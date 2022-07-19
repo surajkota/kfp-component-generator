@@ -33,9 +33,10 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         self.ack_job_name = SageMakerComponent._generate_unique_timestamped_id(
             prefix="ack-trainingjob"
         )
-        self.group_name = "sagemaker.services.k8s.aws"
-        self.version_name = "v1alpha1"
-        self.plural_name = "trainingjobs"
+        self.group = "sagemaker.services.k8s.aws"
+        self.version = "v1alpha1"
+        self.plural = "trainingjobs"
+        self.namespace = "default"
         self.component_dir = "code_gen/components/TrainingJob/"
         self.job_request_outline_location = (
             self.component_dir + "src/TrainingJob-request.yaml.tpl"
@@ -50,29 +51,82 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         outputs: SageMakerTrainingJobOutputs,
     ) -> Dict:
 
-        return super()._create_job_request(inputs, outputs)
+        return super()._create_job_yaml(inputs, outputs)
 
     def _submit_job_request(self, request: Dict) -> object:
-        # list pods test
-        # ret = self._k8s_api_client.list_pod_for_all_namespaces(watch=False)
-        # for i in ret.items:
-        #     print(
-        #         "%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name)
-        #     )
-        # jobs = list()
-        # jobs.append(request)
+        # submit job request
 
-        # print("ack job name: " + request["metadata"]["name"])
-        # print("Sagemaker name: " + request["spec"]["trainingJobName"])
+        print("ack job name: " + request["metadata"]["name"])
+        print("Sagemaker name: " + request["spec"]["trainingJobName"])
 
-        # utils.create_from_yaml(
-        #     k8s_client=self._k8s_api_client, yaml_objects=jobs, verbose=True
-        # )
+        super().create_custom_resource(request)
 
     def _get_job_status(self):
+        ack_statuses = super()._get_job_description()["status"]
+        sm_job_status = ack_statuses["trainingJobStatus"]
 
-        job_statuses = super()._get_job_status()
-        print(job_statuses["trainingJobStatus"])
+        print("Sagemaker job status: " + sm_job_status)
+
+        if sm_job_status == "Completed":
+            return SageMakerJobStatus(is_completed=True, has_error=False, raw_status="")
+        if sm_job_status == "Failed":
+            message = ack_statuses["failureReason"]
+            return SageMakerJobStatus(
+                is_completed=True,
+                has_error=True,
+                error_message=message,
+                raw_status=sm_job_status,
+            )
+
+        return SageMakerJobStatus(is_completed=False, raw_status=sm_job_status)
+
+    def _after_job_complete(
+        self,
+        job: object,
+        request: Dict,
+        inputs: SageMakerTrainingJobInputs,
+        outputs: SageMakerTrainingJobOutputs,
+    ):
+        # prepare component outputs (defined in the spec)
+
+        ack_statuses = super()._get_job_description()["status"]
+
+        outputs.ack_resource_metadata = (
+            ack_statuses["ackResourceMetadata"]
+            if "ackResourceMetadata" in ack_statuses
+            else None
+        )
+        outputs.conditions = (
+            ack_statuses["conditions"] if "conditions" in ack_statuses else None
+        )
+        outputs.debug_rule_evaluation_statuses = (
+            ack_statuses["debugRuleEvaluationStatuses"]
+            if "debugRuleEvaluationStatuses" in ack_statuses
+            else None
+        )
+        outputs.failure_reason = (
+            ack_statuses["failureReason"] if "failureReason" in ack_statuses else None
+        )
+        outputs.model_artifacts = (
+            ack_statuses["modelArtifacts"] if "modelArtifacts" in ack_statuses else None
+        )
+        outputs.profiler_rule_evaluation_statuses = (
+            ack_statuses["profilerRuleEvaluationStatuses"]
+            if "profilerRuleEvaluationStatuses" in ack_statuses
+            else None
+        )
+        outputs.secondary_status = (
+            ack_statuses["secondaryStatus"]
+            if "secondaryStatus" in ack_statuses
+            else None
+        )
+        outputs.training_job_status = (
+            ack_statuses["trainingJobStatus"]
+            if "trainingJobStatus" in ack_statuses
+            else None
+        )
+
+        # print(outputs)
 
 
 if __name__ == "__main__":

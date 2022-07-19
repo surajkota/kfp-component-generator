@@ -3,6 +3,7 @@ from typing import Dict
 from enum import Enum, auto
 from sagemaker.image_uris import retrieve
 import yaml
+from kubernetes import client, config, utils
 
 from code_gen.components.TrainingJob.src.TrainingJob_spec import (
     ${INPUT_CLASS_NAME},

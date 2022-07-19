@@ -62,15 +62,14 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         # jobs = list()
         # jobs.append(request)
 
-        # print("ack job name: " + request["metadata"]["name"])
-        # print("Sagemaker name: " + request["spec"]["trainingJobName"])
+        print("ack job name: " + request["metadata"]["name"])
+        print("Sagemaker name: " + request["spec"]["trainingJobName"])
 
         # utils.create_from_yaml(
         #     k8s_client=self._k8s_api_client, yaml_objects=jobs, verbose=True
         # )
 
     def _get_job_status(self):
-
         job_statuses = super()._get_job_status()
         print(job_statuses["trainingJobStatus"])
 

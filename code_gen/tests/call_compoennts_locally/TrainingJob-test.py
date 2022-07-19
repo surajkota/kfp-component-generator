@@ -36,7 +36,7 @@ https://aws-controllers-k8s.github.io/community/docs/tutorials/sagemaker-example
 #     yaml_dict = yaml.load(f, Loader=yaml.FullLoader)
 #     job_num = yaml_dict["metadata"]["name"].split("-")[-1]
 
-trainingJobName = "training-job-from-ack-kfp-" + str(random.randint(0, 100))
+trainingJobName = "training-job-from-ack-kfp-" + str(random.randint(0, 99999))
 
 hyperParameters = {
     "max_depth": "5",
@@ -50,6 +50,7 @@ hyperParameters = {
 
 algorithmSpecification = {
     "trainingImage": "746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2-1",
+    # "trainingImage": "746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2", # delete: wrong image
     "trainingInputMode": "File",
 }
 

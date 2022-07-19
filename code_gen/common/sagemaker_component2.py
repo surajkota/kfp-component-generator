@@ -26,18 +26,14 @@ from pathlib import Path
 from time import sleep, strftime, gmtime
 from abc import abstractmethod
 from typing import Any, Type, Dict, List, NamedTuple, Optional
-from kubernetes import client, config, utils
-from kubernetes.client.api_client import ApiClient
-import distutils.util as util
 
-from code_gen.common.sagemaker_component_spec import SageMakerComponentSpec
-from code_gen.common.boto3_manager import Boto3Manager
-from code_gen.common.common_inputs import (
+from .sagemaker_component_spec import SageMakerComponentSpec
+from .boto3_manager import Boto3Manager
+from .common_inputs import (
     SageMakerComponentBaseOutputs,
     SageMakerComponentCommonInputs,
     SpotInstanceInputs,
 )
-from code_gen.generator.utils import snake_to_camel
 
 # This handler is called whenever the @ComponentMetadata is applied.
 # It allows the command line compiler to detect every component spec class.
@@ -123,15 +119,6 @@ class SageMakerComponent:
 
     STATUS_POLL_INTERVAL = 30
 
-    # parameters that will be filled by Do().
-    # assignment statements in Do() will be genereated
-    ack_job_name: str
-    group: str
-    version: str
-    plural: str
-    namespace: Optional[str] = None
-    component_dir: str
-
     def __init__(self):
         """Initialize a new component."""
         self._initialize_logging()
@@ -155,8 +142,7 @@ class SageMakerComponent:
         """
         # Global try-catch in order to allow for safe abort
         try:
-            # self._configure_aws_clients(inputs)
-            self._get_k8s_api_client()
+            self._configure_aws_clients(inputs)
 
             # Successful execution
             if not self._do(inputs, outputs, output_paths):
@@ -164,15 +150,6 @@ class SageMakerComponent:
         except Exception as e:
             logging.exception("An error occurred while running the component")
             raise e
-
-    def _get_k8s_api_client(self) -> ApiClient:
-        # Create new client everytime to avoid token refresh issues
-        # https://github.com/kubernetes-client/python/issues/741
-        # https://github.com/kubernetes-client/python-base/issues/125
-        if bool(util.strtobool(os.environ.get("LOAD_IN_CLUSTER_KUBECONFIG", "false"))):
-            config.load_incluster_config()
-            return ApiClient()
-        return config.new_client_from_config()
 
     def _configure_aws_clients(self, inputs: SageMakerComponentCommonInputs):
         """Configures the internal AWS clients for the component.
@@ -236,7 +213,7 @@ class SageMakerComponent:
             return False
 
         self._after_job_complete(job, request, inputs, outputs)
-        # self._write_all_outputs(output_paths, outputs)
+        self._write_all_outputs(output_paths, outputs)
 
         return True
 
@@ -248,35 +225,6 @@ class SageMakerComponent:
             SageMakerJobStatus: A status object.
         """
         pass
-
-    def _get_job_description(self):
-        """kubectl describe trainingjob JOB_NAME"""
-
-        _k8s_custom_client = client.CustomObjectsApi(self._get_k8s_api_client())
-
-        # kubectl get all training jobs
-        # api_response = _k8s_custom_client.list_cluster_custom_object(
-        #     group=self.group,
-        #     version=self.version,
-        #     plural=self.plural,
-        # )
-        # for job in api_response["items"]:
-        #     print("ACK name: " + job["metadata"]["name"])
-
-        job_description = _k8s_custom_client.get_namespaced_custom_object_status(
-            group=self.group,
-            version=self.version,
-            plural=self.plural,
-            namespace="default",
-            # namespace=self.namespace,
-            name=self.ack_job_name,
-            # name="ack-trainingjob-20220718174353-gn6p",
-            # name="ack-trainingjob-20220717230038-5d9m",
-        )
-
-        # print(job_description["status"])
-
-        return job_description
 
     @abstractmethod
     def _create_job_request(
@@ -295,41 +243,6 @@ class SageMakerComponent:
         """
         pass
 
-    def _create_job_yaml(
-        self,
-        inputs: SageMakerComponentCommonInputs,
-        outputs: SageMakerComponentBaseOutputs,
-    ) -> Dict:
-        """Creates the ACK request object to execute the component.
-
-        Args:
-            inputs: A populated list of user inputs.
-            outputs: An unpopulated list of component output variables.
-
-        Returns:
-            dict: A dictionary object representing the request.
-        """
-        with open(self.job_request_outline_location) as job_request_outline:
-            job_request_dict = yaml.load(job_request_outline, Loader=yaml.FullLoader)
-            job_request_spec = job_request_dict["spec"]
-
-            for para in vars(inputs):
-                camel_para = snake_to_camel(para)
-                if camel_para in job_request_spec:
-                    job_request_spec[camel_para] = getattr(inputs, para)
-
-            job_request_dict["metadata"]["name"] = self.ack_job_name
-
-            # print(job_request_dict)
-
-            # write ACK custom object YAML to file
-            # out_loc = self.job_request_location
-            # with open(out_loc, "w+") as f:
-            #     yaml.dump(job_request_dict, f, default_flow_style=False)
-            # print("FILE CREATED: " + out_loc)
-
-        return job_request_dict
-
     @abstractmethod
     def _submit_job_request(self, request: Dict) -> Dict:
         """Submits a pre-defined request object to SageMaker.
@@ -347,29 +260,6 @@ class SageMakerComponent:
             Exception: If SageMaker responded with an error during the request.
         """
         pass
-
-    def create_custom_resource(self, custom_resource: dict):
-        """Submit a custom_resource to the ACK cluster."""
-
-        _api_client = self._get_k8s_api_client()
-        _api = client.CustomObjectsApi(_api_client)
-
-        # print(custom_resource)
-
-        if self.namespace is None:
-            return _api.create_cluster_custom_object(
-                self.group.lower(),
-                self.version.lower(),
-                self.plural.lower(),
-                custom_resource,
-            )
-        return _api.create_namespaced_custom_object(
-            self.group.lower(),
-            self.version.lower(),
-            self.namespace.lower(),
-            self.plural.lower(),
-            custom_resource,
-        )
 
     @abstractmethod
     def _after_submit_job_request(
@@ -440,15 +330,14 @@ class SageMakerComponent:
         Returns:
             string: A pseudo-random string with included timestamp and prefix.
         """
-        unique = "".join(random.choice(chars) for _ in range(size)).lower()
+        unique = "".join(random.choice(chars) for _ in range(size))
         return f'{prefix}{"-" if prefix else ""}{strftime("%Y%m%d%H%M%S", gmtime())}-{unique}'[
             -max_length:
         ]
 
     @staticmethod
     def _enable_spot_instance_support(
-        request: Dict,
-        inputs: SpotInstanceInputs,
+        request: Dict, inputs: SpotInstanceInputs,
     ) -> Dict:
         """Modifies a request object to add support for spot instance fields.
 
