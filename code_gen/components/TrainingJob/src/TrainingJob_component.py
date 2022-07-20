@@ -1,9 +1,6 @@
 import logging
 from typing import Dict
-from enum import Enum, auto
 from sagemaker.image_uris import retrieve
-import yaml
-from kubernetes import client, config, utils
 
 from code_gen.components.TrainingJob.src.TrainingJob_spec import (
     SageMakerTrainingJobInputs,
@@ -26,7 +23,6 @@ from code_gen.generator.utils import snake_to_camel
 )
 class SageMakerTrainingJobComponent(SageMakerComponent):
     """SageMaker component for training."""
-
     def Do(self, spec: SageMakerTrainingJobSpec):
 
         # set parameters
@@ -35,7 +31,7 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         )
 
         ############GENERATED SECTION BELOW############
-
+        
         self.group = "sagemaker.services.k8s.aws"
         self.version = "v1alpha1"
         self.plural = "trainingjobs"
@@ -62,7 +58,7 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
     def _submit_job_request(self, request: Dict) -> object:
         # submit job request
 
-        super()._create_custom_resource(request)
+        return super()._create_resource(request, 3, 10)
 
     def _after_submit_job_request(
         self,
@@ -79,12 +75,12 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
 
     def _get_job_status(self):
         ack_statuses = super()._get_resource()["status"]
-        sm_job_status = ack_statuses["trainingJobStatus"]  # todo: developer customize
+        sm_job_status = ack_statuses["trainingJobStatus"] # todo: developer customize
 
-        print("Sagemaker job status: " + sm_job_status)
+        # print("Sagemaker job status: " + sm_job_status)
 
         if sm_job_status == "Completed":
-            return SageMakerJobStatus(is_completed=True, has_error=False, raw_status="")
+            return SageMakerJobStatus(is_completed=True, has_error=False, raw_status="Completed")
         if sm_job_status == "Failed":
             message = ack_statuses["failureReason"]
             return SageMakerJobStatus(
@@ -108,14 +104,16 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         ack_statuses = super()._get_resource()["status"]
 
         ############GENERATED SECTION BELOW############
-
+        
         outputs.ack_resource_metadata = (
             ack_statuses["ackResourceMetadata"]
             if "ackResourceMetadata" in ack_statuses
             else None
         )
         outputs.conditions = (
-            ack_statuses["conditions"] if "conditions" in ack_statuses else None
+            ack_statuses["conditions"]
+            if "conditions" in ack_statuses
+            else None
         )
         outputs.debug_rule_evaluation_statuses = (
             ack_statuses["debugRuleEvaluationStatuses"]
@@ -123,10 +121,14 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
             else None
         )
         outputs.failure_reason = (
-            ack_statuses["failureReason"] if "failureReason" in ack_statuses else None
+            ack_statuses["failureReason"]
+            if "failureReason" in ack_statuses
+            else None
         )
         outputs.model_artifacts = (
-            ack_statuses["modelArtifacts"] if "modelArtifacts" in ack_statuses else None
+            ack_statuses["modelArtifacts"]
+            if "modelArtifacts" in ack_statuses
+            else None
         )
         outputs.profiler_rule_evaluation_statuses = (
             ack_statuses["profilerRuleEvaluationStatuses"]

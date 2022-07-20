@@ -28,6 +28,7 @@ from abc import abstractmethod
 from typing import Any, Type, Dict, List, NamedTuple, Optional
 from kubernetes import client, config, utils
 from kubernetes.client.api_client import ApiClient
+from kubernetes.client.rest import ApiException
 import distutils.util as util
 
 from code_gen.common.sagemaker_component_spec import SageMakerComponentSpec
@@ -121,7 +122,7 @@ class SageMakerComponent:
     COMPONENT_DESCRIPTION = ""
     COMPONENT_SPEC = SageMakerComponentSpec
 
-    STATUS_POLL_INTERVAL = 30
+    STATUS_POLL_INTERVAL = 20
 
     # parameters that will be filled by Do().
     # assignment statements in Do() will be genereated
@@ -209,7 +210,7 @@ class SageMakerComponent:
         signal.signal(signal.SIGTERM, signal_term_handler)
 
         request = self._create_job_request(inputs, outputs)
-        
+
         try:
             job = self._submit_job_request(request)
         except Exception as e:
@@ -228,6 +229,7 @@ class SageMakerComponent:
                 status = self._get_job_status()
                 # Continue until complete
                 if status and status.is_completed:
+                    logging.info(f"Job completed, final status: {status.raw_status}")
                     break
 
                 sleep(self.STATUS_POLL_INTERVAL)
@@ -242,7 +244,7 @@ class SageMakerComponent:
             logging.error(status.error_message)
             return False
 
-        # self._after_job_complete(job, request, inputs, outputs)
+        self._after_job_complete(job, request, inputs, outputs)
         # self._write_all_outputs(output_paths, outputs)
 
         return True
@@ -257,8 +259,8 @@ class SageMakerComponent:
         pass
 
     def _get_resource(self):
-        """Get the resource from a given reference.
-        kubectl describe trainingjob JOB_NAME -n NAMESPACE
+        """Get the custom resource detail
+        similar to: kubectl describe trainingjob JOB_NAME -n NAMESPACE
 
         Returns:
             None or object: None if the resource doesnt exist in server, otherwise the
@@ -291,8 +293,8 @@ class SageMakerComponent:
             namespace=self.namespace.lower(),  # "default",
             plural=self.plural.lower(),
             name=self._ack_job_name.lower(),
-            # name="ack-trainingjob-20220718174353-gn6p",
-            # name="ack-trainingjob-20220717230038-5d9m",
+            # name="ack-trainingjob-20220718174353-gn6p", # failed
+            # name="ack-trainingjob-20220717230038-5d9m",  # completed
         )
 
         # print(job_description["status"])
@@ -391,6 +393,57 @@ class SageMakerComponent:
             self.plural.lower(),
             custom_resource,
         )
+
+    def _wait_resource_consumed_by_controller(
+        self,
+        wait_periods: int = 3,
+        period_length: int = 10,
+    ):
+        """Wait for the custom resource to be consumed by the controller."""
+        if not self._get_resource_exists():
+            logging.error(
+                f"Resource %s does not exist",
+                (self.namespace + " " + self._ack_job_name),
+            )
+            return None
+
+        for _ in range(wait_periods):
+            resource = self._get_resource()
+
+            if "status" in resource:
+                return resource
+
+            sleep(period_length)
+
+        logging.error(
+            f"Wait for resource %s to be consumed by controller timed out",
+            (self.namespace + " " + self._ack_job_name),
+        )
+        return None
+
+    def _get_resource_exists(self) -> bool:
+        try:
+            return self._get_resource() is not None
+        except ApiException:
+            return False
+
+    def _create_resource(
+        self,
+        cr_spec: object,
+        wait_periods: int,
+        period_length: int,
+    ):
+        """
+        Create a resource from the spec and wait to be consumed by controller
+
+        :param spec: spec of the resource corresponding
+        :return: resource if it was created successfully, otherwise None
+        """
+        resource = self._create_custom_resource(cr_spec)
+        resource = self._wait_resource_consumed_by_controller(
+            wait_periods, period_length
+        )
+        return resource
 
     @abstractmethod
     def _after_submit_job_request(

@@ -1,9 +1,6 @@
 import logging
 from typing import Dict
-from enum import Enum, auto
 from sagemaker.image_uris import retrieve
-import yaml
-from kubernetes import client, config, utils
 
 from code_gen.components.TrainingJob.src.TrainingJob_spec import (
     ${INPUT_CLASS_NAME},
@@ -26,7 +23,6 @@ from code_gen.generator.utils import snake_to_camel
 )
 class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
     """SageMaker component for training."""
-
     def Do(self, spec: ${SPEC_CLASS_NAME}):
 
         # set parameters
@@ -51,7 +47,7 @@ class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
     def _submit_job_request(self, request: Dict) -> object:
         # submit job request
 
-        super()._create_custom_resource(request)
+        return super()._create_resource(request, 3, 10)
 
     def _after_submit_job_request(
         self,
@@ -65,15 +61,15 @@ class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
         #     f"Created Sagamaker Training Job with name: %s",
         #     request["spec"]["trainingJobName"],  # todo: developer customize
         # )
-        
+
     def _get_job_status(self):
         ack_statuses = super()._get_resource()["status"]
         sm_job_status = ack_statuses["trainingJobStatus"] # todo: developer customize
 
-        print("Sagemaker job status: " + sm_job_status)
+        # print("Sagemaker job status: " + sm_job_status)
 
         if sm_job_status == "Completed":
-            return SageMakerJobStatus(is_completed=True, has_error=False, raw_status="")
+            return SageMakerJobStatus(is_completed=True, has_error=False, raw_status="Completed")
         if sm_job_status == "Failed":
             message = ack_statuses["failureReason"]
             return SageMakerJobStatus(
@@ -101,6 +97,7 @@ class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
         ############GENERATED SECTION ABOVE############
 
         # print(outputs)
+
 
 if __name__ == "__main__":
     import sys

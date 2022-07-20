@@ -10,10 +10,9 @@ from code_gen.generator.utils import (
 )
 
 
-def get_do_paramaters_snippet(_output_src_dir, _crd_name):
+def get_do_paramaters_snippet(_output_src_dir, _crd_name, _crd_info):
 
-    crd_info = get_crd_info(ACK_CRD_YAML_LOCATION)
-    group, version, plural, namespace = crd_info
+    group, version, plural, namespace = _crd_info
 
     _snippet = """
         self.group = "%s"
@@ -73,6 +72,8 @@ if __name__ == "__main__":
         ACK_CRD_YAML_LOCATION
     )
 
+    crd_info = get_crd_info(ACK_CRD_YAML_LOCATION)
+
     ## set up output file directory
     output_component_dir = "code_gen/components/" + crd_name + "/"
     output_src_dir = output_component_dir + "src/"
@@ -91,7 +92,7 @@ if __name__ == "__main__":
         component_class_name,
     ) = get_class_names(crd_name)
 
-    do_parameters_snippet = get_do_paramaters_snippet(output_src_dir, crd_name)
+    do_parameters_snippet = get_do_paramaters_snippet(output_src_dir, crd_name, crd_info)
     output_prep_snippet = get_output_prep_snippet(output_statuses)
 
     ## replace placeholders in templates with buffer, then write to file
