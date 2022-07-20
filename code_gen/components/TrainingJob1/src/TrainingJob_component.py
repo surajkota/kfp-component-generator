@@ -40,10 +40,10 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         self.namespace = "default"
 
         self.job_request_outline_location = (
-            "code_gen/components/TrainingJob/src/TrainingJob-request.yaml.tpl"
+            "code_gen/components/TrainingJob/src/TrainingJob_request.yaml.tpl"
         )
         self.job_request_location = (
-            "code_gen/components/TrainingJob/src/TrainingJob-request.yaml"
+            "code_gen/components/TrainingJob/src/TrainingJob_request.yaml"
         )
 
         super().Do(spec.inputs, spec.outputs, spec.output_paths)

@@ -145,7 +145,7 @@ _k8s_custom_client = client.CustomObjectsApi(_get_k8s_api_client())
 
 
 # submit ack job
-# utils.create_from_yaml(k8s_client=k8s_api_client, yaml_file="code_gen/components/TrainingJob/src/TrainingJob-request.yaml", verbose=True)
+# utils.create_from_yaml(k8s_client=k8s_api_client, yaml_file="code_gen/components/TrainingJob/src/TrainingJob_request.yaml", verbose=True)
 
 create_custom_resource(
     namespace="default", version=version, plural=plural, group=group, custom_resource=cr

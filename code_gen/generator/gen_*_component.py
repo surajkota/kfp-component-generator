@@ -31,8 +31,8 @@ def get_do_paramaters_snippet(_output_src_dir, _crd_name):
         version,
         plural,
         namespace,
-        _output_src_dir + _crd_name + "-request.yaml.tpl",
-        _output_src_dir + _crd_name + "-request.yaml",
+        _output_src_dir + _crd_name + "_request.yaml.tpl",
+        _output_src_dir + _crd_name + "_request.yaml",
     )
 
     return _snippet
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     output_component_path = output_src_dir + output_component_name
 
     output_job_request_outline_location = (
-        output_src_dir + crd_name + "-request.yaml.tpl"
+        output_src_dir + crd_name + "_request.yaml.tpl"
     )
 
     ## prepare code snippets

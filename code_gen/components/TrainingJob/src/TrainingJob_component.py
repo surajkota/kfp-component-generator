@@ -35,17 +35,17 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         )
 
         ############GENERATED SECTION BELOW############
-        
+
         self.group = "sagemaker.services.k8s.aws"
         self.version = "v1alpha1"
         self.plural = "trainingjobs"
         self.namespace = "default"
 
         self.job_request_outline_location = (
-            "code_gen/components/TrainingJob/src/TrainingJob-request.yaml.tpl"
+            "code_gen/components/TrainingJob/src/TrainingJob_request.yaml.tpl"
         )
         self.job_request_location = (
-            "code_gen/components/TrainingJob/src/TrainingJob-request.yaml"
+            "code_gen/components/TrainingJob/src/TrainingJob_request.yaml"
         )
         ############GENERATED SECTION ABOVE############
 
@@ -76,10 +76,10 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         #     f"Created Sagamaker Training Job with name: %s",
         #     request["spec"]["trainingJobName"],  # todo: developer customize
         # )
-        
+
     def _get_job_status(self):
         ack_statuses = super()._get_resource()["status"]
-        sm_job_status = ack_statuses["trainingJobStatus"] # todo: developer customize
+        sm_job_status = ack_statuses["trainingJobStatus"]  # todo: developer customize
 
         print("Sagemaker job status: " + sm_job_status)
 
@@ -108,16 +108,14 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         ack_statuses = super()._get_resource()["status"]
 
         ############GENERATED SECTION BELOW############
-        
+
         outputs.ack_resource_metadata = (
             ack_statuses["ackResourceMetadata"]
             if "ackResourceMetadata" in ack_statuses
             else None
         )
         outputs.conditions = (
-            ack_statuses["conditions"]
-            if "conditions" in ack_statuses
-            else None
+            ack_statuses["conditions"] if "conditions" in ack_statuses else None
         )
         outputs.debug_rule_evaluation_statuses = (
             ack_statuses["debugRuleEvaluationStatuses"]
@@ -125,14 +123,10 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
             else None
         )
         outputs.failure_reason = (
-            ack_statuses["failureReason"]
-            if "failureReason" in ack_statuses
-            else None
+            ack_statuses["failureReason"] if "failureReason" in ack_statuses else None
         )
         outputs.model_artifacts = (
-            ack_statuses["modelArtifacts"]
-            if "modelArtifacts" in ack_statuses
-            else None
+            ack_statuses["modelArtifacts"] if "modelArtifacts" in ack_statuses else None
         )
         outputs.profiler_rule_evaluation_statuses = (
             ack_statuses["profilerRuleEvaluationStatuses"]
@@ -152,6 +146,7 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         ############GENERATED SECTION ABOVE############
 
         # print(outputs)
+
 
 if __name__ == "__main__":
     import sys

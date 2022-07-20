@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # prepare code snippet for src/component.py
     py_add_argument_buffer = get_py_add_argument(input_spec_all, input_spec_required)
 
-    # prepare code snippet for src/component-request.yaml.tpl
+    # prepare code snippet for src/component_request.yaml.tpl
     ack_job_request_outline_spec_buffer = get_ack_job_request_outline_spec(
         input_spec_all
     )
@@ -49,9 +49,9 @@ if __name__ == "__main__":
 
     output_py_location = output_src_dir + crd_name + ".py"
     output_job_request_outline_location = (
-        output_src_dir + crd_name + "-request.yaml.tpl"
+        output_src_dir + crd_name + "_request.yaml.tpl"
     )
-    job_request_location = output_src_dir + crd_name + "-request.yaml"
+    job_request_location = output_src_dir + crd_name + "_request.yaml"
 
     # replace template placeholders with buffer, then write to file
     # (don't change the order, yaml comes first, create the /component dir first)

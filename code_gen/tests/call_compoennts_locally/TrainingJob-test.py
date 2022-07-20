@@ -32,7 +32,7 @@ https://aws-controllers-k8s.github.io/community/docs/tutorials/sagemaker-example
 
 # set up input values
 
-# with open("code_gen/components/TrainingJob/src/TrainingJob-request.yaml.tpl", "r") as f:
+# with open("code_gen/components/TrainingJob/src/TrainingJob_request.yaml.tpl", "r") as f:
 #     yaml_dict = yaml.load(f, Loader=yaml.FullLoader)
 #     job_num = yaml_dict["metadata"]["name"].split("-")[-1]
 

@@ -18,9 +18,9 @@ def snake_to_camel(name):
 
 def build_job_yaml(_args):
     """
-    Read the outline file src/component-request.yaml.tpl 
+    Read the outline file src/component_request.yaml.tpl 
     Build an ack job (custom object) yaml file with user input args.
-    Write the yaml file to src/component-request.yaml.
+    Write the yaml file to src/component_request.yaml.
     """
     with open(
         "${JOB_REQUEST_OUTLINE_LOC}", 'r'

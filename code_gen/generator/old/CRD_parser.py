@@ -204,7 +204,7 @@ def get_pipeline_args_assign(_input_spec_all):
     return _pipeline_args_assign_buffer
 
 
-## Generate src/component-request.yaml.tpl content
+## Generate src/component_request.yaml.tpl content
 def get_ack_job_request_outline_spec(_input_spec_all):
     """
     Populate spec section in a ACK job request YAML
@@ -272,8 +272,8 @@ if __name__ == "__main__":
     output_src_dir = output_component_dir + "src/"
 
     output_py_location = output_src_dir + crd_name + ".py"
-    output_job_request_outline_location = output_src_dir + crd_name + "-request.yaml.tpl"
-    job_request_location = output_src_dir + crd_name + "-request.yaml"
+    output_job_request_outline_location = output_src_dir + crd_name + "_request.yaml.tpl"
+    job_request_location = output_src_dir + crd_name + "_request.yaml"
 
     # replace template placeholders with buffer, then write to file
     # (don't change the order, yaml comes first, create the /component dir first)

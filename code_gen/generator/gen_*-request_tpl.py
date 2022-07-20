@@ -1,4 +1,4 @@
-## Generate src/component-request.yaml.tpl content
+## Generate src/component_request.yaml.tpl content
 import random
 from code_gen.generator.utils import parse_crd, snake_to_camel, write_snippet_to_file
 
@@ -38,9 +38,9 @@ if __name__ == "__main__":
     output_src_dir = "code_gen/components/" + crd_name + "/src/"
 
     output_job_request_outline_location = (
-        output_src_dir + crd_name + "-request.yaml.tpl"
+        output_src_dir + crd_name + "_request.yaml.tpl"
     )
-    job_request_location = output_src_dir + crd_name + "-request.yaml"
+    job_request_location = output_src_dir + crd_name + "_request.yaml"
 
 
     ## replace placeholders in templates with buffer, then write to file

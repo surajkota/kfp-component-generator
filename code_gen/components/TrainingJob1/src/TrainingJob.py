@@ -16,7 +16,7 @@ def snake_to_camel(name):
 def build_job_yaml(_args):
     
     with open(
-        "code_gen/components/TrainingJob/src/TrainingJob-request.yaml.tpl", "r"
+        "code_gen/components/TrainingJob/src/TrainingJob_request.yaml.tpl", "r"
     ) as job_request_outline:
         job_request_dict = yaml.load(job_request_outline, Loader=yaml.FullLoader)
         job_request_spec = job_request_dict["spec"]
@@ -31,7 +31,7 @@ def build_job_yaml(_args):
 
         # print(job_request_dict)
 
-        out_loc = "code_gen/components/TrainingJob/src/TrainingJob-request.yaml"
+        out_loc = "code_gen/components/TrainingJob/src/TrainingJob_request.yaml"
         with open(out_loc, "w+") as f:
             yaml.dump(job_request_dict, f, default_flow_style=False)
         print("CREATED: " + out_loc)
