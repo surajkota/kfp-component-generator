@@ -28,10 +28,16 @@ class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
     """SageMaker component for training."""
 
     def Do(self, spec: ${SPEC_CLASS_NAME}):
-        self.ACK_JOB_NAME = SageMakerComponent._generate_unique_timestamped_id(
-            prefix="ACK-${CRD_NAME}"
+
+        # set parameters
+        self._ack_job_name = SageMakerComponent._generate_unique_timestamped_id(
+            prefix="ack-${CRD_NAME_LOWER}"
         )
-        # print(self.ACK_JOB_NAME)
+
+        ############GENERATED SECTION BELOW############
+        ${DO_PARAMETERS}
+        ############GENERATED SECTION ABOVE############
+
         super().Do(spec.inputs, spec.outputs, spec.output_paths)
 
     def _create_job_request(
@@ -40,27 +46,61 @@ class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
         outputs: ${OUTPUT_CLASS_NAME},
     ) -> Dict:
 
-        with open(
-            "code_gen/components/TrainingJob/src/TrainingJob-request.yaml.tpl", "r"
-        ) as job_request_outline:
-            job_request_dict = yaml.load(job_request_outline, Loader=yaml.FullLoader)
-            job_request_spec = job_request_dict["spec"]
+        return super()._create_job_yaml(inputs, outputs)
 
-            for para in vars(inputs):
-                camel_para = snake_to_camel(para)
-                if camel_para in job_request_spec:
-                    job_request_spec[camel_para] = getattr(inputs, para)
+    def _submit_job_request(self, request: Dict) -> object:
+        # submit job request
 
-            # job_request_dict["spec"] = job_request_spec
-            job_request_dict["metadata"]["name"] = self.ACK_JOB_NAME
+        super()._create_custom_resource(request)
 
-            print(job_request_dict)
+    def _after_submit_job_request(
+        self,
+        job: object,
+        request: Dict,
+        inputs: ${INPUT_CLASS_NAME},
+        outputs: ${OUTPUT_CLASS_NAME},
+    ):
+        logging.info(f"Created ACK custom object with name: {self._ack_job_name}")
+        # logging.info(
+        #     f"Created Sagamaker Training Job with name: %s",
+        #     request["spec"]["trainingJobName"],  # todo: developer customize
+        # )
+        
+    def _get_job_status(self):
+        ack_statuses = super()._get_resource()["status"]
+        sm_job_status = ack_statuses["trainingJobStatus"] # todo: developer customize
 
-            out_loc = "code_gen/components/TrainingJob/src/TrainingJob-request.yaml"
-            with open(out_loc, "w+") as f:
-                yaml.dump(job_request_dict, f, default_flow_style=False)
-            print("CREATED: " + out_loc)
+        print("Sagemaker job status: " + sm_job_status)
 
+        if sm_job_status == "Completed":
+            return SageMakerJobStatus(is_completed=True, has_error=False, raw_status="")
+        if sm_job_status == "Failed":
+            message = ack_statuses["failureReason"]
+            return SageMakerJobStatus(
+                is_completed=True,
+                has_error=True,
+                error_message=message,
+                raw_status=sm_job_status,
+            )
+
+        return SageMakerJobStatus(is_completed=False, raw_status=sm_job_status)
+
+    def _after_job_complete(
+        self,
+        job: object,
+        request: Dict,
+        inputs: ${INPUT_CLASS_NAME},
+        outputs: ${OUTPUT_CLASS_NAME},
+    ):
+        # prepare component outputs (defined in the spec)
+
+        ack_statuses = super()._get_resource()["status"]
+
+        ############GENERATED SECTION BELOW############
+        ${OUTPUT_PREP}
+        ############GENERATED SECTION ABOVE############
+
+        # print(outputs)
 
 if __name__ == "__main__":
     import sys

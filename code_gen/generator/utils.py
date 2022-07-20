@@ -40,15 +40,34 @@ def parse_crd(_file_name):
 
     return _input_spec_required, _input_spec_all, _output_statuses, _crd_name
 
+
+def get_crd_info(_file_name):
+    with open(_file_name, "r") as crd_file:
+        crd_dict = yaml.load(crd_file, Loader=yaml.FullLoader)
+
+    _group = crd_dict["spec"]["group"]
+    _plural = crd_dict["spec"]["names"]["plural"]
+    _version = crd_dict["spec"]["versions"][0]["name"]
+    _namespace = "default" if crd_dict["spec"]["scope"] == "Namespaced" else ""
+
+    return _group, _version, _plural, _namespace
+
+
 def get_class_names(_crd_name):
     _input_class_name = "SageMaker" + _crd_name + "Inputs"
     _output_class_name = "SageMaker" + _crd_name + "Outputs"
     _spec_class_name = "SageMaker" + _crd_name + "Spec"
-    _component_class_name = "SageMaker" + _crd_name + "Component" 
+    _component_class_name = "SageMaker" + _crd_name + "Component"
 
-    return (_input_class_name, _output_class_name, _spec_class_name, _component_class_name)
+    return (
+        _input_class_name,
+        _output_class_name,
+        _spec_class_name,
+        _component_class_name,
+    )
 
-def write_buffer_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file_dir):
+
+def write_snippet_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file_dir):
     """
     Open template file at _template_loc
     Substite placeholders in templates following mapping _replace_dict

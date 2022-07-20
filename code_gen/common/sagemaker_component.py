@@ -125,12 +125,14 @@ class SageMakerComponent:
 
     # parameters that will be filled by Do().
     # assignment statements in Do() will be genereated
-    ack_job_name: str
+    _ack_job_name: str
     group: str
     version: str
     plural: str
     namespace: Optional[str] = None
-    component_dir: str
+
+    job_request_outline_location: str
+    job_request_location: str
 
     def __init__(self):
         """Initialize a new component."""
@@ -156,7 +158,11 @@ class SageMakerComponent:
         # Global try-catch in order to allow for safe abort
         try:
             # self._configure_aws_clients(inputs)
-            self._get_k8s_api_client()
+
+            # test if k8s is available
+            _test_client = self._get_k8s_api_client()
+            _test_api = client.CoreV1Api(_test_client)
+            _test_api.list_node()
 
             # Successful execution
             if not self._do(inputs, outputs, output_paths):
@@ -203,6 +209,7 @@ class SageMakerComponent:
         signal.signal(signal.SIGTERM, signal_term_handler)
 
         request = self._create_job_request(inputs, outputs)
+        
         try:
             job = self._submit_job_request(request)
         except Exception as e:
@@ -235,7 +242,7 @@ class SageMakerComponent:
             logging.error(status.error_message)
             return False
 
-        self._after_job_complete(job, request, inputs, outputs)
+        # self._after_job_complete(job, request, inputs, outputs)
         # self._write_all_outputs(output_paths, outputs)
 
         return True
@@ -249,27 +256,41 @@ class SageMakerComponent:
         """
         pass
 
-    def _get_job_description(self):
-        """kubectl describe trainingjob JOB_NAME"""
+    def _get_resource(self):
+        """Get the resource from a given reference.
+        kubectl describe trainingjob JOB_NAME -n NAMESPACE
 
-        _k8s_custom_client = client.CustomObjectsApi(self._get_k8s_api_client())
+        Returns:
+            None or object: None if the resource doesnt exist in server, otherwise the
+                custom object.
+        """
+
+        _api_client = self._get_k8s_api_client()
+        _api = client.CustomObjectsApi(_api_client)
 
         # kubectl get all training jobs
-        # api_response = _k8s_custom_client.list_cluster_custom_object(
+        # api_response = _api.list_cluster_custom_object(
         #     group=self.group,
         #     version=self.version,
         #     plural=self.plural,
         # )
         # for job in api_response["items"]:
-        #     print("ACK name: " + job["metadata"]["name"])
+        #     print("ACK custom object name: " + job["metadata"]["name"])
 
-        job_description = _k8s_custom_client.get_namespaced_custom_object_status(
-            group=self.group,
-            version=self.version,
-            plural=self.plural,
-            namespace="default",
-            # namespace=self.namespace,
-            name=self.ack_job_name,
+        if self.namespace is None:
+            job_description = _api.get_cluster_custom_object(
+                self.group.lower(),
+                self.version.lower(),
+                self.plural.lower(),
+                self._ack_job_name.lower(),
+            )
+
+        job_description = _api.get_namespaced_custom_object(
+            group=self.group.lower(),
+            version=self.version.lower(),
+            namespace=self.namespace.lower(),  # "default",
+            plural=self.plural.lower(),
+            name=self._ack_job_name.lower(),
             # name="ack-trainingjob-20220718174353-gn6p",
             # name="ack-trainingjob-20220717230038-5d9m",
         )
@@ -284,14 +305,14 @@ class SageMakerComponent:
         inputs: SageMakerComponentCommonInputs,
         outputs: SageMakerComponentBaseOutputs,
     ) -> Dict:
-        """Creates the boto3 request object to execute the component.
+        """Creates the ACK custom object.
 
         Args:
             inputs: A populated list of user inputs.
             outputs: An unpopulated list of component output variables.
 
         Returns:
-            dict: A dictionary object representing the request.
+            dict: A dictionary object representing the custom object.
         """
         pass
 
@@ -318,7 +339,7 @@ class SageMakerComponent:
                 if camel_para in job_request_spec:
                     job_request_spec[camel_para] = getattr(inputs, para)
 
-            job_request_dict["metadata"]["name"] = self.ack_job_name
+            job_request_dict["metadata"]["name"] = self._ack_job_name
 
             # print(job_request_dict)
 
@@ -348,7 +369,7 @@ class SageMakerComponent:
         """
         pass
 
-    def create_custom_resource(self, custom_resource: dict):
+    def _create_custom_resource(self, custom_resource: dict):
         """Submit a custom_resource to the ACK cluster."""
 
         _api_client = self._get_k8s_api_client()

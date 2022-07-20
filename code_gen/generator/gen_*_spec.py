@@ -5,7 +5,7 @@ from code_gen.generator.utils import (
     get_class_names,
     parse_crd,
     snake_to_camel,
-    write_buffer_to_file,
+    write_snippet_to_file,
 )
 
 
@@ -123,7 +123,7 @@ if __name__ == "__main__":
         "SPEC_INPUT_VALIDATORS": spec_inputs_validators_buffer,
         "SPEC_OUTPUT_VALIDATORS": spec_outputs_validators_buffer,
     }
-    write_buffer_to_file(
+    write_snippet_to_file(
         spec_replace,
         "code_gen/templates/*_spec.py.tpl",
         output_spec_path,

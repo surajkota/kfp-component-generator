@@ -1,7 +1,7 @@
 import random
 from code_gen.generator.utils import (
     parse_crd,
-    write_buffer_to_file,
+    write_snippet_to_file,
 )
 from code_gen.generator.gen_comp_src import (
     get_py_add_argument,
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         "YAML_ARGS": yaml_args_buffer,
         "COMPONENT_CONTAINER_IMAGE": COMPONENT_CONTAINER_IMAGE,
     }
-    write_buffer_to_file(
+    write_snippet_to_file(
         yaml_replace,
         "code_gen/templates/component.yaml.tpl",
         output_yaml_location,
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         "JOB_REQUEST_OUTLINE_LOC": output_job_request_outline_location,
         "JOB_REQUEST_LOC": job_request_location,
     }
-    write_buffer_to_file(
+    write_snippet_to_file(
         py_replace,
         "code_gen/templates/component.py.tpl",
         output_py_location,
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         "JOB_REQUEST_OUTLINE_SPEC": ack_job_request_outline_spec_buffer,
         "RAND_NUM": random.randrange(0, 99999, 1),
     }
-    write_buffer_to_file(
+    write_snippet_to_file(
         ack_job_request_replace,
         "code_gen/templates/ack_job_request.yaml.tpl",
         output_job_request_outline_location,

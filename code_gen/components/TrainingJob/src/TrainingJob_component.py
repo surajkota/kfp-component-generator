@@ -5,7 +5,6 @@ from sagemaker.image_uris import retrieve
 import yaml
 from kubernetes import client, config, utils
 
-
 from code_gen.components.TrainingJob.src.TrainingJob_spec import (
     SageMakerTrainingJobInputs,
     SageMakerTrainingJobOutputs,
@@ -29,19 +28,26 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
     """SageMaker component for training."""
 
     def Do(self, spec: SageMakerTrainingJobSpec):
+
         # set parameters
-        self.ack_job_name = SageMakerComponent._generate_unique_timestamped_id(
+        self._ack_job_name = SageMakerComponent._generate_unique_timestamped_id(
             prefix="ack-trainingjob"
         )
+
+        ############GENERATED SECTION BELOW############
+        
         self.group = "sagemaker.services.k8s.aws"
         self.version = "v1alpha1"
         self.plural = "trainingjobs"
         self.namespace = "default"
-        self.component_dir = "code_gen/components/TrainingJob/"
+
         self.job_request_outline_location = (
-            self.component_dir + "src/TrainingJob-request.yaml.tpl"
+            "code_gen/components/TrainingJob/src/TrainingJob-request.yaml.tpl"
         )
-        self.job_request_location = self.component_dir + "src/TrainingJob-request.yaml"
+        self.job_request_location = (
+            "code_gen/components/TrainingJob/src/TrainingJob-request.yaml"
+        )
+        ############GENERATED SECTION ABOVE############
 
         super().Do(spec.inputs, spec.outputs, spec.output_paths)
 
@@ -56,14 +62,24 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
     def _submit_job_request(self, request: Dict) -> object:
         # submit job request
 
-        print("ack job name: " + request["metadata"]["name"])
-        print("Sagemaker name: " + request["spec"]["trainingJobName"])
+        super()._create_custom_resource(request)
 
-        super().create_custom_resource(request)
-
+    def _after_submit_job_request(
+        self,
+        job: object,
+        request: Dict,
+        inputs: SageMakerTrainingJobInputs,
+        outputs: SageMakerTrainingJobOutputs,
+    ):
+        logging.info(f"Created ACK custom object with name: {self._ack_job_name}")
+        # logging.info(
+        #     f"Created Sagamaker Training Job with name: %s",
+        #     request["spec"]["trainingJobName"],  # todo: developer customize
+        # )
+        
     def _get_job_status(self):
-        ack_statuses = super()._get_job_description()["status"]
-        sm_job_status = ack_statuses["trainingJobStatus"]
+        ack_statuses = super()._get_resource()["status"]
+        sm_job_status = ack_statuses["trainingJobStatus"] # todo: developer customize
 
         print("Sagemaker job status: " + sm_job_status)
 
@@ -89,15 +105,19 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
     ):
         # prepare component outputs (defined in the spec)
 
-        ack_statuses = super()._get_job_description()["status"]
+        ack_statuses = super()._get_resource()["status"]
 
+        ############GENERATED SECTION BELOW############
+        
         outputs.ack_resource_metadata = (
             ack_statuses["ackResourceMetadata"]
             if "ackResourceMetadata" in ack_statuses
             else None
         )
         outputs.conditions = (
-            ack_statuses["conditions"] if "conditions" in ack_statuses else None
+            ack_statuses["conditions"]
+            if "conditions" in ack_statuses
+            else None
         )
         outputs.debug_rule_evaluation_statuses = (
             ack_statuses["debugRuleEvaluationStatuses"]
@@ -105,10 +125,14 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
             else None
         )
         outputs.failure_reason = (
-            ack_statuses["failureReason"] if "failureReason" in ack_statuses else None
+            ack_statuses["failureReason"]
+            if "failureReason" in ack_statuses
+            else None
         )
         outputs.model_artifacts = (
-            ack_statuses["modelArtifacts"] if "modelArtifacts" in ack_statuses else None
+            ack_statuses["modelArtifacts"]
+            if "modelArtifacts" in ack_statuses
+            else None
         )
         outputs.profiler_rule_evaluation_statuses = (
             ack_statuses["profilerRuleEvaluationStatuses"]
@@ -125,9 +149,9 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
             if "trainingJobStatus" in ack_statuses
             else None
         )
+        ############GENERATED SECTION ABOVE############
 
         # print(outputs)
-
 
 if __name__ == "__main__":
     import sys
