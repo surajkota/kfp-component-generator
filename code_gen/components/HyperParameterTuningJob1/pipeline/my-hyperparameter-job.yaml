@@ -52,7 +52,7 @@ spec:
     algorithmSpecification:
       # The URL and tag of your ECR container
       # If you are not on us-west-2 you can find an imageURI here https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-algo-docker-registry-paths.html
-      trainingImage: 746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2-1
+      trainingImage: 632365934929.dkr.ecr.us-west-1.amazonaws.com/xgboost:1
       trainingInputMode: File
     # A role with SageMaker and S3 access
     # example arn:aws:iam::1234567890:role/service-role/AmazonSageMaker-ExecutionRole
