@@ -486,6 +486,37 @@ class SageMakerComponent:
         """Handles any SIGTERM events."""
         pass
 
+    def _delete_custom_resource(
+        self,
+        wait_periods: int = 1,
+        period_length: int = 5,
+    ):
+        """Delete custom resource from cluster and wait for it to be removed by the server
+        for wait_periods * period_length seconds.
+        Returns:
+            response, bool:
+            response is APIserver response for the operation.
+            bool is true if resource was removed from the server and false otherwise
+        """
+        _api_client = self._get_k8s_api_client()
+        _api = client.CustomObjectsApi(_api_client)
+
+        _response = None
+        if self.namespace is None:
+            _response = _api.delete_cluster_custom_object(
+                self.group.lower(),
+                self.version.lower(),
+                self.plural.lower(),
+                self._ack_job_name.lower(),
+            )
+        _response = _api.delete_namespaced_custom_object(
+            self.group.lower(),
+            self.version.lower(),
+            self.namespace.lower(),
+            self.plural.lower(),
+            self._ack_job_name.lower(),
+        )
+
     @abstractmethod
     def _print_logs_for_job(self):
         """Print the associated logs for the current job."""

@@ -1,103 +1,122 @@
-import os 
+import os
+import random
 
 """
 Call component.py locally
 """
 
-# json object
-channelObj = {
-    "ChannelName": "",
-    "DataSource": {
-        "S3DataSource": {
-            "S3Uri": "",
-            "S3DataType": "S3Prefix",
-            "S3DataDistributionType": "FullyReplicated",
-        }
+hyperParameterTuningJobName = "ack-hpo-job-kfp-" + str(random.randint(0, 99999))
+hyperParameterTuningJobConfig = {
+    "strategy": "Bayesian",
+    "hyperParameterTuningJobObjective": {
+        "type_": "Minimize",
+        "metricName": "validation:error",
     },
-    "CompressionType": "None",
-    "RecordWrapperType": "None",
+    "resourceLimits": {"maxNumberOfTrainingJobs": 10, "maxParallelTrainingJobs": 5},
+    "parameterRanges": {
+        "integerParameterRanges": [
+            {
+                "name": "num_round",
+                "minValue": "10",
+                "maxValue": "20",
+                "scalingType": "Linear",
+            }
+        ],
+        "continuousParameterRanges": [],
+        "categoricalParameterRanges": [],
+    },
 }
-
-training_job_definition = {
-    "AlgorithmSpecification": {
-      "TrainingImage": "training_image",
-      "TrainingInputMode": "File"
+trainingJobDefinition = {
+    "staticHyperParameters": {
+        "base_score": "0.5",
+        "booster": "gbtree",
+        "csv_weights": "0",
+        "dsplit": "row",
+        "grow_policy": "depthwise",
+        "lambda_bias": "0.0",
+        "max_bin": "256",
+        "max_leaves": "0",
+        "normalize_type": "tree",
+        "objective": "reg:linear",
+        "one_drop": "0",
+        "prob_buffer_row": "1.0",
+        "process_type": "default",
+        "rate_drop": "0.0",
+        "refresh_leaf": "1",
+        "sample_type": "uniform",
+        "scale_pos_weight": "1.0",
+        "silent": "0",
+        "sketch_eps": "0.03",
+        "skip_drop": "0.0",
+        "tree_method": "auto",
+        "tweedie_variance_power": "1.5",
+        "updater": '"grow_colmaker,prune"',
     },
-    "InputDataConfig": [
-      {
-        "ChannelName": "train",
-        "CompressionType": "None",
-        "ContentType": "csv",
-        "DataSource": {
-          "S3DataSource": {
-            "S3DataDistributionType": "FullyReplicated",
-            "S3DataType": "S3Prefix",
-            "S3Uri": 's3://xxx/xxx/output'
-          }
-        }
-      },
-      {
-        "ChannelName": "validation",
-        "CompressionType": "None",
-        "ContentType": "csv",
-        "DataSource": {
-          "S3DataSource": {
-            "S3DataDistributionType": "FullyReplicated",
-            "S3DataType": "S3Prefix",
-            "S3Uri": 's3://xxx/xxx/output'
-          }
-        }
-      }
+    "algorithmSpecification": {
+        "trainingImage": "632365934929.dkr.ecr.us-west-1.amazonaws.com/xgboost:1",
+        "trainingInputMode": "File",
+    },
+    "roleARN": "arn:aws:iam::402026529871:role/ack-sagemaker-execution-role-402026529871",
+    "inputDataConfig": [
+        {
+            "channelName": "train",
+            "dataSource": {
+                "s3DataSource": {
+                    "s3DataType": "S3Prefix",
+                    "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/train",
+                    "s3DataDistributionType": "FullyReplicated",
+                }
+            },
+            "contentType": "text/libsvm",
+            "compressionType": "None",
+            "recordWrapperType": "None",
+            "inputMode": "File",
+        },
+        {
+            "channelName": "validation",
+            "dataSource": {
+                "s3DataSource": {
+                    "s3DataType": "S3Prefix",
+                    "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/validation",
+                    "s3DataDistributionType": "FullyReplicated",
+                }
+            },
+            "contentType": "text/libsvm",
+            "compressionType": "None",
+            "recordWrapperType": "None",
+            "inputMode": "File",
+        },
     ],
-    "OutputDataConfig": {
-      "S3OutputPath": "s3://xxx/xxx/output"
+    "outputDataConfig": {"s3OutputPath": "s3://ack-sagemaker-bucket-402026529871"},
+    "resourceConfig": {
+        "instanceType": "ml.m4.xlarge",
+        "instanceCount": 1,
+        "volumeSizeInGB": 25,
     },
-    "ResourceConfig": {
-      "InstanceCount": 2,
-      "InstanceType": "ml.c4.2xlarge",
-      "VolumeSizeInGB": 10
-    },
-    "RoleArn": "role",
-    "StaticHyperParameters": {
-      "eval_metric": "auc",
-      "num_round": "100",
-      "objective": "binary:logistic",
-      "rate_drop": "0.3",
-      "tweedie_variance_power": "1.4"
-    },
-    "StoppingCondition": {
-      "MaxRuntimeInSeconds": 43200
-    }
-}
-
-warm_start_config = {
-	"ParentHyperParameterTuningJobs" : [
-	{"HyperParameterTuningJobName" : 'MyParentTuningJob'}
-	],
-	"WarmStartType" : "IdenticalDataAndAlgorithm"
+    "stoppingCondition": {"maxRuntimeInSeconds": 3600},
+    "enableNetworkIsolation": True,
+    "enableInterContainerTrafficEncryption": False,
 }
 
 REQUIRED_ARGS = {
-	"--hyper_parameter_tuning_job_config":
-	""" '{"S3Uri":"s3://fake-bucket/data","S3DataType":"S3Prefix","S3DataDistributionType":"FullyReplicated"}' """,
-	"--hyper_parameter_tuning_job_name":
-	""" 'job name example' """,
-	"--tags":
-	""" '[]' """,
-	"--training_job_definition":
-	"'" + str(training_job_definition) + "'",
-	"--training_job_definitions":
-	""" '[]' """,
-	"--warm_start_config":
-	"'" + str(warm_start_config) + "'",
+    "--hyper_parameter_tuning_job_config": '"'
+    + str(hyperParameterTuningJobConfig)
+    + '"',
+    "--hyper_parameter_tuning_job_name": '"' + str(hyperParameterTuningJobName) + '"',
+    # "--tags": """ '[]' """,
+    "--training_job_definition": '"' + str(trainingJobDefinition) + '"',
+    # "--training_job_definitions": """ '[]' """,
+    # "--warm_start_config": '"' + str(warm_start_config) + '"',
 }
 
 arguments = ""
 
 for key in REQUIRED_ARGS:
-	arguments = arguments + " " + key + " " + REQUIRED_ARGS[key]
+    arguments = arguments + " " + key + " " + REQUIRED_ARGS[key]
 
-file_loc = "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob.py"
+# print(arguments)
+
+file_loc = "code_gen/components/HyperParameterTuningJob1/src/HyperParameterTuningJob.py"
 
 # os.system("pwd")
 os.system("python " + file_loc + arguments)

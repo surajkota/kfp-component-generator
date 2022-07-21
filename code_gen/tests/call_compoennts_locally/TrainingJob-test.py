@@ -39,7 +39,7 @@ https://aws-controllers-k8s.github.io/community/docs/tutorials/sagemaker-example
 trainingJobName = "training-job-from-ack-kfp-" + str(random.randint(0, 99999))
 
 hyperParameters = {
-    "max_depth": "5",
+    "max_depth": "2",
     "gamma": "4",
     "eta": "0.2",
     "min_child_weight": "6",
