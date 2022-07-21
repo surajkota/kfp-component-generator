@@ -1,11 +1,13 @@
+# This YAML is modified from https://aws.amazon.com/blogs/machine-learning/use-amazon-sagemaker-ack-operators-to-train-and-deploy-machine-learning-models/
+# May have some difference with https://github.com/aws-controllers-k8s/sagemaker-controller/blob/main/samples/training/my-training-job.yaml
 apiVersion: sagemaker.services.k8s.aws/v1alpha1
 kind: TrainingJob
 metadata:
-  name: 'ack-xgboost-training-job-kfp-1'
+my-training-job  name: "ack-xgboost-training-job-kfp-6"
 spec:
   # Name that will appear in the SageMaker console
-  trainingJobName: 'ack-xgboost-training-job-KFP-1'
-  hyperParameters: 
+  trainingJobName: "ack-xgboost-training-job-KFP-6"
+  hyperParameters:
     max_depth: "5"
     gamma: "4"
     eta: "0.2"
@@ -15,13 +17,13 @@ spec:
     num_round: "10"
   algorithmSpecification:
     # The URL and tag of your ECR container
-    trainingImage: '746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2-1'
+    trainingImage: "746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2-1"
     trainingInputMode: File
   # A role with SageMaker and S3 access
   roleARN: arn:aws:iam::402026529871:role/ack-sagemaker-execution-role-402026529871
   outputDataConfig:
     # The output path of your model
-    s3OutputPath: s3://ack-sagemaker-bucket-402026529871 
+    s3OutputPath: s3://ack-sagemaker-bucket-402026529871
   resourceConfig:
     instanceCount: 1
     instanceType: ml.m4.xlarge
@@ -33,7 +35,7 @@ spec:
       dataSource:
         s3DataSource:
           s3DataType: S3Prefix
-          # The input path of your train data 
+          # The input path of your train data
           s3URI: s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/train
           s3DataDistributionType: FullyReplicated
       contentType: text/libsvm
@@ -42,7 +44,7 @@ spec:
       dataSource:
         s3DataSource:
           s3DataType: S3Prefix
-          # The input path of your validation data 
+          # The input path of your validation data
           s3URI: s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/validation
           s3DataDistributionType: FullyReplicated
       contentType: text/libsvm

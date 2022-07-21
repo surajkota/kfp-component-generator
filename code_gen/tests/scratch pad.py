@@ -8,8 +8,9 @@ import distutils.util as util
 
 #############################################################################################################
 # # organize the input spec, sort alphabetically by key
-# with open("code_gen/components/train/pipeline/ack_training_job_request.yaml") as f:
-#     crd_dict = yaml.load(f, Loader=yaml.FullLoader)
+# with open("code_gen/components/TrainingJob1/pipeline/ack_training_job_request.yaml") as f:
+with open("code_gen/components/HyperParameterTuningJob1/pipeline/my-hyperparameter-job.yaml") as f:
+    crd_dict = yaml.load(f, Loader=yaml.FullLoader)
 
 # print(crd_dict['spec'])
 
