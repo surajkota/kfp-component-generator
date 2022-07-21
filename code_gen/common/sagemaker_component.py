@@ -32,7 +32,7 @@ from kubernetes.client.rest import ApiException
 import distutils.util as util
 
 from code_gen.common.sagemaker_component_spec import SageMakerComponentSpec
-from code_gen.common.boto3_manager import Boto3Manager
+# from code_gen.common.boto3_manager import Boto3Manager
 from code_gen.common.common_inputs import (
     SageMakerComponentBaseOutputs,
     SageMakerComponentCommonInputs,
@@ -181,21 +181,21 @@ class SageMakerComponent:
             return ApiClient()
         return config.new_client_from_config()
 
-    def _configure_aws_clients(self, inputs: SageMakerComponentCommonInputs):
-        """Configures the internal AWS clients for the component.
+    # def _configure_aws_clients(self, inputs: SageMakerComponentCommonInputs):
+    #     """Configures the internal AWS clients for the component.
 
-        Args:
-            inputs: A populated list of user inputs.
-        """
-        self._sm_client = Boto3Manager.get_sagemaker_client(
-            self._get_component_version(),
-            inputs.region,
-            endpoint_url=inputs.endpoint_url,
-            assume_role_arn=inputs.assume_role,
-        )
-        self._cw_client = Boto3Manager.get_cloudwatch_client(
-            inputs.region, assume_role_arn=inputs.assume_role
-        )
+    #     Args:
+    #         inputs: A populated list of user inputs.
+    #     """
+    #     self._sm_client = Boto3Manager.get_sagemaker_client(
+    #         self._get_component_version(),
+    #         inputs.region,
+    #         endpoint_url=inputs.endpoint_url,
+    #         assume_role_arn=inputs.assume_role,
+    #     )
+    #     self._cw_client = Boto3Manager.get_cloudwatch_client(
+    #         inputs.region, assume_role_arn=inputs.assume_role
+    #     )
 
     def _do(
         self,

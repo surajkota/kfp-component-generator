@@ -1,6 +1,5 @@
 import logging
 from typing import Dict
-from sagemaker.image_uris import retrieve
 
 from code_gen.components.TrainingJob.src.TrainingJob_spec import (
     SageMakerTrainingJobInputs,
