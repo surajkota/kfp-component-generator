@@ -12,7 +12,7 @@ hyperParameterTuningJobConfig = {
         "type_": "Minimize",
         "metricName": "validation:error",
     },
-    "resourceLimits": {"maxNumberOfTrainingJobs": 10, "maxParallelTrainingJobs": 5},
+    "resourceLimits": {"maxNumberOfTrainingJobs": 2, "maxParallelTrainingJobs": 1},
     "parameterRanges": {
         "integerParameterRanges": [
             {
@@ -116,7 +116,8 @@ for key in REQUIRED_ARGS:
 
 # print(arguments)
 
-file_loc = "code_gen/components/HyperParameterTuningJob1/src/HyperParameterTuningJob.py"
+# file_loc = "code_gen/components/HyperParameterTuningJob1/src/HyperParameterTuningJob.py"
+file_loc = "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_component.py"
 
 # os.system("pwd")
 os.system("python " + file_loc + arguments)

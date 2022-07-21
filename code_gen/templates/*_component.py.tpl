@@ -2,7 +2,7 @@ import logging
 from typing import Dict
 from sagemaker.image_uris import retrieve
 
-from code_gen.components.TrainingJob.src.TrainingJob_spec import (
+from code_gen.components.${CRD_NAME}.src.${CRD_NAME}_spec import (
     ${INPUT_CLASS_NAME},
     ${OUTPUT_CLASS_NAME},
     ${SPEC_CLASS_NAME},
