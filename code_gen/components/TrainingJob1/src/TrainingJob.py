@@ -14,7 +14,7 @@ def snake_to_camel(name):
 
 
 def build_job_yaml(_args):
-    
+
     with open(
         "code_gen/components/TrainingJob/src/TrainingJob_request.yaml.tpl", "r"
     ) as job_request_outline:

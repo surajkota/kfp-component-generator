@@ -216,4 +216,3 @@ import urllib.request
 # # print(crd_download_url)
 
 # urllib.request.urlretrieve(crd_download_url, "code_gen/ack_crd_v0.3.3/{}".format(crd_chosen))
-

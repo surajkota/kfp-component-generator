@@ -22,9 +22,7 @@ CRD_TYPE_TO_ARGS_TYPE: Dict[str, str] = {
 
 ## Generate src/*_spec.py content
 def get_spec_input_snippets(_input_spec_all, _input_spec_required):
-    """
-    Generate the input section for src/*_spec.py
-    """
+    """Generate the input section for src/*_spec.py."""
     _spec_inputs_defi_snippet = ""
     _spec_inputs_validators_snippet = ""
 
@@ -43,7 +41,9 @@ def get_spec_input_snippets(_input_spec_all, _input_spec_required):
         ), """ % (
             camel_to_snake(key),
             CRD_TYPE_TO_ARGS_TYPE.get(_input_spec_all[key]["type"]),
-            ' '.join(re.split(r"\n", _input_spec_all[key]["description"][0:100].strip())),
+            " ".join(
+                re.split(r"\n", _input_spec_all[key]["description"][0:100].strip())
+            ),
             key in _input_spec_required,
         )
 
@@ -54,9 +54,7 @@ def get_spec_input_snippets(_input_spec_all, _input_spec_required):
 
 
 def get_spec_output_snippets(_output_statuses):
-    """
-    Generate the output section for src/*_spec.py
-    """
+    """Generate the output section for src/*_spec.py."""
     _spec_outputs_defi_snippet = ""
     _spec_outputs_validators_snippet = ""
 
@@ -71,7 +69,9 @@ def get_spec_output_snippets(_output_statuses):
             description="%s",
         ), """ % (
             camel_to_snake(key),
-            ' '.join(re.split(r"\n", _output_statuses[key]["description"][0:100].strip())),
+            " ".join(
+                re.split(r"\n", _output_statuses[key]["description"][0:100].strip())
+            ),
         )
 
     return (

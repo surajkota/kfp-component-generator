@@ -33,7 +33,9 @@ from code_gen.common.sagemaker_component_spec import (
 from code_gen.common.spec_input_parsers import SpecInputParsers
 
 CommandlineArgumentType = Union[
-    str, InputValuePlaceholder, OutputPathPlaceholder,
+    str,
+    InputValuePlaceholder,
+    OutputPathPlaceholder,
 ]
 
 
@@ -202,7 +204,10 @@ class SageMakerComponentCompiler(object):
                 container=ContainerSpec(
                     image=f"{component_image_uri}:{component_image_tag}",
                     command=["python3"],
-                    args=[component_file_path,] + io_args.args,  # type: ignore
+                    args=[
+                        component_file_path,
+                    ]
+                    + io_args.args,  # type: ignore
                 )
             ),
         )

@@ -10,17 +10,13 @@ from code_gen.common.spec_input_parsers import SpecInputParsers
 
 
 def camel_to_snake(name):
-    """
-    Convert camel case to snake case
-    """
+    """Convert camel case to snake case."""
     name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
 
 def snake_to_camel(name):
-    """
-    Convert snake case to camel case
-    """
+    """Convert snake case to camel case."""
     if name == "role_arn":
         return "roleARN"
     temp = name.split("_")
@@ -28,10 +24,8 @@ def snake_to_camel(name):
 
 
 def parse_crd(_file_name):
-    """
-    Read in ACK CRD YAML file from file location
-    Parse file and get fields
-    """
+    """Read in ACK CRD YAML file from file location Parse file and get
+    fields."""
 
     with open(_file_name, "r") as crd_file:
         crd_dict = yaml.load(crd_file, Loader=yaml.FullLoader)
@@ -51,10 +45,8 @@ def parse_crd(_file_name):
 
 
 def get_crd_info(_file_name):
-    """
-    Read in ACK CRD YAML file from file location
-    Parse file and get crd information: name, plural, version, namespace
-    """
+    """Read in ACK CRD YAML file from file location Parse file and get crd
+    information: name, plural, version, namespace."""
     with open(_file_name, "r") as crd_file:
         crd_dict = yaml.load(crd_file, Loader=yaml.FullLoader)
 
@@ -67,9 +59,7 @@ def get_crd_info(_file_name):
 
 
 def get_class_names(_crd_name):
-    """
-    Get component class names from CRD name
-    """
+    """Get component class names from CRD name."""
     _input_class_name = "SageMaker" + _crd_name + "Inputs"
     _output_class_name = "SageMaker" + _crd_name + "Outputs"
     _spec_class_name = "SageMaker" + _crd_name + "Spec"
@@ -84,12 +74,9 @@ def get_class_names(_crd_name):
 
 
 def write_snippet_to_file(_replace_dict, _template_path, _out_file_path, _out_file_dir):
-    """
-    Open template file at _template_path
-    Substite placeholders in templates following mapping _replace_dict
-    Create a dir _out_file_dir, if does not exist
-    Write output file stream to file _out_file_path
-    """
+    """Open template file at _template_path Substite placeholders in templates
+    following mapping _replace_dict Create a dir _out_file_dir, if does not
+    exist Write output file stream to file _out_file_path."""
 
     # open and replace placeholders in templates
     with open(_template_path) as t:
@@ -106,9 +93,7 @@ def write_snippet_to_file(_replace_dict, _template_path, _out_file_path, _out_fi
 
 
 def fetch_ack_crd():
-    """
-    Fetch ACK CRD from latest release
-    """
+    """Fetch ACK CRD from latest release."""
     releases = requests.get(
         "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/releases/latest"
     ).json()

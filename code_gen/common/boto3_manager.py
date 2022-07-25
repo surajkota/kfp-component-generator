@@ -71,7 +71,9 @@ class Boto3Manager(object):
             assume_session.create_client,
             assume_session.get_credentials(),
             role_arn,
-            extra_args={"DurationSeconds": assume_duration,},
+            extra_args={
+                "DurationSeconds": assume_duration,
+            },
             cache=JSONFileCache(),
         )
         role_session = BotocoreSession()

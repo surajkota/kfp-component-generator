@@ -21,9 +21,10 @@ CRD_TYPE_TO_DEFAULT_VALUE: Dict[str, str] = {
 
 ## Generate component.yaml content
 def get_yaml_inputs(_input_spec_all):
-    """
-    Populate input section with name, type, description, ..
-    Return a code snippet waiting to be written to component.yaml.tpl template
+    """Populate input section with name, type, description, ..
+
+    Return a code snippet waiting to be written to component.yaml.tpl
+    template
     """
 
     _yaml_inputs_buffer = ""
@@ -46,9 +47,10 @@ def get_yaml_inputs(_input_spec_all):
 
 
 def get_yaml_args(_input_spec_all):
-    """
-    Populate args section with name, type, description, ..
-    Return a code snippet waiting to be written to component.yaml.tpl template
+    """Populate args section with name, type, description, ..
+
+    Return a code snippet waiting to be written to component.yaml.tpl
+    template
     """
 
     _yaml_args_buffer = ""
@@ -65,9 +67,10 @@ def get_yaml_args(_input_spec_all):
 
 
 def get_yaml_outputs(_output_statuses):
-    """
-    Populate output section with name, type, description, ..
-    Return a code snippet waiting to be written to component.yaml.tpl template
+    """Populate output section with name, type, description, ..
+
+    Return a code snippet waiting to be written to component.yaml.tpl
+    template
     """
 
     _yaml_outputs_buffer = ""

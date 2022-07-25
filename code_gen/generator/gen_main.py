@@ -1,4 +1,5 @@
-import random
+import argparse
+
 from code_gen.generator.gen_component import (
     get_do_paramaters_snippet,
     get_output_prep_snippet,
@@ -20,14 +21,20 @@ from code_gen.generator.utils import (
 
 if __name__ == "__main__":
 
-    ##############User inputs##############
-    ACK_CRD_YAML_LOCATION = (
+    ## Parse arguments and get user input
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--crd_path", help="Path to the CRD file")
+    parser.add_argument("--container_image", help="Container image to run component")
+
+    args = parser.parse_args()
+
+    ACK_CRD_YAML_LOCATION = args.crd_path or (
         # "code_gen/ack_crd/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
-        "code_gen/ack_crd/sagemaker.services.k8s.aws_trainingjobs.yaml"
+        # "code_gen/ack_crd/sagemaker.services.k8s.aws_trainingjobs.yaml"
+        # "code_gen/ack_crd/sagemaker.services.k8s.aws_featuregroups.yaml"
     )
     # ACK_CRD_YAML_LOCATION = (fetch_ack_crd())
-    COMPONENT_CONTAINER_IMAGE = "rdpen/kfp-component-sagemaker:"
-    ##############User inputs##############
+    COMPONENT_CONTAINER_IMAGE = args.container_image or "rdpen/kfp-component-sagemaker:"
 
     ## From ACK CRD YAML, parse fields needed
     input_spec_required, input_spec_all, output_statuses, crd_name = parse_crd(
@@ -45,9 +52,7 @@ if __name__ == "__main__":
     output_component_name = crd_name + "_component.py"
     output_component_path = output_src_dir + output_component_name
 
-    output_job_request_outline_path = (
-        output_src_dir + crd_name + "_request.yaml.tpl"
-    )
+    output_job_request_outline_path = output_src_dir + crd_name + "_request.yaml.tpl"
     job_request_path = output_src_dir + crd_name + "_request.yaml"
 
     output_yaml_path = output_component_dir + "component.yaml"

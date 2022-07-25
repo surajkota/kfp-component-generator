@@ -45,25 +45,28 @@ sagemaker_HyperParameterTuningJob_op = components.load_component_from_file(
     # "code_gen/components/HyperParameterTuningJob/component.yaml"
 )
 
-@dsl.pipeline(name="HyperParameterTuningJob", description="SageMaker HyperParameterTuningJob component")
-def HyperParameterTuningJob(
-	hyper_parameter_tuning_job_config = "{}", # JsonObject
-    hyper_parameter_tuning_job_name = "Job Name Example", #String
-    tags = "[]", #JsonArray
-    training_job_definition = channelObj, #JsonObject
-    training_job_definitions = channelObjList, # JsonArray
-    warm_start_config = "{}", # JsonObject
 
+@dsl.pipeline(
+    name="HyperParameterTuningJob",
+    description="SageMaker HyperParameterTuningJob component",
+)
+def HyperParameterTuningJob(
+    hyper_parameter_tuning_job_config="{}",  # JsonObject
+    hyper_parameter_tuning_job_name="Job Name Example",  # String
+    tags="[]",  # JsonArray
+    training_job_definition=channelObj,  # JsonObject
+    training_job_definitions=channelObjList,  # JsonArray
+    warm_start_config="{}",  # JsonObject
 ):
     HyperParameterTuningJob = sagemaker_HyperParameterTuningJob_op(
-		hyper_parameter_tuning_job_config = hyper_parameter_tuning_job_config,
-		hyper_parameter_tuning_job_name = hyper_parameter_tuning_job_name,
-		tags = tags,
-		training_job_definition = training_job_definition,
-		training_job_definitions = training_job_definitions,
-		warm_start_config = warm_start_config,
-
+        hyper_parameter_tuning_job_config=hyper_parameter_tuning_job_config,
+        hyper_parameter_tuning_job_name=hyper_parameter_tuning_job_name,
+        tags=tags,
+        training_job_definition=training_job_definition,
+        training_job_definitions=training_job_definitions,
+        warm_start_config=warm_start_config,
     )  # .apply(use_aws_secret('aws-secret', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'))
+
 
 if __name__ == "__main__":
     kfp.compiler.Compiler().compile(HyperParameterTuningJob, __file__ + ".zip")

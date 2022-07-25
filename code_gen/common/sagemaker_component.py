@@ -186,9 +186,7 @@ class SageMakerComponent:
         _test_api.list_node()
 
     def _get_k8s_api_client(self) -> ApiClient:
-        """
-        Create new client everytime to avoid token refresh issues
-        """
+        """Create new client everytime to avoid token refresh issues."""
         if bool(util.strtobool(os.environ.get("LOAD_IN_CLUSTER_KUBECONFIG", "false"))):
             config.load_incluster_config()
             return ApiClient()
@@ -256,8 +254,8 @@ class SageMakerComponent:
         pass
 
     def _get_resource(self):
-        """Get the custom resource detail
-        similar to: kubectl describe trainingjob JOB_NAME -n NAMESPACE
+        """Get the custom resource detail similar to: kubectl describe
+        trainingjob JOB_NAME -n NAMESPACE.
 
         Returns:
             None or object: None if the resource doesnt exist in server, otherwise the
@@ -356,8 +354,7 @@ class SageMakerComponent:
         pass
 
     def _create_custom_resource(self, custom_resource: dict):
-        """
-        Submit a custom_resource to the ACK cluster
+        """Submit a custom_resource to the ACK cluster.
 
         Args:
             custom_resource: A dictionary object representing the custom object.
@@ -388,8 +385,7 @@ class SageMakerComponent:
         wait_periods: int = 5,
         period_length: int = 10,
     ):
-        """
-        Wait for the custom resource to be consumed by the controller.
+        """Wait for the custom resource to be consumed by the controller.
 
         Args:
             wait_periods: The number of times to wait for the resource to be consumed.
@@ -417,8 +413,7 @@ class SageMakerComponent:
         return None
 
     def _get_resource_exists(self) -> bool:
-        """
-        Check if the custom resource exists.
+        """Check if the custom resource exists.
 
         Returns:
             bool: True if the resource exists, False otherwise.
@@ -434,8 +429,8 @@ class SageMakerComponent:
         wait_periods: int,
         period_length: int,
     ):
-        """
-        Create a resource from the spec and wait to be consumed by controller
+        """Create a resource from the spec and wait to be consumed by
+        controller.
 
         Args:
             cr_spec: A dictionary object representing the custom object.
@@ -495,7 +490,9 @@ class SageMakerComponent:
         wait_periods: int = 1,
         period_length: int = 5,
     ):
-        """Delete custom resource from cluster and wait for it to be removed by the server
+        """Delete custom resource from cluster and wait for it to be removed by
+        the server.
+
         for wait_periods * period_length seconds.
         Returns:
             response, bool:

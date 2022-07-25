@@ -58,10 +58,8 @@ def snake_to_camel(name):
 
 
 def parse_crd(_file_name):
-    """
-    Read in ACK CRD YAML file from file location
-    Parse file and get fields
-    """
+    """Read in ACK CRD YAML file from file location Parse file and get
+    fields."""
 
     with open(_file_name, "r") as crd_file:
         crd_dict = yaml.load(crd_file, Loader=yaml.FullLoader)
@@ -82,9 +80,10 @@ def parse_crd(_file_name):
 
 ## Generate src/component.py content
 def get_py_add_argument(_input_spec_all, _input_spec_required):
-    """
-    Populate parser.add_argument with name, type, description, ..
-    Return a code snippet waiting to be written to component.py.tpl template
+    """Populate parser.add_argument with name, type, description, ..
+
+    Return a code snippet waiting to be written to component.py.tpl
+    template
     """
 
     _py_add_argument_buffer = ""
@@ -108,9 +107,10 @@ def get_py_add_argument(_input_spec_all, _input_spec_required):
 
 ## Generate component.yaml content
 def get_yaml_inputs(_input_spec_all):
-    """
-    Populate input section with name, type, description, ..
-    Return a code snippet waiting to be written to component.yaml.tpl template
+    """Populate input section with name, type, description, ..
+
+    Return a code snippet waiting to be written to component.yaml.tpl
+    template
     """
 
     _yaml_inputs_buffer = ""
@@ -133,9 +133,10 @@ def get_yaml_inputs(_input_spec_all):
 
 
 def get_yaml_args(_input_spec_all):
-    """
-    Populate args section with name, type, description, ..
-    Return a code snippet waiting to be written to component.yaml.tpl template
+    """Populate args section with name, type, description, ..
+
+    Return a code snippet waiting to be written to component.yaml.tpl
+    template
     """
 
     _yaml_args_buffer = ""
@@ -152,9 +153,10 @@ def get_yaml_args(_input_spec_all):
 
 
 def get_yaml_outputs(_output_statuses):
-    """
-    Populate output section with name, type, description, ..
-    Return a code snippet waiting to be written to component.yaml.tpl template
+    """Populate output section with name, type, description, ..
+
+    Return a code snippet waiting to be written to component.yaml.tpl
+    template
     """
 
     _yaml_outputs_buffer = ""
@@ -176,10 +178,8 @@ def get_yaml_outputs(_output_statuses):
 
 ## Generate pipeline/component-pipeline.py content
 def get_pipeline_user_inputs(_input_spec_all):
-    """
-    Populate user input section in a sample pipeline
-    Return a code snippet waiting to be written to pipeline.py.tpl template
-    """
+    """Populate user input section in a sample pipeline Return a code snippet
+    waiting to be written to pipeline.py.tpl template."""
     _pipeline_user_inputs_buffer = ""
 
     for key in _input_spec_all:
@@ -189,10 +189,8 @@ def get_pipeline_user_inputs(_input_spec_all):
 
 
 def get_pipeline_args_assign(_input_spec_all):
-    """
-    Populate args section in a sample pipeline
-    Return a code snippet waiting to be written to pipeline.py.tpl template
-    """
+    """Populate args section in a sample pipeline Return a code snippet waiting
+    to be written to pipeline.py.tpl template."""
     _pipeline_args_assign_buffer = ""
 
     for key in _input_spec_all:
@@ -206,10 +204,8 @@ def get_pipeline_args_assign(_input_spec_all):
 
 ## Generate src/component_request.yaml.tpl content
 def get_ack_job_request_outline_spec(_input_spec_all):
-    """
-    Populate spec section in a ACK job request YAML
-    Return a code snippet waiting to be written to ack_job_request.yaml.tpl template
-    """
+    """Populate spec section in a ACK job request YAML Return a code snippet
+    waiting to be written to ack_job_request.yaml.tpl template."""
     _ack_job_request_outline_spec_buffer = ""
 
     for key in _input_spec_all:
@@ -219,12 +215,9 @@ def get_ack_job_request_outline_spec(_input_spec_all):
 
 
 def write_buffer_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file_dir):
-    """
-    Open template file at _template_loc
-    Substite placeholders in templates following mapping _replace_dict
-    Create a dir _out_file_dir, if does not exist
-    Write output file stream to file _out_file_loc
-    """
+    """Open template file at _template_loc Substite placeholders in templates
+    following mapping _replace_dict Create a dir _out_file_dir, if does not
+    exist Write output file stream to file _out_file_loc."""
 
     # replace placeholders in templates
     with open(_template_loc) as t:
@@ -250,14 +243,14 @@ if __name__ == "__main__":
 
     # get code snippet (buffer) to be filled in templates
     py_add_argument_buffer = get_py_add_argument(input_spec_all, input_spec_required)
-    
+
     yaml_inputs_buffer = get_yaml_inputs(input_spec_all)
     yaml_args_buffer = get_yaml_args(input_spec_all)
     yaml_outputs_buffer = get_yaml_outputs(output_statuses)
 
     pipeline_user_inputs_buffer = get_pipeline_user_inputs(input_spec_all)
     pipeline_args_assign_buffer = get_pipeline_args_assign(input_spec_all)
-    
+
     ack_job_request_outline_spec_buffer = get_ack_job_request_outline_spec(
         input_spec_all
     )
@@ -272,7 +265,9 @@ if __name__ == "__main__":
     output_src_dir = output_component_dir + "src/"
 
     output_py_location = output_src_dir + crd_name + ".py"
-    output_job_request_outline_location = output_src_dir + crd_name + "_request.yaml.tpl"
+    output_job_request_outline_location = (
+        output_src_dir + crd_name + "_request.yaml.tpl"
+    )
     job_request_location = output_src_dir + crd_name + "_request.yaml"
 
     # replace template placeholders with buffer, then write to file

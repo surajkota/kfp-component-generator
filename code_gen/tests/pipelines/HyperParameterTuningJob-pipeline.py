@@ -61,7 +61,7 @@ trainingJobDefinition = {
         "skip_drop": "0.0",
         "tree_method": "auto",
         "tweedie_variance_power": "1.5",
-        "updater": 'grow_colmaker,prune',
+        "updater": "grow_colmaker,prune",
     },
     "algorithmSpecification": {
         "trainingImage": "632365934929.dkr.ecr.us-west-1.amazonaws.com/xgboost:1",

@@ -22,10 +22,9 @@ CRD_TYPE_TO_DEFAULT_VALUE: Dict[str, str] = {
 
 ## Generate component.yaml content
 def get_yaml_inputs(_input_spec_all):
-    """
-    Populate input section with name, type, description, default value
-    Return a code snippet waiting to be written to component.yaml.tpl template
-    """
+    """Populate input section with name, type, description, default value
+    Return a code snippet waiting to be written to component.yaml.tpl
+    template."""
 
     _yaml_inputs_snippet = ""
 
@@ -40,16 +39,19 @@ def get_yaml_inputs(_input_spec_all):
             camel_to_snake(key),
             CRD_TYPE_TO_KFP_TYPE.get(_input_spec_all[key]["type"]),
             CRD_TYPE_TO_DEFAULT_VALUE.get(_input_spec_all[key]["type"]),
-            ' '.join(re.split(r"\n", _input_spec_all[key]["description"][0:100].strip())),
+            " ".join(
+                re.split(r"\n", _input_spec_all[key]["description"][0:100].strip())
+            ),
         )
 
     return _yaml_inputs_snippet
 
 
 def get_yaml_args(_input_spec_all):
-    """
-    Populate args section with name, type, description, ..
-    Return a code snippet waiting to be written to component.yaml.tpl template
+    """Populate args section with name, type, description, ..
+
+    Return a code snippet waiting to be written to component.yaml.tpl
+    template
     """
 
     _yaml_args_snippet = ""
@@ -66,9 +68,10 @@ def get_yaml_args(_input_spec_all):
 
 
 def get_yaml_outputs(_output_statuses):
-    """
-    Populate output section with name, type, description, ..
-    Return a code snippet waiting to be written to component.yaml.tpl template
+    """Populate output section with name, type, description, ..
+
+    Return a code snippet waiting to be written to component.yaml.tpl
+    template
     """
 
     _yaml_outputs_snippet = ""
@@ -82,7 +85,9 @@ def get_yaml_outputs(_output_statuses):
     }""" % (
             camel_to_snake(key),
             CRD_TYPE_TO_KFP_TYPE.get(_output_statuses[key]["type"]),
-            ' '.join(re.split(r"\n", _output_statuses[key]["description"][0:100].strip())),
+            " ".join(
+                re.split(r"\n", _output_statuses[key]["description"][0:100].strip())
+            ),
         )
 
     return _yaml_outputs_snippet

@@ -5,9 +5,10 @@ import boto3
 import os
 from kubernetes import client, config, utils
 
+
 def submit_job_request(k8s_core, ack_yaml):
     """
-    args: 
+    args:
         k8s_client: an ApiClient object, initialized with the client args.
         ack_yaml: List[dict]. Optional list of YAML objects; used instead
             of reading the `yaml_file`. Default is None.
@@ -20,9 +21,10 @@ def submit_job_request(k8s_core, ack_yaml):
 
     ## after job submitted, log job submitted in console
 
+
 def get_job_status(k8s_client, cr_group, cr_version, cr_name):
     """
-    args: 
+    args:
         cr_group: the custom resource's group (parsed from ack_yaml)
         cr_version: the custom resource's version (parsed from ack_yaml)
         cr_namespace: The custom resource's namespace (parsed from ack_yaml, if empty, then 'default')
@@ -33,26 +35,24 @@ def get_job_status(k8s_client, cr_group, cr_version, cr_name):
     """
     pass
 
+
 def main():
     ## parse input arguments
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--ack_yaml",
-        type=yaml.safe_load,
-        help="Raw YAML for deployment",
-        default="{}"
+        "--ack_yaml", type=yaml.safe_load, help="Raw YAML for deployment", default="{}"
     )
 
     args = parser.parse_args()
 
     ack_yaml = args.ack_yaml
     logging.info(ack_yaml)
-    logging.info('\n')
-    logging.info('===========================')
+    logging.info("\n")
+    logging.info("===========================")
 
-    # ## configure identity to access Kubenete/ACK/kubecli? 
-    # # user input an IAM role 
+    # ## configure identity to access Kubenete/ACK/kubecli?
+    # # user input an IAM role
     # # python client provides this KFP pod/container access to EKS/Sagemaker/S3 etc.
     # region = 'us-west-1'
     # cluster_name = 'kf-ack-west-1'
@@ -88,8 +88,8 @@ def main():
     # kubectl describe trainingjobs ack-xgboost-training-job-369148113735-5 --namespace default
     # api_response = k8s_custom_client.get_namespaced_custom_object_status(group='sagemaker.services.k8s.aws', version='v1alpha1', namespace='default', plural='trainingjobs', name='ack-xgboost-training-job-369148113735-6')
     # print(api_response['status'])
-    
-    # Similar to kubectl get trainingjobs --all-namespaces 
+
+    # Similar to kubectl get trainingjobs --all-namespaces
     # but list or watch cluster scoped custom objects in YAML DETAILS
     # https://stackoverflow.com/questions/61594447/python-kubernetes-client-equivalent-of-kubectl-get-custom-resource
     # api_response = k8s_custom_client.list_cluster_custom_object(group='sagemaker.services.k8s.aws', version='v1alpha1', plural='trainingjobs')
@@ -100,6 +100,7 @@ def main():
     # write to tmp file
     # with open('/tmp/whatever_output.txt', 'w') as f:
     #     f.write(ret)
+
 
 if __name__ == "__main__":
     main()

@@ -31,7 +31,7 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         )
 
         ############GENERATED SECTION BELOW############
-        
+
         self.group = "sagemaker.services.k8s.aws"
         self.version = "v1alpha1"
         self.plural = "trainingjobs"

@@ -13,9 +13,10 @@ CRD_TYPE_TO_ARGS_TYPE: Dict[str, str] = {
 
 ## Generate src/component.py content
 def get_py_add_argument(_input_spec_all, _input_spec_required):
-    """
-    Populate parser.add_argument with name, type, description, ..
-    Return a code snippet waiting to be written to component.py.tpl template
+    """Populate parser.add_argument with name, type, description, ..
+
+    Return a code snippet waiting to be written to component.py.tpl
+    template
     """
 
     _py_add_argument_buffer = ""

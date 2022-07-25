@@ -4,16 +4,15 @@ from code_gen.generator.utils import parse_crd, snake_to_camel, write_snippet_to
 
 
 def get_ack_job_request_outline_spec(_input_spec_all):
-    """
-    Populate spec section in a ACK job request YAML
-    Return a code snippet waiting to be written to ack_job_request.yaml.tpl template
-    """
+    """Populate spec section in a ACK job request YAML Return a code snippet
+    waiting to be written to ack_job_request.yaml.tpl template."""
     _ack_job_request_outline_spec_snippet = ""
 
     for key in _input_spec_all:
         _ack_job_request_outline_spec_snippet += """  %s: \n""" % snake_to_camel(key)
 
     return _ack_job_request_outline_spec_snippet
+
 
 if __name__ == "__main__":
 
@@ -41,7 +40,6 @@ if __name__ == "__main__":
         output_src_dir + crd_name + "_request.yaml.tpl"
     )
     job_request_location = output_src_dir + crd_name + "_request.yaml"
-
 
     ## replace placeholders in templates with buffer, then write to file
     ack_job_request_replace = {

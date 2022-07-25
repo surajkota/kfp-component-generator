@@ -92,7 +92,9 @@ if __name__ == "__main__":
         component_class_name,
     ) = get_class_names(crd_name)
 
-    do_parameters_snippet = get_do_paramaters_snippet(output_src_dir, crd_name, crd_info)
+    do_parameters_snippet = get_do_paramaters_snippet(
+        output_src_dir, crd_name, crd_info
+    )
     output_prep_snippet = get_output_prep_snippet(output_statuses)
 
     ## replace placeholders in templates with buffer, then write to file
