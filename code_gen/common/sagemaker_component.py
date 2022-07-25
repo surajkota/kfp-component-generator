@@ -33,7 +33,6 @@ import distutils.util as util
 
 from code_gen.common.sagemaker_component_spec import SageMakerComponentSpec
 
-# from code_gen.common.boto3_manager import Boto3Manager
 from code_gen.common.common_inputs import (
     SageMakerComponentBaseOutputs,
     SageMakerComponentCommonInputs,
@@ -123,7 +122,7 @@ class SageMakerComponent:
     COMPONENT_DESCRIPTION = ""
     COMPONENT_SPEC = SageMakerComponentSpec
 
-    STATUS_POLL_INTERVAL = 20
+    STATUS_POLL_INTERVAL = 30
 
     # parameters that will be filled by Do().
     # assignment statements in Do() will be genereated
@@ -135,6 +134,9 @@ class SageMakerComponent:
 
     job_request_outline_location: str
     job_request_location: str
+
+    cluster_region: str
+    cluster_name: str
 
     def __init__(self):
         """Initialize a new component."""
@@ -159,8 +161,6 @@ class SageMakerComponent:
         """
         # Global try-catch in order to allow for safe abort
         try:
-            # self._configure_aws_clients(inputs)
-
             # test if k8s is available
             self._init_configure_k8s()
 
@@ -172,7 +172,12 @@ class SageMakerComponent:
             raise e
 
     def _init_configure_k8s(self):
-        # logging.info(sys.version)
+        """Initializes the kubernetes client and configures the namespace."""
+        os.system(
+            "aws eks update-kubeconfig --region {} --name {}".format(
+                self.cluster_region, self.cluster_name
+            )
+        )
         os.system("aws eks update-kubeconfig --region us-west-1 --name kf-ack-west-1")
         logging.info("Create kubeconfig using 'aws eks update-kubeconfig'")
 
@@ -181,29 +186,13 @@ class SageMakerComponent:
         _test_api.list_node()
 
     def _get_k8s_api_client(self) -> ApiClient:
-        # Create new client everytime to avoid token refresh issues
-        # https://github.com/kubernetes-client/python/issues/741
-        # https://github.com/kubernetes-client/python-base/issues/125
+        """
+        Create new client everytime to avoid token refresh issues
+        """
         if bool(util.strtobool(os.environ.get("LOAD_IN_CLUSTER_KUBECONFIG", "false"))):
             config.load_incluster_config()
             return ApiClient()
         return config.new_client_from_config()
-
-    # def _configure_aws_clients(self, inputs: SageMakerComponentCommonInputs):
-    #     """Configures the internal AWS clients for the component.
-
-    #     Args:
-    #         inputs: A populated list of user inputs.
-    #     """
-    #     self._sm_client = Boto3Manager.get_sagemaker_client(
-    #         self._get_component_version(),
-    #         inputs.region,
-    #         endpoint_url=inputs.endpoint_url,
-    #         assume_role_arn=inputs.assume_role,
-    #     )
-    #     self._cw_client = Boto3Manager.get_cloudwatch_client(
-    #         inputs.region, assume_role_arn=inputs.assume_role
-    #     )
 
     def _do(
         self,
@@ -237,7 +226,7 @@ class SageMakerComponent:
                 status = self._get_job_status()
                 # Continue until complete
                 if status and status.is_completed:
-                    logging.info(f"Job completed, final status: {status.raw_status}")
+                    logging.info(f"Job ended, final status: {status.raw_status}")
                     break
 
                 sleep(self.STATUS_POLL_INTERVAL)
@@ -278,15 +267,6 @@ class SageMakerComponent:
         _api_client = self._get_k8s_api_client()
         _api = client.CustomObjectsApi(_api_client)
 
-        # kubectl get all training jobs
-        # api_response = _api.list_cluster_custom_object(
-        #     group=self.group,
-        #     version=self.version,
-        #     plural=self.plural,
-        # )
-        # for job in api_response["items"]:
-        #     print("ACK custom object name: " + job["metadata"]["name"])
-
         if self.namespace is None:
             job_description = _api.get_cluster_custom_object(
                 self.group.lower(),
@@ -301,11 +281,7 @@ class SageMakerComponent:
             namespace=self.namespace.lower(),  # "default",
             plural=self.plural.lower(),
             name=self._ack_job_name.lower(),
-            # name="ack-trainingjob-20220718174353-gn6p", # failed
-            # name="ack-trainingjob-20220717230038-5d9m",  # completed
         )
-
-        # print(job_description["status"])
 
         return job_description
 
@@ -380,7 +356,12 @@ class SageMakerComponent:
         pass
 
     def _create_custom_resource(self, custom_resource: dict):
-        """Submit a custom_resource to the ACK cluster."""
+        """
+        Submit a custom_resource to the ACK cluster
+
+        Args:
+            custom_resource: A dictionary object representing the custom object.
+        """
 
         _api_client = self._get_k8s_api_client()
         _api = client.CustomObjectsApi(_api_client)
@@ -407,7 +388,13 @@ class SageMakerComponent:
         wait_periods: int = 5,
         period_length: int = 10,
     ):
-        """Wait for the custom resource to be consumed by the controller."""
+        """
+        Wait for the custom resource to be consumed by the controller.
+
+        Args:
+            wait_periods: The number of times to wait for the resource to be consumed.
+            period_length: The length of time to wait between polling.
+        """
         if not self._get_resource_exists():
             logging.error(
                 f"Resource %s does not exist",
@@ -430,6 +417,12 @@ class SageMakerComponent:
         return None
 
     def _get_resource_exists(self) -> bool:
+        """
+        Check if the custom resource exists.
+
+        Returns:
+            bool: True if the resource exists, False otherwise.
+        """
         try:
             return self._get_resource() is not None
         except ApiException:
@@ -444,9 +437,12 @@ class SageMakerComponent:
         """
         Create a resource from the spec and wait to be consumed by controller
 
-        :param spec: spec of the resource corresponding
-        :return: resource if it was created successfully, otherwise None
+        Args:
+            cr_spec: A dictionary object representing the custom object.
+            wait_periods: The number of times to wait for the resource to be created.
+            period_length: The length of time to wait between polling.
         """
+
         resource = self._create_custom_resource(cr_spec)
         resource = self._wait_resource_consumed_by_controller(
             wait_periods, period_length
@@ -558,90 +554,6 @@ class SageMakerComponent:
             -max_length:
         ]
 
-    @staticmethod
-    def _enable_spot_instance_support(
-        request: Dict,
-        inputs: SpotInstanceInputs,
-    ) -> Dict:
-        """Modifies a request object to add support for spot instance fields.
-
-        Args:
-            request: A request object to modify.
-            inputs: A populated list of user inputs.
-
-        Returns:
-            dict: The modified dictionary
-        """
-        if inputs.max_run_time:
-            request["StoppingCondition"]["MaxRuntimeInSeconds"] = inputs.max_run_time
-
-        if inputs.spot_instance:
-            request["EnableManagedSpotTraining"] = inputs.spot_instance
-            if (
-                inputs.max_wait_time
-                >= request["StoppingCondition"]["MaxRuntimeInSeconds"]
-            ):
-                request["StoppingCondition"][
-                    "MaxWaitTimeInSeconds"
-                ] = inputs.max_wait_time
-            else:
-                logging.error(
-                    "Max wait time must be greater than or equal to max run time."
-                )
-                raise Exception("Could not create job request.")
-
-            if inputs.checkpoint_config and "S3Uri" in inputs.checkpoint_config:
-                request["CheckpointConfig"] = inputs.checkpoint_config
-            else:
-                logging.error(
-                    "EnableManagedSpotTraining requires checkpoint config with an S3 uri."
-                )
-                raise Exception("Could not create job request.")
-        else:
-            # Remove any artifacts that require spot instance support
-            del request["StoppingCondition"]["MaxWaitTimeInSeconds"]
-            del request["CheckpointConfig"]
-
-        return request
-
-    @staticmethod
-    def _validate_hyperparameters(hyperparam_args: Dict) -> Dict:
-        """Validates hyperparameters and returns the dictionary used for a
-        request.
-
-        Args:
-            hyperparam_args: HyperParameters as passed in by the user.
-
-        Returns:
-            dict: A validated set of HyperParameters.
-        """
-        # Validate all values are strings
-        for key, value in hyperparam_args.items():
-            if not isinstance(value, str):
-                raise Exception(
-                    f"Could not parse hyperparameters. Value for {key} was not a string."
-                )
-
-        return hyperparam_args
-
-    @staticmethod
-    def _enable_tag_support(
-        request: Dict, inputs: SageMakerComponentCommonInputs
-    ) -> Dict:
-        """Modifies a request object to add support for tag fields.
-
-        Args:
-            request: A request object to modify.
-            inputs: A populated list of user inputs.
-
-        Returns:
-            dict: The modified dictionary
-        """
-        for key, val in inputs.tags.items():
-            request["Tags"].append({"Key": key, "Value": val})
-
-        return request
-
     def _write_all_outputs(
         self,
         output_paths: SageMakerComponentBaseOutputs,
@@ -692,138 +604,3 @@ class SageMakerComponent:
 
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
         Path(output_path).write_text(write_value)
-
-    @staticmethod
-    def _get_component_version() -> str:
-        """Get component version from the first line of License file.
-
-        Returns:
-            str: The string version as specified in the License file.
-        """
-        component_version = "NULL"
-
-        # Get license file using known common directory
-        license_file_path = os.path.abspath(
-            os.path.join(
-                SageMakerComponent._get_common_path(), "../THIRD-PARTY-LICENSES.txt"
-            )
-        )
-        with open(license_file_path, "r") as license_file:
-            version_match = re.search(
-                "Amazon SageMaker Components for Kubeflow Pipelines; version (([0-9]+[.])+[0-9]+)",
-                license_file.readline(),
-            )
-            if version_match is not None:
-                component_version = version_match.group(1)
-
-        return component_version
-
-    @staticmethod
-    def _get_common_path() -> str:
-        """Gets the path of the common directory in the project.
-
-        Returns:
-            str: The `realpath` representation of the common directory.
-        """
-        return os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
-    @staticmethod
-    def _get_request_template(template_name: str) -> Dict[str, Any]:
-        """Loads and returns a template file as a Python construct.
-
-        Args:
-            template_name: The name corresponding to the template file to load.
-
-        Returns:
-            dict: A Python construct created by loading the template file.
-        """
-        with open(
-            os.path.join(
-                SageMakerComponent._get_common_path(),
-                "templates",
-                f"{template_name}.template.yaml",
-            ),
-            "r",
-        ) as f:
-            request = yaml.safe_load(f)
-        return request
-
-    def _print_log_header(self, header_len, title=""):
-        """Prints a header section for logs.
-
-        Args:
-            header_len: The maximum length of the header line.
-            title: The header title.
-        """
-        logging.info(f"{title:*^{header_len}}")
-
-    def _print_cloudwatch_logs(self, log_grp: str, job_name: str):
-        """Gets the CloudWatch logs for SageMaker jobs.
-
-        Args:
-            log_grp: The name of a CloudWatch log group.
-            job_name: The name of the job as defined in CloudWatch.
-        """
-
-        CW_ERROR_MESSAGE = "Error in fetching CloudWatch logs for SageMaker job"
-
-        try:
-            logging.info(
-                "\n******************** CloudWatch logs for {} {} ********************\n".format(
-                    log_grp, job_name
-                )
-            )
-
-            log_streams = self._cw_client.describe_log_streams(
-                logGroupName=log_grp, logStreamNamePrefix=job_name + "/"
-            )["logStreams"]
-
-            for log_stream in log_streams:
-                logging.info("\n***** {} *****\n".format(log_stream["logStreamName"]))
-                response = self._cw_client.get_log_events(
-                    logGroupName=log_grp, logStreamName=log_stream["logStreamName"]
-                )
-                for event in response["events"]:
-                    logging.info(event["message"])
-
-            logging.info(
-                "\n******************** End of CloudWatch logs for {} {} ********************\n".format(
-                    log_grp, job_name
-                )
-            )
-        except Exception as e:
-            logging.error(CW_ERROR_MESSAGE)
-            logging.error(e)
-
-    def _get_model_artifacts_from_job(self, job_name: str):
-        """Loads training job model artifact results from a completed job.
-
-        Args:
-            job_name: The name of the completed training job.
-
-        Returns:
-            str: The S3 model artifacts of the job.
-        """
-        info = self._sm_client.describe_training_job(TrainingJobName=job_name)
-        model_artifact_url = info["ModelArtifacts"]["S3ModelArtifacts"]
-        return model_artifact_url
-
-    def _get_image_from_job(self, job_name: str):
-        """Gets the training image URL from a training job.
-
-        Args:
-            job_name: The name of a training job.
-
-        Returns:
-            str: A training image URL.
-        """
-        info = self._sm_client.describe_training_job(TrainingJobName=job_name)
-        if "TrainingImage" in info["AlgorithmSpecification"]:
-            image = info["AlgorithmSpecification"]["TrainingImage"]
-        else:
-            algorithm_name = info["AlgorithmSpecification"]["AlgorithmName"]
-            image = self._sm_client.describe_algorithm(AlgorithmName=algorithm_name)[
-                "TrainingSpecification"
-            ]["TrainingImage"]
-
-        return image

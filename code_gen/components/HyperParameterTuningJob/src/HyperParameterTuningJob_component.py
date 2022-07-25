@@ -31,6 +31,9 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
             prefix="ack-hyperparametertuningjob"
         )
 
+        self.cluster_region = "us-west-1"
+        self.cluster_name = "kf-ack-west-1"
+
         ############GENERATED SECTION BELOW############
         
         self.group = "sagemaker.services.k8s.aws"
@@ -98,6 +101,15 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
                 error_message=message,
                 raw_status=sm_job_status,
             )
+        if sm_job_status == "Stopped":
+            message = "Sagemaker job was stopped"
+            return SageMakerJobStatus(
+                is_completed=True,
+                has_error=True,
+                error_message=message,
+                raw_status=sm_job_status,
+            )
+        
 
         return SageMakerJobStatus(is_completed=False, raw_status=sm_job_status)
 
