@@ -655,7 +655,15 @@ class SageMakerComponent:
             outputs: A populated list of output values.
         """
         for output_key, output_value in outputs.__dict__.items():
+            if output_value is None:
+                # logging.warning(f"Output {output_key} is None.")
+                output_value = "N/A"
+
             output_path = output_paths.__dict__.get(output_key)
+
+            # logging.info(f"Writing output {output_key} to {output_path}")
+            # logging.info(f"Output value: {output_value}")
+
             if not output_path:
                 logging.error(f"Could not find output path for {output_key}")
                 continue

@@ -40,8 +40,8 @@ trainingJobName = "training-job-from-ack-kfp-" + str(random.randint(0, 99999))
 
 hyperParameters = {
     "max_depth": "2",
-    "gamma": "4",
-    "eta": "0.2",
+    "gamma": "10",
+    "eta": "0.3",
     "min_child_weight": "6",
     "objective": "multi:softmax",
     "num_class": "10",
