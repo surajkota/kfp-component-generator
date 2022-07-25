@@ -1,7 +1,7 @@
 apiVersion: sagemaker.services.k8s.aws/v1alpha1
 kind: TrainingJob
 metadata:
-  name: ack-xgboost-training-job-kfp-7
+  name: ack-training-job-kfp-1
 spec:
   algorithmSpecification:
     trainingImage: 746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2-1
@@ -40,4 +40,4 @@ spec:
   roleARN: arn:aws:iam::402026529871:role/ack-sagemaker-execution-role-402026529871
   stoppingCondition:
     maxRuntimeInSeconds: 86400
-  trainingJobName: ack-xgboost-training-job-KFP-7
+  trainingJobName: ack-training-job-KFP-1

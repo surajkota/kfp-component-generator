@@ -32,6 +32,7 @@ from kubernetes.client.rest import ApiException
 import distutils.util as util
 
 from code_gen.common.sagemaker_component_spec import SageMakerComponentSpec
+
 # from code_gen.common.boto3_manager import Boto3Manager
 from code_gen.common.common_inputs import (
     SageMakerComponentBaseOutputs,
@@ -161,9 +162,7 @@ class SageMakerComponent:
             # self._configure_aws_clients(inputs)
 
             # test if k8s is available
-            _test_client = self._get_k8s_api_client()
-            _test_api = client.CoreV1Api(_test_client)
-            _test_api.list_node()
+            self._init_configure_k8s()
 
             # Successful execution
             if not self._do(inputs, outputs, output_paths):
@@ -171,6 +170,15 @@ class SageMakerComponent:
         except Exception as e:
             logging.exception("An error occurred while running the component")
             raise e
+
+    def _init_configure_k8s(self):
+        # logging.info(sys.version)
+        os.system("aws eks update-kubeconfig --region us-west-1 --name kf-ack-west-1")
+        logging.info("Create kubeconfig using 'aws eks update-kubeconfig'")
+
+        _test_client = self._get_k8s_api_client()
+        _test_api = client.CoreV1Api(_test_client)
+        _test_api.list_node()
 
     def _get_k8s_api_client(self) -> ApiClient:
         # Create new client everytime to avoid token refresh issues
@@ -245,7 +253,7 @@ class SageMakerComponent:
             return False
 
         self._after_job_complete(job, request, inputs, outputs)
-        # self._write_all_outputs(output_paths, outputs)
+        self._write_all_outputs(output_paths, outputs)
 
         return True
 

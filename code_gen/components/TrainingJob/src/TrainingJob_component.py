@@ -68,6 +68,10 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         outputs: SageMakerTrainingJobOutputs,
     ):
         logging.info(f"Created ACK custom object with name: {self._ack_job_name}")
+
+        arn = super()._get_resource()["status"]["ackResourceMetadata"]["arn"]
+        logging.info(f"Created Sagamaker Training Job with ARN: {arn}")
+
         # logging.info(
         #     f"Created Sagamaker Training Job with name: %s",
         #     request["spec"]["trainingJobName"],  # todo: developer customize
@@ -75,6 +79,7 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
 
     def _get_job_status(self):
         ack_statuses = super()._get_resource()["status"]
+        # logging.info(ack_statuses)
         sm_job_status = ack_statuses["trainingJobStatus"]  # todo: developer customize
 
         # print("Sagemaker job status: " + sm_job_status)

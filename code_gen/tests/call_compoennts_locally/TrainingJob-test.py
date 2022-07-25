@@ -126,4 +126,4 @@ for key in REQUIRED_ARGS:
 file_loc = "code_gen/components/TrainingJob/src/TrainingJob_component.py"
 # file_loc = "code_gen/components/TrainingJob1/src/TrainingJob1.py"
 
-os.system("python " + file_loc + arguments)
+os.system("python3 " + file_loc + arguments)
