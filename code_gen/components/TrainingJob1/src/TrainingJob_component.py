@@ -1,9 +1,5 @@
 import logging
 from typing import Dict
-from enum import Enum, auto
-from sagemaker.image_uris import retrieve
-import yaml
-from kubernetes import client, config, utils
 
 from code_gen.components.TrainingJob.src.TrainingJob_spec import (
     SageMakerTrainingJobInputs,
@@ -30,10 +26,12 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
     def Do(self, spec: SageMakerTrainingJobSpec):
 
         # set parameters
-        self.ack_job_name = SageMakerComponent._generate_unique_timestamped_id(
+        self._ack_job_name = SageMakerComponent._generate_unique_timestamped_id(
             prefix="ack-trainingjob"
         )
 
+        ############GENERATED SECTION BELOW############
+        
         self.group = "sagemaker.services.k8s.aws"
         self.version = "v1alpha1"
         self.plural = "trainingjobs"
@@ -45,6 +43,7 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         self.job_request_location = (
             "code_gen/components/TrainingJob/src/TrainingJob_request.yaml"
         )
+        ############GENERATED SECTION ABOVE############
 
         super().Do(spec.inputs, spec.outputs, spec.output_paths)
 
@@ -59,10 +58,7 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
     def _submit_job_request(self, request: Dict) -> object:
         # submit job request
 
-        # print("ack job name: " + request["metadata"]["name"])
-        # print("Sagemaker name: " + request["spec"]["trainingJobName"])
-
-        super()._create_custom_resource(request)
+        return super()._create_resource(request, 3, 10)
 
     def _after_submit_job_request(
         self,
@@ -72,6 +68,10 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         outputs: SageMakerTrainingJobOutputs,
     ):
         logging.info(f"Created ACK custom object with name: {self._ack_job_name}")
+
+        arn = super()._get_resource()["status"]["ackResourceMetadata"]["arn"]
+        logging.info(f"Created Sagamaker Training Job with ARN: {arn}")
+
         # logging.info(
         #     f"Created Sagamaker Training Job with name: %s",
         #     request["spec"]["trainingJobName"],  # todo: developer customize
@@ -79,12 +79,15 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
 
     def _get_job_status(self):
         ack_statuses = super()._get_resource()["status"]
+        # logging.info(ack_statuses)
         sm_job_status = ack_statuses["trainingJobStatus"]  # todo: developer customize
 
-        print("Sagemaker job status: " + sm_job_status)
+        # print("Sagemaker job status: " + sm_job_status)
 
         if sm_job_status == "Completed":
-            return SageMakerJobStatus(is_completed=True, has_error=False, raw_status="")
+            return SageMakerJobStatus(
+                is_completed=True, has_error=False, raw_status="Completed"
+            )
         if sm_job_status == "Failed":
             message = ack_statuses["failureReason"]
             return SageMakerJobStatus(
@@ -106,6 +109,8 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
         # prepare component outputs (defined in the spec)
 
         ack_statuses = super()._get_resource()["status"]
+
+        ############GENERATED SECTION BELOW############
 
         outputs.ack_resource_metadata = (
             ack_statuses["ackResourceMetadata"]
@@ -141,6 +146,7 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
             if "trainingJobStatus" in ack_statuses
             else None
         )
+        ############GENERATED SECTION ABOVE############
 
         # print(outputs)
 
