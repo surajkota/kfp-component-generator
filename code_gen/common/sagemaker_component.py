@@ -404,7 +404,7 @@ class SageMakerComponent:
 
     def _wait_resource_consumed_by_controller(
         self,
-        wait_periods: int = 3,
+        wait_periods: int = 5,
         period_length: int = 10,
     ):
         """Wait for the custom resource to be consumed by the controller."""

@@ -39,7 +39,7 @@ def get_spec_input_snippets(_input_spec_all, _input_spec_required):
         ), """ % (
             camel_to_snake(key),
             CRD_TYPE_TO_ARGS_TYPE.get(_input_spec_all[key]["type"]),
-            _input_spec_all[key]["description"][0:30],
+            _input_spec_all[key]["description"][0:100].strip().split('\t'),
             key in _input_spec_required,
         )
 
@@ -64,7 +64,7 @@ def get_spec_output_snippets(_output_statuses):
             description="%s",
         ), """ % (
             camel_to_snake(key),
-            _output_statuses[key]["description"][0:30],
+            _output_statuses[key]["description"][0:100].strip().split('\t'),
         )
 
     return (

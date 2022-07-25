@@ -1,11 +1,22 @@
-import os
+#!/usr/bin/env python3
+
+# Uncomment the apply(use_aws_secret()) below if you are not using OIDC
+# more info : https://github.com/kubeflow/pipelines/tree/master/samples/contrib/aws-samples/README.md
+
+# RUN in dir: code_gen/tests/pipelines/HyperParameterTuningJob-pipeline.py
+# dsl-compile --py HyperParameterTuningJob-pipeline.py --output HyperParameterTuningJob-pipeline.tar.gz
+
+import kfp
+import json
+import copy
+from kfp import components
+from kfp import dsl
+from kfp.aws import use_aws_secret
 import random
 
-"""
-Call component.py locally
-"""
+# users can prepare complex input args (object, array) here:
 
-hyperParameterTuningJobName = "kfp-ack-hpo-job-" + str(random.randint(0, 99999))
+hyperParameterTuningJobName = "kfp-ack-hpo-job-" + str(random.randint(0, 999999))
 hyperParameterTuningJobConfig = {
     "strategy": "Bayesian",
     "hyperParameterTuningJobObjective": {
@@ -50,7 +61,7 @@ trainingJobDefinition = {
         "skip_drop": "0.0",
         "tree_method": "auto",
         "tweedie_variance_power": "1.5",
-        "updater": '"grow_colmaker,prune"',
+        "updater": 'grow_colmaker,prune',
     },
     "algorithmSpecification": {
         "trainingImage": "632365934929.dkr.ecr.us-west-1.amazonaws.com/xgboost:1",
@@ -98,26 +109,34 @@ trainingJobDefinition = {
     "enableInterContainerTrafficEncryption": False,
 }
 
-REQUIRED_ARGS = {
-    "--hyper_parameter_tuning_job_config": '"'
-    + str(hyperParameterTuningJobConfig)
-    + '"',
-    "--hyper_parameter_tuning_job_name": '"' + str(hyperParameterTuningJobName) + '"',
-    # "--tags": """ '[]' """,
-    "--training_job_definition": '"' + str(trainingJobDefinition) + '"',
-    # "--training_job_definitions": """ '[]' """,
-    # "--warm_start_config": '"' + str(warm_start_config) + '"',
-}
+###########################GENERATED SECTION BELOW############################
 
-arguments = ""
+sagemaker_HyperParameterTuningJob_op = components.load_component_from_file(
+    "../../components/HyperParameterTuningJob/component.yaml"
+)
 
-for key in REQUIRED_ARGS:
-    arguments = arguments + " " + key + " " + REQUIRED_ARGS[key]
 
-# print(arguments)
+@dsl.pipeline(
+    name="HyperParameterTuningJob",
+    description="SageMaker HyperParameterTuningJob component",
+)
+def HyperParameterTuningJob(
+    hyper_parameter_tuning_job_config=hyperParameterTuningJobConfig,  # JsonObject
+    hyper_parameter_tuning_job_name=hyperParameterTuningJobName,  # String
+    tags=None,  # JsonArray
+    training_job_definition=trainingJobDefinition,  # JsonObject
+    training_job_definitions=None,  # JsonArray
+    warm_start_config=None,  # JsonObject
+):
+    HyperParameterTuningJob = sagemaker_HyperParameterTuningJob_op(
+        hyper_parameter_tuning_job_config=hyper_parameter_tuning_job_config,
+        hyper_parameter_tuning_job_name=hyper_parameter_tuning_job_name,
+        tags=tags,
+        training_job_definition=training_job_definition,
+        training_job_definitions=training_job_definitions,
+        warm_start_config=warm_start_config,
+    ).apply(use_aws_secret("aws-secret", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"))
 
-# file_loc = "code_gen/components/HyperParameterTuningJob1/src/HyperParameterTuningJob.py"
-file_loc = "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_component.py"
 
-# os.system("pwd")
-os.system("python " + file_loc + arguments)
+if __name__ == "__main__":
+    kfp.compiler.Compiler().compile(HyperParameterTuningJob, __file__ + ".zip")

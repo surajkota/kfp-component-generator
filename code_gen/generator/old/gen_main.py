@@ -7,7 +7,7 @@ from code_gen.generator.gen_comp_src import (
     get_py_add_argument,
     get_ack_job_request_outline_spec,
 )
-from code_gen.generator.gen_comp_yaml import (
+from code_gen.generator.gen_yaml import (
     get_yaml_inputs,
     get_yaml_args,
     get_yaml_outputs,

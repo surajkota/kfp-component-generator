@@ -1,6 +1,5 @@
 import logging
 from typing import Dict
-# from sagemaker.image_uris import retrieve
 
 from code_gen.components.${CRD_NAME}.src.${CRD_NAME}_spec import (
     ${INPUT_CLASS_NAME},
@@ -22,7 +21,9 @@ from code_gen.generator.utils import snake_to_camel
     spec=${SPEC_CLASS_NAME},
 )
 class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
+
     """SageMaker component for training."""
+
     def Do(self, spec: ${SPEC_CLASS_NAME}):
 
         # set parameters
@@ -47,7 +48,7 @@ class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
     def _submit_job_request(self, request: Dict) -> object:
         # submit job request
 
-        return super()._create_resource(request, 3, 10)
+        return super()._create_resource(request, 5, 10)
 
     def _after_submit_job_request(
         self,
@@ -57,6 +58,10 @@ class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
         outputs: ${OUTPUT_CLASS_NAME},
     ):
         logging.info(f"Created ACK custom object with name: {self._ack_job_name}")
+
+        arn = super()._get_resource()["status"]["ackResourceMetadata"]["arn"]
+        logging.info(f"Created Sagamaker ${CRD_NAME} with ARN: {arn}")
+
         # logging.info(
         #     f"Created Sagamaker Training Job with name: %s",
         #     request["spec"]["trainingJobName"],  # todo: developer customize
@@ -64,12 +69,14 @@ class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
 
     def _get_job_status(self):
         ack_statuses = super()._get_resource()["status"]
-        sm_job_status = ack_statuses["trainingJobStatus"] # todo: developer customize
+        sm_job_status = ack_statuses["trainingJobStatus"]  # todo: developer customize
 
         # print("Sagemaker job status: " + sm_job_status)
 
         if sm_job_status == "Completed":
-            return SageMakerJobStatus(is_completed=True, has_error=False, raw_status="Completed")
+            return SageMakerJobStatus(
+                is_completed=True, has_error=False, raw_status="Completed"
+            )
         if sm_job_status == "Failed":
             message = ack_statuses["failureReason"]
             return SageMakerJobStatus(

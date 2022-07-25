@@ -1,6 +1,5 @@
 import logging
 from typing import Dict
-from sagemaker.image_uris import retrieve
 
 from code_gen.components.HyperParameterTuningJob.src.HyperParameterTuningJob_spec import (
     SageMakerHyperParameterTuningJobInputs,
@@ -22,7 +21,9 @@ from code_gen.generator.utils import snake_to_camel
     spec=SageMakerHyperParameterTuningJobSpec,
 )
 class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
+
     """SageMaker component for training."""
+
     def Do(self, spec: SageMakerHyperParameterTuningJobSpec):
 
         # set parameters
@@ -31,18 +32,14 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
         )
 
         ############GENERATED SECTION BELOW############
-        
+
         self.group = "sagemaker.services.k8s.aws"
         self.version = "v1alpha1"
         self.plural = "hyperparametertuningjobs"
         self.namespace = "default"
 
-        self.job_request_outline_location = (
-            "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_request.yaml.tpl"
-        )
-        self.job_request_location = (
-            "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_request.yaml"
-        )
+        self.job_request_outline_location = "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_request.yaml.tpl"
+        self.job_request_location = "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_request.yaml"
         ############GENERATED SECTION ABOVE############
 
         super().Do(spec.inputs, spec.outputs, spec.output_paths)
@@ -58,7 +55,7 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
     def _submit_job_request(self, request: Dict) -> object:
         # submit job request
 
-        return super()._create_resource(request, 3, 10)
+        return super()._create_resource(request, 5, 10)
 
     def _after_submit_job_request(
         self,
@@ -68,6 +65,10 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
         outputs: SageMakerHyperParameterTuningJobOutputs,
     ):
         logging.info(f"Created ACK custom object with name: {self._ack_job_name}")
+
+        arn = super()._get_resource()["status"]["ackResourceMetadata"]["arn"]
+        logging.info(f"Created Sagamaker HyperParameterTuningJob with ARN: {arn}")
+
         # logging.info(
         #     f"Created Sagamaker Training Job with name: %s",
         #     request["spec"]["trainingJobName"],  # todo: developer customize
@@ -75,12 +76,16 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
 
     def _get_job_status(self):
         ack_statuses = super()._get_resource()["status"]
-        sm_job_status = ack_statuses["hyperParameterTuningJobStatus"] # todo: developer customize
+        sm_job_status = ack_statuses[
+            "hyperParameterTuningJobStatus"
+        ]  # todo: developer customize
 
         # print("Sagemaker job status: " + sm_job_status)
 
         if sm_job_status == "Completed":
-            return SageMakerJobStatus(is_completed=True, has_error=False, raw_status="Completed")
+            return SageMakerJobStatus(
+                is_completed=True, has_error=False, raw_status="Completed"
+            )
         if sm_job_status == "Failed":
             message = ack_statuses["failureReason"]
             return SageMakerJobStatus(
@@ -104,7 +109,7 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
         ack_statuses = super()._get_resource()["status"]
 
         ############GENERATED SECTION BELOW############
-        
+
         outputs.ack_resource_metadata = (
             ack_statuses["ackResourceMetadata"]
             if "ackResourceMetadata" in ack_statuses
@@ -116,14 +121,10 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
             else None
         )
         outputs.conditions = (
-            ack_statuses["conditions"]
-            if "conditions" in ack_statuses
-            else None
+            ack_statuses["conditions"] if "conditions" in ack_statuses else None
         )
         outputs.failure_reason = (
-            ack_statuses["failureReason"]
-            if "failureReason" in ack_statuses
-            else None
+            ack_statuses["failureReason"] if "failureReason" in ack_statuses else None
         )
         outputs.hyper_parameter_tuning_job_status = (
             ack_statuses["hyperParameterTuningJobStatus"]

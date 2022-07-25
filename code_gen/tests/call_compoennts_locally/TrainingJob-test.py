@@ -36,7 +36,7 @@ https://aws-controllers-k8s.github.io/community/docs/tutorials/sagemaker-example
 #     yaml_dict = yaml.load(f, Loader=yaml.FullLoader)
 #     job_num = yaml_dict["metadata"]["name"].split("-")[-1]
 
-trainingJobName = "training-job-from-ack-kfp-" + str(random.randint(0, 99999))
+trainingJobName = "kfp-ack-training-job-" + str(random.randint(0, 99999))
 
 hyperParameters = {
     "max_depth": "2",

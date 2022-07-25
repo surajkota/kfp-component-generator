@@ -15,7 +15,7 @@ implementation:
     image: ${COMPONENT_CONTAINER_IMAGE}
     command: [python3]
     args:
-      - code_gen/components/${CRD_NAME}/src/${CRD_NAME}.py
+      - code_gen/components/${CRD_NAME}/src/${CRD_NAME}_component.py
       ###########################GENERATED SECTION BELOW############################
       ${YAML_ARGS}
       ###########################GENERATED SECTION ABOVE############################

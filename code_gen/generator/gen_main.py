@@ -8,6 +8,7 @@ from code_gen.generator.gen_spec import (
     get_spec_input_snippets,
     get_spec_output_snippets,
 )
+from code_gen.generator.gen_yaml import get_yaml_args, get_yaml_inputs, get_yaml_outputs
 from code_gen.generator.utils import (
     get_class_names,
     get_crd_info,
@@ -47,6 +48,8 @@ if __name__ == "__main__":
     )
     job_request_location = output_src_dir + crd_name + "_request.yaml"
 
+    output_yaml_location = output_component_dir + "component.yaml"
+
     ## prepare code snippet
 
     (
@@ -77,6 +80,12 @@ if __name__ == "__main__":
     ack_job_request_outline_spec_snippet = get_ack_job_request_outline_spec(
         input_spec_all
     )
+
+    # component.yaml
+    yaml_inputs_snippet = get_yaml_inputs(input_spec_all)
+    yaml_args_snippet = get_yaml_args(input_spec_all)
+    yaml_outputs_snippet = get_yaml_outputs(output_statuses)
+
 
     ## replace placeholders in templates with snippet, then write to file
     spec_replace = {
@@ -117,11 +126,24 @@ if __name__ == "__main__":
         "CRD_NAME": crd_name,
         "CRD_NAME_LOWER": crd_name.lower(),
         "JOB_REQUEST_OUTLINE_SPEC": ack_job_request_outline_spec_snippet,
-        "RAND_NUM": random.randrange(0, 99999, 1),
     }
     write_snippet_to_file(
         ack_job_request_replace,
         "code_gen/templates/ack_job_request.yaml.tpl",
         output_job_request_outline_location,
         output_src_dir,
+    )
+
+    yaml_replace = {
+        "CRD_NAME": crd_name,
+        "YAML_INPUTS": yaml_inputs_snippet,
+        "YAML_OUTPUTS": yaml_outputs_snippet,
+        "YAML_ARGS": yaml_args_snippet,
+        "COMPONENT_CONTAINER_IMAGE": COMPONENT_CONTAINER_IMAGE,
+    }
+    write_snippet_to_file(
+        yaml_replace,
+        "code_gen/templates/component.yaml.tpl",
+        output_yaml_location,
+        output_component_dir,
     )
