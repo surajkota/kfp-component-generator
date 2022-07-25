@@ -10,11 +10,17 @@ from code_gen.common.spec_input_parsers import SpecInputParsers
 
 
 def camel_to_snake(name):
+    """
+    Convert camel case to snake case
+    """
     name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
 
 def snake_to_camel(name):
+    """
+    Convert snake case to camel case
+    """
     if name == "role_arn":
         return "roleARN"
     temp = name.split("_")
@@ -45,6 +51,10 @@ def parse_crd(_file_name):
 
 
 def get_crd_info(_file_name):
+    """
+    Read in ACK CRD YAML file from file location
+    Parse file and get crd information: name, plural, version, namespace
+    """
     with open(_file_name, "r") as crd_file:
         crd_dict = yaml.load(crd_file, Loader=yaml.FullLoader)
 
@@ -57,6 +67,9 @@ def get_crd_info(_file_name):
 
 
 def get_class_names(_crd_name):
+    """
+    Get component class names from CRD name
+    """
     _input_class_name = "SageMaker" + _crd_name + "Inputs"
     _output_class_name = "SageMaker" + _crd_name + "Outputs"
     _spec_class_name = "SageMaker" + _crd_name + "Spec"
@@ -70,26 +83,26 @@ def get_class_names(_crd_name):
     )
 
 
-def write_snippet_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file_dir):
+def write_snippet_to_file(_replace_dict, _template_path, _out_file_path, _out_file_dir):
     """
-    Open template file at _template_loc
+    Open template file at _template_path
     Substite placeholders in templates following mapping _replace_dict
     Create a dir _out_file_dir, if does not exist
-    Write output file stream to file _out_file_loc
+    Write output file stream to file _out_file_path
     """
 
-    # replace placeholders in templates
-    with open(_template_loc) as t:
+    # open and replace placeholders in templates
+    with open(_template_path) as t:
         template = string.Template(t.read())
         file_draft = template.safe_substitute(_replace_dict)
 
-    # if output dir not exist, create one and write to file
+    # if output dir does not exist, create one and write to file
     if not os.path.exists(_out_file_dir):
         os.makedirs(_out_file_dir)
-    with open(_out_file_loc, "w+") as f:
+    with open(_out_file_path, "w+") as f:
         f.write(file_draft)
 
-    print("CREATED: " + _out_file_loc)
+    print("CREATED: " + _out_file_path)
 
 
 def fetch_ack_crd():
@@ -119,6 +132,7 @@ def fetch_ack_crd():
         + latest_tag_commit_sha
     ).json()
 
+    # prompt user to select a CRD
     list_of_crd_names = []
 
     for crd in crds:
@@ -133,6 +147,7 @@ def fetch_ack_crd():
     ]
     crd_name_chosen = inquirer.prompt(questions).get("crd_name_chosen")
 
+    # download the CRD file to local
     crd_download_url = ""
     for item in crds:
         if item["name"] == crd_name_chosen:
@@ -147,5 +162,3 @@ def fetch_ack_crd():
         urllib.request.urlretrieve(crd_download_url, download_path)
         print("CRD downloaded to path: {}".format(download_path))
         return download_path
-
-

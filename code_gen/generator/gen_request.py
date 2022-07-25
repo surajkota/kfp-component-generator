@@ -8,12 +8,12 @@ def get_ack_job_request_outline_spec(_input_spec_all):
     Populate spec section in a ACK job request YAML
     Return a code snippet waiting to be written to ack_job_request.yaml.tpl template
     """
-    _ack_job_request_outline_spec_buffer = ""
+    _ack_job_request_outline_spec_snippet = ""
 
     for key in _input_spec_all:
-        _ack_job_request_outline_spec_buffer += """  %s: \n""" % snake_to_camel(key)
+        _ack_job_request_outline_spec_snippet += """  %s: \n""" % snake_to_camel(key)
 
-    return _ack_job_request_outline_spec_buffer
+    return _ack_job_request_outline_spec_snippet
 
 if __name__ == "__main__":
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     )
 
     ## prepare code snippet
-    ack_job_request_outline_spec_buffer = get_ack_job_request_outline_spec(
+    ack_job_request_outline_spec_snippet = get_ack_job_request_outline_spec(
         input_spec_all
     )
 
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     ack_job_request_replace = {
         "CRD_NAME": crd_name,
         "CRD_NAME_LOWER": crd_name.lower(),
-        "JOB_REQUEST_OUTLINE_SPEC": ack_job_request_outline_spec_buffer,
+        "JOB_REQUEST_OUTLINE_SPEC": ack_job_request_outline_spec_snippet,
         "RAND_NUM": random.randrange(0, 99999, 1),
     }
     write_snippet_to_file(

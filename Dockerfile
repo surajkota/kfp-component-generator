@@ -21,7 +21,6 @@ RUN yum update -y \
     python3 \
     wget \
     unzip \
-    vim \ 
     sudo\
     tar
 
@@ -37,12 +36,6 @@ RUN  curl -LO "https://dl.k8s.io/release/v1.24.0/bin/linux/amd64/kubectl" \
 
 # Install eksctl
 RUN curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp && mv /tmp/eksctl /bin
-
-# # Install aws-iam-authenticator
-# RUN curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
-# RUN chmod +x ./aws-iam-authenticator
-# RUN mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-# RUN echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
 
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt

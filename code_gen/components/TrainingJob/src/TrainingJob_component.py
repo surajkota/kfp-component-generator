@@ -59,7 +59,7 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
     def _submit_job_request(self, request: Dict) -> object:
         # submit job request
 
-        return super()._create_resource(request, 3, 10)
+        return super()._create_resource(request, 5, 10)
 
     def _after_submit_job_request(
         self,

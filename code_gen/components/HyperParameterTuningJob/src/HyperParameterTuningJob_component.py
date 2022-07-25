@@ -32,14 +32,18 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
         )
 
         ############GENERATED SECTION BELOW############
-
+        
         self.group = "sagemaker.services.k8s.aws"
         self.version = "v1alpha1"
         self.plural = "hyperparametertuningjobs"
         self.namespace = "default"
 
-        self.job_request_outline_location = "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_request.yaml.tpl"
-        self.job_request_location = "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_request.yaml"
+        self.job_request_outline_location = (
+            "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_request.yaml.tpl"
+        )
+        self.job_request_location = (
+            "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_request.yaml"
+        )
         ############GENERATED SECTION ABOVE############
 
         super().Do(spec.inputs, spec.outputs, spec.output_paths)
@@ -109,7 +113,7 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
         ack_statuses = super()._get_resource()["status"]
 
         ############GENERATED SECTION BELOW############
-
+        
         outputs.ack_resource_metadata = (
             ack_statuses["ackResourceMetadata"]
             if "ackResourceMetadata" in ack_statuses
@@ -121,10 +125,14 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
             else None
         )
         outputs.conditions = (
-            ack_statuses["conditions"] if "conditions" in ack_statuses else None
+            ack_statuses["conditions"]
+            if "conditions" in ack_statuses
+            else None
         )
         outputs.failure_reason = (
-            ack_statuses["failureReason"] if "failureReason" in ack_statuses else None
+            ack_statuses["failureReason"]
+            if "failureReason" in ack_statuses
+            else None
         )
         outputs.hyper_parameter_tuning_job_status = (
             ack_statuses["hyperParameterTuningJobStatus"]

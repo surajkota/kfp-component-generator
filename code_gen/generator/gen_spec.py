@@ -1,3 +1,4 @@
+import re
 from telnetlib import STATUS
 from typing import Dict
 from code_gen.generator.utils import (
@@ -21,17 +22,20 @@ CRD_TYPE_TO_ARGS_TYPE: Dict[str, str] = {
 
 ## Generate src/*_spec.py content
 def get_spec_input_snippets(_input_spec_all, _input_spec_required):
-    _spec_inputs_defi_buffer = ""
-    _spec_inputs_validators_buffer = ""
+    """
+    Generate the input section for src/*_spec.py
+    """
+    _spec_inputs_defi_snippet = ""
+    _spec_inputs_validators_snippet = ""
 
     for key in _input_spec_all:
 
-        _spec_inputs_defi_buffer += """
+        _spec_inputs_defi_snippet += """
     %s: Input""" % (
             camel_to_snake(key),
         )
 
-        _spec_inputs_validators_buffer += """
+        _spec_inputs_validators_snippet += """
         %s=InputValidator(
             input_type=%s,
             description="%s",
@@ -39,37 +43,40 @@ def get_spec_input_snippets(_input_spec_all, _input_spec_required):
         ), """ % (
             camel_to_snake(key),
             CRD_TYPE_TO_ARGS_TYPE.get(_input_spec_all[key]["type"]),
-            _input_spec_all[key]["description"][0:100].strip().split('\t'),
+            ' '.join(re.split(r"\n", _input_spec_all[key]["description"][0:100].strip())),
             key in _input_spec_required,
         )
 
     return (
-        _spec_inputs_defi_buffer,
-        _spec_inputs_validators_buffer,
+        _spec_inputs_defi_snippet,
+        _spec_inputs_validators_snippet,
     )
 
 
 def get_spec_output_snippets(_output_statuses):
-    _spec_outputs_defi_buffer = ""
-    _spec_outputs_validators_buffer = ""
+    """
+    Generate the output section for src/*_spec.py
+    """
+    _spec_outputs_defi_snippet = ""
+    _spec_outputs_validators_snippet = ""
 
     for key in _output_statuses:
-        _spec_outputs_defi_buffer += """
+        _spec_outputs_defi_snippet += """
     %s: Output""" % (
             camel_to_snake(key),
         )
 
-        _spec_outputs_validators_buffer += """
+        _spec_outputs_validators_snippet += """
         %s=OutputValidator(
             description="%s",
         ), """ % (
             camel_to_snake(key),
-            _output_statuses[key]["description"][0:100].strip().split('\t'),
+            ' '.join(re.split(r"\n", _output_statuses[key]["description"][0:100].strip())),
         )
 
     return (
-        _spec_outputs_defi_buffer,
-        _spec_outputs_validators_buffer,
+        _spec_outputs_defi_snippet,
+        _spec_outputs_validators_snippet,
     )
 
 
@@ -90,13 +97,13 @@ if __name__ == "__main__":
 
     ## prepare code snippet
     (
-        spec_inputs_defi_buffer,
-        spec_inputs_validators_buffer,
+        spec_inputs_defi_snippet,
+        spec_inputs_validators_snippet,
     ) = get_spec_input_snippets(input_spec_all, input_spec_required)
 
     (
-        spec_outputs_defi_buffer,
-        spec_outputs_validators_buffer,
+        spec_outputs_defi_snippet,
+        spec_outputs_validators_snippet,
     ) = get_spec_output_snippets(output_statuses)
 
     (
@@ -118,10 +125,10 @@ if __name__ == "__main__":
         "INPUT_CLASS_NAME": input_class_name,
         "OUTPUT_CLASS_NAME": output_class_name,
         "SPEC_CLASS_NAME": spec_class_name,
-        "SPEC_INPUT_DEFINITIONS": spec_inputs_defi_buffer,
-        "SPEC_OUTPUT_DEFINITIONS": spec_outputs_defi_buffer,
-        "SPEC_INPUT_VALIDATORS": spec_inputs_validators_buffer,
-        "SPEC_OUTPUT_VALIDATORS": spec_outputs_validators_buffer,
+        "SPEC_INPUT_DEFINITIONS": spec_inputs_defi_snippet,
+        "SPEC_OUTPUT_DEFINITIONS": spec_outputs_defi_snippet,
+        "SPEC_INPUT_VALIDATORS": spec_inputs_validators_snippet,
+        "SPEC_OUTPUT_VALIDATORS": spec_outputs_validators_snippet,
     }
     write_snippet_to_file(
         spec_replace,

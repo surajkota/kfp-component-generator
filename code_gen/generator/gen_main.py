@@ -22,8 +22,8 @@ if __name__ == "__main__":
 
     ##############User inputs##############
     ACK_CRD_YAML_LOCATION = (
-        "code_gen/ack_crd/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
-        # "code_gen/ack_crd/sagemaker.services.k8s.aws_trainingjobs.yaml"
+        # "code_gen/ack_crd/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
+        "code_gen/ack_crd/sagemaker.services.k8s.aws_trainingjobs.yaml"
     )
     # ACK_CRD_YAML_LOCATION = (fetch_ack_crd())
     COMPONENT_CONTAINER_IMAGE = "rdpen/kfp-component-sagemaker:"
@@ -45,12 +45,12 @@ if __name__ == "__main__":
     output_component_name = crd_name + "_component.py"
     output_component_path = output_src_dir + output_component_name
 
-    output_job_request_outline_location = (
+    output_job_request_outline_path = (
         output_src_dir + crd_name + "_request.yaml.tpl"
     )
-    job_request_location = output_src_dir + crd_name + "_request.yaml"
+    job_request_path = output_src_dir + crd_name + "_request.yaml"
 
-    output_yaml_location = output_component_dir + "component.yaml"
+    output_yaml_path = output_component_dir + "component.yaml"
 
     ## prepare code snippet
 
@@ -131,7 +131,7 @@ if __name__ == "__main__":
     write_snippet_to_file(
         ack_job_request_replace,
         "code_gen/templates/ack_job_request.yaml.tpl",
-        output_job_request_outline_location,
+        output_job_request_outline_path,
         output_src_dir,
     )
 
@@ -145,6 +145,6 @@ if __name__ == "__main__":
     write_snippet_to_file(
         yaml_replace,
         "code_gen/templates/component.yaml.tpl",
-        output_yaml_location,
+        output_yaml_path,
         output_component_dir,
     )
