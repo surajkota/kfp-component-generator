@@ -10,6 +10,7 @@ from code_gen.generator.gen_spec import (
 )
 from code_gen.generator.gen_yaml import get_yaml_args, get_yaml_inputs, get_yaml_outputs
 from code_gen.generator.utils import (
+    fetch_ack_crd,
     get_class_names,
     get_crd_info,
     parse_crd,
@@ -21,10 +22,11 @@ if __name__ == "__main__":
 
     ##############User inputs##############
     ACK_CRD_YAML_LOCATION = (
-        "code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
-        # "code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_trainingjobs.yaml"
+        "code_gen/ack_crd/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
+        # "code_gen/ack_crd/sagemaker.services.k8s.aws_trainingjobs.yaml"
     )
-    COMPONENT_CONTAINER_IMAGE = "rdpen/kfp-component-sagemaker:latest"
+    # ACK_CRD_YAML_LOCATION = (fetch_ack_crd())
+    COMPONENT_CONTAINER_IMAGE = "rdpen/kfp-component-sagemaker:"
     ##############User inputs##############
 
     ## From ACK CRD YAML, parse fields needed
@@ -85,7 +87,6 @@ if __name__ == "__main__":
     yaml_inputs_snippet = get_yaml_inputs(input_spec_all)
     yaml_args_snippet = get_yaml_args(input_spec_all)
     yaml_outputs_snippet = get_yaml_outputs(output_statuses)
-
 
     ## replace placeholders in templates with snippet, then write to file
     spec_replace = {

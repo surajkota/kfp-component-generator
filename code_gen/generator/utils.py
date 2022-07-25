@@ -1,4 +1,7 @@
 import random
+import inquirer
+import requests
+import urllib.request
 import yaml, re, os
 from string import Template
 import string
@@ -87,3 +90,62 @@ def write_snippet_to_file(_replace_dict, _template_loc, _out_file_loc, _out_file
         f.write(file_draft)
 
     print("CREATED: " + _out_file_loc)
+
+
+def fetch_ack_crd():
+    """
+    Fetch ACK CRD from latest release
+    """
+    releases = requests.get(
+        "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/releases/latest"
+    ).json()
+    latest_release_ver_name = releases["name"]
+
+    latest_tag = requests.get(
+        "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/git/ref/tags/"
+        + latest_release_ver_name
+    ).json()
+    latest_tag_sha = latest_tag["object"]["sha"]
+    latest_tag_type = latest_tag["object"]["type"]
+
+    if latest_tag_type == "tag":
+        latest_tag_commit = requests.get(latest_tag["object"]["url"]).json()
+        latest_tag_commit_sha = latest_tag_commit["object"]["sha"]
+    elif latest_tag_type == "commit":
+        latest_tag_commit_sha = latest_tag_sha
+
+    crds = requests.get(
+        "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/contents/config/crd/bases?ref="
+        + latest_tag_commit_sha
+    ).json()
+
+    list_of_crd_names = []
+
+    for crd in crds:
+        list_of_crd_names.append(crd["name"])
+
+    questions = [
+        inquirer.List(
+            "crd_name_chosen",
+            message="Select the CRD you want to use:",
+            choices=list_of_crd_names,
+        ),
+    ]
+    crd_name_chosen = inquirer.prompt(questions).get("crd_name_chosen")
+
+    crd_download_url = ""
+    for item in crds:
+        if item["name"] == crd_name_chosen:
+            crd_download_url = item["download_url"]
+            break
+
+    if crd_download_url == "":
+        print("Error: CRD not found")
+        return
+    else:
+        download_path = "code_gen/ack_crd_v0.3.3/{}".format(crd_name_chosen)
+        urllib.request.urlretrieve(crd_download_url, download_path)
+        print("CRD downloaded to path: {}".format(download_path))
+        return download_path
+
+

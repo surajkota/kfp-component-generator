@@ -7,18 +7,18 @@ from kubernetes.client.api_client import ApiClient
 import distutils.util as util
 
 #############################################################################################################
-# # organize the input spec, sort alphabetically by key
-# with open("code_gen/components/TrainingJob1/pipeline/ack_training_job_request.yaml") as f:
-with open("code_gen/components/HyperParameterTuningJob1/pipeline/my-hyperparameter-job.yaml") as f:
-    crd_dict = yaml.load(f, Loader=yaml.FullLoader)
+# # # organize the input spec, sort alphabetically by key
+# # with open("code_gen/components/TrainingJob1/pipeline/ack_training_job_request.yaml") as f:
+# with open("code_gen/components/HyperParameterTuningJob1/pipeline/my-hyperparameter-job.yaml") as f:
+#     crd_dict = yaml.load(f, Loader=yaml.FullLoader)
 
-print(crd_dict['spec'])
+# print(crd_dict['spec'])
 
-# for key in crd_dict['spec']:
-#     print(key)
+# # for key in crd_dict['spec']:
+# #     print(key)
 
-# with open("test.yaml", 'w+') as f:
-#     yaml.dump(crd_dict, f, default_flow_style=False)
+# # with open("test.yaml", 'w+') as f:
+# #     yaml.dump(crd_dict, f, default_flow_style=False)
 
 #############################################################################################################
 # test submit yaml to kubectl
@@ -151,3 +151,69 @@ print(crd_dict['spec'])
 # create_custom_resource(
 #     namespace="default", version=version, plural=plural, group=group, custom_resource=cr
 # )
+
+#############################################################################################################
+# retrive CRD YAML from github
+# # https://stackoverflow.com/questions/67040794/how-can-i-get-the-commit-hash-of-the-latest-release-from-github-api
+
+# retrive CRD YAML from github
+import requests
+import inquirer
+import urllib.request
+
+
+# releases = requests.get(
+#     "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/releases/latest"
+# ).json()
+# latest_version_name = releases["name"]
+
+# # print(latest_version_name)
+
+# # tags = requests.get(
+# #     "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/tags"
+# # ).json()
+# # latest_tag_sha = tags[0]["commit"]["sha"]
+# #
+# # print(latest_tag_sha)
+
+# latest_tag = requests.get(
+#     "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/git/ref/tags/" + latest_version_name
+# ).json()
+# latest_tag_sha = latest_tag["object"]["sha"]
+# latest_tag_type = latest_tag["object"]["type"]
+
+# # print(latest_tag_type, latest_tag_sha)
+
+# if latest_tag_type == "tag":
+#     latest_tag_commit = requests.get(latest_tag["object"]["url"]).json()
+#     latest_tag_commit_sha = latest_tag_commit["object"]["sha"]
+# elif latest_tag_type == "commit":
+#     latest_tag_commit_sha = latest_tag_sha
+
+# # print(latest_tag_commit_sha)
+
+# crds = requests.get("https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/contents/config/crd/bases?ref=" + latest_tag_commit_sha).json()
+
+# list_of_crd_names = []
+
+# for crd in crds:
+#     list_of_crd_names.append(crd["name"])
+
+# questions = [
+#     inquirer.List(
+#         "crd_chosen",
+#         message="Select the CRD you want to use:",
+#         choices=list_of_crd_names,
+#     ),
+# ]
+# crd_chosen = inquirer.prompt(questions).get("crd_chosen")
+
+# for item in crds:
+#     if item["name"] == crd_chosen:
+#         crd_download_url = item["download_url"]
+#         break
+
+# # print(crd_download_url)
+
+# urllib.request.urlretrieve(crd_download_url, "code_gen/ack_crd_v0.3.3/{}".format(crd_chosen))
+

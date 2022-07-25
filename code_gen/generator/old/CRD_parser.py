@@ -9,8 +9,8 @@ from code_gen.common.spec_input_parsers import SpecInputParsers
 
 ##############User inputs##############
 ACK_CRD_YAML_LOCATION = (
-    "code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
-    # "code_gen/ack_crd_v0.3.3/sagemaker.services.k8s.aws_trainingjobs.yaml"
+    "code_gen/ack_crd/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
+    # "code_gen/ack_crd/sagemaker.services.k8s.aws_trainingjobs.yaml"
 )
 COMPONENT_CONTAINER_IMAGE = "rdpen/kfp-component-sagemaker:latest"
 ##############User inputs##############
