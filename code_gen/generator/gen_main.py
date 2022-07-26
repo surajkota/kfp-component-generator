@@ -1,3 +1,16 @@
+"""
+Code generator entry point
+Call this script to generate code from given parameters
+
+Usage:
+1. RUN python code_gen/generator/gen_main.py --crd_name <crd_name> --container_image <container_image>
+2. RUN python code_gen/generator/gen_main.py --container_image <container_image>, and select CRD from prompt
+
+Example:
+1. python code_gen/generator/gen_main.py --crd_name "sagemaker.services.k8s.aws_trainingjobs.yaml" --container_image "rdpen/kfp-component-sagemaker:"
+2. python code_gen/generator/gen_main.py
+"""
+
 import argparse
 
 from code_gen.generator.gen_component import (
@@ -11,7 +24,8 @@ from code_gen.generator.gen_spec import (
 )
 from code_gen.generator.gen_yaml import get_yaml_args, get_yaml_inputs, get_yaml_outputs
 from code_gen.generator.utils import (
-    fetch_ack_crd,
+    download_selected_crd,
+    fetch_all_crds,
     get_class_names,
     get_crd_info,
     parse_crd,
@@ -24,16 +38,19 @@ if __name__ == "__main__":
     ## Parse arguments and get user input
     parser = argparse.ArgumentParser()
     parser.add_argument("--crd_path", help="Path to the CRD file")
+    parser.add_argument("--crd_name", help="Name of the selected CRD file")
     parser.add_argument("--container_image", help="Container image to run component")
-
     args = parser.parse_args()
 
-    ACK_CRD_YAML_LOCATION = args.crd_path or (
-        # "code_gen/ack_crd/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
-        # "code_gen/ack_crd/sagemaker.services.k8s.aws_trainingjobs.yaml"
-        # "code_gen/ack_crd/sagemaker.services.k8s.aws_featuregroups.yaml"
-    )
-    # ACK_CRD_YAML_LOCATION = (fetch_ack_crd())
+    ACK_CRD_YAML_LOCATION = download_selected_crd(fetch_all_crds(), args.crd_name)
+
+    # Debug ACK_CRD_YAML_LOCATION
+    # ACK_CRD_YAML_LOCATION = args.crd_path or (
+    #     # "code_gen/ack_crd/sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml"
+    #     # "code_gen/ack_crd/sagemaker.services.k8s.aws_trainingjobs.yaml"
+    #     # "code_gen/ack_crd/sagemaker.services.k8s.aws_featuregroups.yaml"
+    # )
+
     COMPONENT_CONTAINER_IMAGE = args.container_image or "rdpen/kfp-component-sagemaker:"
 
     ## From ACK CRD YAML, parse fields needed
@@ -57,8 +74,7 @@ if __name__ == "__main__":
 
     output_yaml_path = output_component_dir + "component.yaml"
 
-    ## prepare code snippet
-
+    ## prepare code snippets
     (
         input_class_name,
         output_class_name,
@@ -93,7 +109,7 @@ if __name__ == "__main__":
     yaml_args_snippet = get_yaml_args(input_spec_all)
     yaml_outputs_snippet = get_yaml_outputs(output_statuses)
 
-    ## replace placeholders in templates with snippet, then write to file
+    ## replace placeholders in templates with snippets, then write to file
     spec_replace = {
         "CRD_NAME": crd_name,
         "INPUT_CLASS_NAME": input_class_name,

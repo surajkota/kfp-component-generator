@@ -1,3 +1,7 @@
+"""
+Methods to generate content in component.yaml
+"""
+
 from typing import Dict
 import re
 from code_gen.generator.utils import camel_to_snake

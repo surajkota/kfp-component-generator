@@ -92,8 +92,9 @@ def write_snippet_to_file(_replace_dict, _template_path, _out_file_path, _out_fi
     print("CREATED: " + _out_file_path)
 
 
-def fetch_ack_crd():
-    """Fetch ACK CRD from latest release."""
+def fetch_all_crds():
+    """Fetch all ACK CRD from latest release."""
+
     releases = requests.get(
         "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/releases/latest"
     ).json()
@@ -117,20 +118,29 @@ def fetch_ack_crd():
         + latest_tag_commit_sha
     ).json()
 
-    # prompt user to select a CRD
+    return crds
+
+
+def download_selected_crd(crds, crd_selected):
+    """Download selected ACK CRD from latest release."""
+
     list_of_crd_names = []
 
     for crd in crds:
         list_of_crd_names.append(crd["name"])
 
-    questions = [
-        inquirer.List(
-            "crd_name_chosen",
-            message="Select the CRD you want to use:",
-            choices=list_of_crd_names,
-        ),
-    ]
-    crd_name_chosen = inquirer.prompt(questions).get("crd_name_chosen")
+    # if crd_selected is not configured, prompt user to select a crd_name
+    if crd_selected is None:
+        questions = [
+            inquirer.List(
+                "crd_name_chosen",
+                message="Select the CRD you want to use:",
+                choices=list_of_crd_names,
+            ),
+        ]
+        crd_name_chosen = inquirer.prompt(questions).get("crd_name_chosen")
+    else:
+        crd_name_chosen = crd_selected
 
     # download the CRD file to local
     crd_download_url = ""
@@ -143,7 +153,7 @@ def fetch_ack_crd():
         print("Error: CRD not found")
         return
     else:
-        download_path = "code_gen/ack_crd_v0.3.3/{}".format(crd_name_chosen)
+        download_path = "code_gen/ack_crd/{}".format(crd_name_chosen)
         urllib.request.urlretrieve(crd_download_url, download_path)
         print("CRD downloaded to path: {}".format(download_path))
         return download_path

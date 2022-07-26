@@ -32,3 +32,11 @@ code_gen
 
 ## Generator
 
+To run the generator, run `gen_main.py` in the project source directory
+
+1. `python code_gen/generator/gen_main.py --crd_name <crd_name> --container_image <container_image>`
+2. `python code_gen/generator/gen_main.py --container_image <container_image>`, and then select CRD from prompt
+
+Example:
+1. `python code_gen/generator/gen_main.py --crd_name "sagemaker.services.k8s.aws_trainingjobs.yaml" --container_image "rdpen/kfp-component-sagemaker:latest"`
+2. `python code_gen/generator/gen_main.py`

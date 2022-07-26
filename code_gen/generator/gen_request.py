@@ -1,4 +1,7 @@
-## Generate src/component_request.yaml.tpl content
+"""
+Methods to generate content in src/*_request.yaml.tpl
+"""
+
 import random
 from code_gen.generator.utils import parse_crd, snake_to_camel, write_snippet_to_file
 

@@ -1,3 +1,7 @@
+"""
+Methods to generate content in src/*_component.py
+"""
+
 from telnetlib import STATUS
 from typing import Dict
 from code_gen.generator.utils import (
