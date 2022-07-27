@@ -97,17 +97,26 @@ def write_snippet_to_file(_replace_dict, _template_path, _out_file_dir, _out_fil
 def fetch_all_crds():
     """Fetch all ACK CRD from latest release."""
 
-    releases = requests.get(
-        "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/releases/latest"
-    ).json()
-    latest_release_ver_name = releases["name"]
-
+    try:
+        releases = requests.get(
+            "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/releases/latest"
+        ).json()
+        latest_release_ver_name = releases["name"]
+    except:
+        print("Error fetching latest release, see response below")
+        print(releases)
+        return None
+    
+    print("RETRIEVED: latest release name " + latest_release_ver_name)
+    
     latest_tag = requests.get(
         "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/git/ref/tags/"
         + latest_release_ver_name
     ).json()
     latest_tag_sha = latest_tag["object"]["sha"]
     latest_tag_type = latest_tag["object"]["type"]
+    
+    print("RETRIEVED: latest tag type " + latest_tag_type)
 
     if latest_tag_type == "tag":
         latest_tag_commit = requests.get(latest_tag["object"]["url"]).json()
@@ -119,6 +128,8 @@ def fetch_all_crds():
         "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/contents/config/crd/bases?ref="
         + latest_tag_commit_sha
     ).json()
+    
+    print("RETRIEVED: all crds")
 
     return crds
 
@@ -157,5 +168,5 @@ def download_selected_crd(crds, crd_selected):
     else:
         download_path = "code_gen/ack_crd/{}".format(crd_name_chosen)
         urllib.request.urlretrieve(crd_download_url, download_path)
-        print("CRD downloaded to path: {}".format(download_path))
+        print("DOWNLOADED: CRD path: {}".format(download_path))
         return download_path

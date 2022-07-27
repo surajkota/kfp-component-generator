@@ -2,10 +2,6 @@ import os
 import random
 
 from numpy import argsort
-import yaml
-from code_gen.components.TrainingJob.src.TrainingJob_component import (
-    SageMakerTrainingJobComponent,
-)
 
 """
 Call component implementation src/TrainingJob.py locally. 
@@ -49,13 +45,17 @@ hyperParameters = {
 }
 
 algorithmSpecification = {
+    # The URL and tag of your ECR container
+    # If you are not on us-west-2 you can find an imageURI here https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-algo-docker-registry-paths.html
     "trainingImage": "746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2-1",
-    # "trainingImage": "746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2", # delete: wrong image
     "trainingInputMode": "File",
 }
 
+# change it to your role with SageMaker and S3 access
+# example arn:aws:iam::1234567890:role/service-role/AmazonSageMaker-ExecutionRole
 roleARN = "arn:aws:iam::402026529871:role/ack-sagemaker-execution-role-402026529871"
 
+# change it to your bucket: s3://<YOUR BUCKET/OUTPUT> 
 outputDataConfig = {"s3OutputPath": "s3://ack-sagemaker-bucket-402026529871"}
 
 resourceConfig = {
@@ -72,6 +72,7 @@ inputDataConfig = [
         "dataSource": {
             "s3DataSource": {
                 "s3DataType": "S3Prefix",
+                # change it to your input path of the train data: s3://<YOUR BUCKET>/sagemaker/xgboost/train
                 "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/train",
                 "s3DataDistributionType": "FullyReplicated",
             },
@@ -84,6 +85,7 @@ inputDataConfig = [
         "dataSource": {
             "s3DataSource": {
                 "s3DataType": "S3Prefix",
+                # change it to your input path of the validation data: s3://<YOUR BUCKET>/sagemaker/xgboost/validation
                 "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/validation",
                 "s3DataDistributionType": "FullyReplicated",
             },
