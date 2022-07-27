@@ -62,17 +62,12 @@ if __name__ == "__main__":
     ## set up output file directory
     output_component_dir = "code_gen/components/" + crd_name + "/"
     output_src_dir = output_component_dir + "src/"
-
+    
     output_spec_name = crd_name + "_spec.py"
-    output_spec_path = output_src_dir + output_spec_name
-
     output_component_name = crd_name + "_component.py"
-    output_component_path = output_src_dir + output_component_name
+    output_job_request_outline_name = crd_name + "_request.yaml.tpl"
+    output_component_yaml_name = "component.yaml"
 
-    output_job_request_outline_path = output_src_dir + crd_name + "_request.yaml.tpl"
-    job_request_path = output_src_dir + crd_name + "_request.yaml"
-
-    output_yaml_path = output_component_dir + "component.yaml"
 
     ## prepare code snippets
     (
@@ -123,8 +118,8 @@ if __name__ == "__main__":
     write_snippet_to_file(
         spec_replace,
         "code_gen/templates/*_spec.py.tpl",
-        output_spec_path,
         output_src_dir,
+        output_spec_name
     )
 
     component_replace = {
@@ -140,8 +135,8 @@ if __name__ == "__main__":
     write_snippet_to_file(
         component_replace,
         "code_gen/templates/*_component.py.tpl",
-        output_component_path,
         output_src_dir,
+        output_component_name
     )
 
     ack_job_request_replace = {
@@ -152,8 +147,8 @@ if __name__ == "__main__":
     write_snippet_to_file(
         ack_job_request_replace,
         "code_gen/templates/ack_job_request.yaml.tpl",
-        output_job_request_outline_path,
         output_src_dir,
+        output_job_request_outline_name,
     )
 
     yaml_replace = {
@@ -166,6 +161,6 @@ if __name__ == "__main__":
     write_snippet_to_file(
         yaml_replace,
         "code_gen/templates/component.yaml.tpl",
-        output_yaml_path,
         output_component_dir,
+        output_component_yaml_name,
     )

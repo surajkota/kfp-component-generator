@@ -23,11 +23,11 @@ def snake_to_camel(name):
     return temp[0] + "".join(ele.title() for ele in temp[1:])
 
 
-def parse_crd(_file_name):
+def parse_crd(_file_path):
     """Read in ACK CRD YAML file from file location Parse file and get
     fields."""
 
-    with open(_file_name, "r") as crd_file:
+    with open(_file_path, "r") as crd_file:
         crd_dict = yaml.load(crd_file, Loader=yaml.FullLoader)
 
         _input_spec_required = crd_dict["spec"]["versions"][0]["schema"][
@@ -44,10 +44,10 @@ def parse_crd(_file_name):
     return _input_spec_required, _input_spec_all, _output_statuses, _crd_name
 
 
-def get_crd_info(_file_name):
+def get_crd_info(_file_path):
     """Read in ACK CRD YAML file from file location Parse file and get crd
     information: name, plural, version, namespace."""
-    with open(_file_name, "r") as crd_file:
+    with open(_file_path, "r") as crd_file:
         crd_dict = yaml.load(crd_file, Loader=yaml.FullLoader)
 
     _group = crd_dict["spec"]["group"]
@@ -73,11 +73,13 @@ def get_class_names(_crd_name):
     )
 
 
-def write_snippet_to_file(_replace_dict, _template_path, _out_file_path, _out_file_dir):
+def write_snippet_to_file(_replace_dict, _template_path, _out_file_dir, _out_file_name):
     """Open template file at _template_path Substite placeholders in templates
     following mapping _replace_dict Create a dir _out_file_dir, if does not
     exist Write output file stream to file _out_file_path."""
 
+    _out_file_path = _out_file_dir + _out_file_name
+    
     # open and replace placeholders in templates
     with open(_template_path) as t:
         template = string.Template(t.read())
