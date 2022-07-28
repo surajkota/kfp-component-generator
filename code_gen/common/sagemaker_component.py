@@ -178,7 +178,6 @@ class SageMakerComponent:
                 self.cluster_region, self.cluster_name
             )
         )
-        os.system("aws eks update-kubeconfig --region us-west-1 --name kf-ack-west-1")
         logging.info("Create kubeconfig using 'aws eks update-kubeconfig'")
 
         _test_client = self._get_k8s_api_client()

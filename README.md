@@ -74,7 +74,7 @@ CREATED: code_gen/components/TrainingJob/component.yaml
 ## How to run the generated components
 
 There are two ways to run the components:
-1. Run the component directly using `code_gen/tests/call_compoennts_locally/TrainingJob-test.py`
+1. Run the component directly using `code_gen/tests/call_components_locally/TrainingJob-test.py`
 2. Run the component in the Kubeflow web dashboard using pipelines
     
 ### Prerequisite:
@@ -101,7 +101,7 @@ We need to create a IAM user and a IAM role for the component to run.
 
 https://github.com/aws-controllers-k8s/sagemaker-controller/blob/main/samples/README.md#sagemaker-execution-iam-role
 
-This roleARN will be used as user input in `code_gen/tests/call_compoennts_locally/TrainingJob-test.py` and `code_gen/tests/pipelines/TrainingJob-pipeline.py`
+This roleARN will be used as user input in `code_gen/tests/call_components_locally/TrainingJob-test.py` and `code_gen/tests/pipelines/TrainingJob-pipeline.py`
 
 #### Create a S3 bucket
 
@@ -118,9 +118,9 @@ Make sure you can connect to EKS:
 
 Follow [this guide](https://github.com/aws-controllers-k8s/sagemaker-controller/blob/main/samples/training/README.md#prerequisites) to upload S3 data and get proper image link. Stop at [Get an Image](https://github.com/aws-controllers-k8s/sagemaker-controller/blob/main/samples/training/README.md#get-an-image).
 
-In `code_gen/tests/call_compoennts_locally/TrainingJob-test.py`, modify values with those associated with your account and training job.
+In `code_gen/tests/call_components_locally/TrainingJob-test.py`, modify values with those associated with your account and training job.
 
-In the project source directory, run `python3 code_gen/tests/call_compoennts_locally/TrainingJob-test.py`
+In the project source directory, run `python3 code_gen/tests/call_components_locally/TrainingJob-test.py`
 
 ### Run the component in the Kubeflow web dashboard
 
@@ -149,7 +149,7 @@ Find the credentials of the IAM user created previously. Apply them to k8s clust
 
 #### Build docker
 
-1. Check image name (implementation.container.image) is correct in the generated component.yaml
+1. Check image name (implementation.container.image) is correct in the generated `component.yaml`
 2. In the project source directory, create and push docker image:
     ```
     image_name=rdpen/kfp-component-sagemaker

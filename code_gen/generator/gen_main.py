@@ -6,9 +6,10 @@ Usage:
 1. RUN python code_gen/generator/gen_main.py --crd_name <crd_name> --container_image <container_image>
 2. RUN python code_gen/generator/gen_main.py --container_image <container_image>, and select CRD from prompt
 
-Example:
+Examples:
 1. python code_gen/generator/gen_main.py --crd_name "sagemaker.services.k8s.aws_trainingjobs.yaml" --container_image "rdpen/kfp-component-sagemaker:"
-2. python code_gen/generator/gen_main.py
+2. python code_gen/generator/gen_main.py --crd_name "sagemaker.services.k8s.aws_hyperparametertuningjobs.yaml" --container_image "rdpen/kfp-component-sagemaker:"
+3. python code_gen/generator/gen_main.py --container_image "rdpen/kfp-component-sagemaker:"
 """
 
 import argparse
