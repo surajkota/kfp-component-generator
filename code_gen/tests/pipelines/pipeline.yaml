@@ -1,59 +1,75 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  generateName: trainingjob-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2022-07-28T10:01:27.663488',
-    pipelines.kubeflow.org/pipeline_spec: '{"description": "SageMaker TrainingJob
-      component", "inputs": [{"default": "{\"trainingImage\": \"746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2-1\",
-      \"trainingInputMode\": \"File\"}", "name": "algorithm_specification", "optional":
-      true}, {"name": "checkpoint_config", "optional": true}, {"name": "debug_hook_config",
-      "optional": true}, {"name": "debug_rule_configurations", "optional": true},
-      {"default": "False", "name": "enable_inter_container_traffic_encryption", "optional":
-      true}, {"default": "False", "name": "enable_managed_spot_training", "optional":
-      true}, {"default": "False", "name": "enable_network_isolation", "optional":
-      true}, {"name": "environment", "optional": true}, {"name": "experiment_config",
-      "optional": true}, {"default": "{\"eta\": \"0.3\", \"gamma\": \"10\", \"max_depth\":
-      \"2\", \"min_child_weight\": \"6\", \"num_class\": \"10\", \"num_round\": \"10\",
-      \"objective\": \"multi:softmax\"}", "name": "hyper_parameters", "optional":
-      true}, {"default": "[{\"channelName\": \"train\", \"compressionType\": \"None\",
-      \"contentType\": \"text/libsvm\", \"dataSource\": {\"s3DataSource\": {\"s3DataDistributionType\":
-      \"FullyReplicated\", \"s3DataType\": \"S3Prefix\", \"s3URI\": \"s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/train\"}}},
-      {\"channelName\": \"validation\", \"compressionType\": \"None\", \"contentType\":
-      \"text/libsvm\", \"dataSource\": {\"s3DataSource\": {\"s3DataDistributionType\":
-      \"FullyReplicated\", \"s3DataType\": \"S3Prefix\", \"s3URI\": \"s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/validation\"}}}]",
-      "name": "input_data_config", "optional": true}, {"default": "{\"s3OutputPath\":
-      \"s3://ack-sagemaker-bucket-402026529871\"}", "name": "output_data_config",
-      "optional": true}, {"name": "profiler_config", "optional": true}, {"name": "profiler_rule_configurations",
-      "optional": true}, {"default": "{\"instanceCount\": 1, \"instanceType\": \"ml.m4.xlarge\",
-      \"volumeSizeInGB\": 5}", "name": "resource_config", "optional": true}, {"default":
-      "arn:aws:iam::402026529871:role/ack-sagemaker-execution-role-402026529871",
-      "name": "role_arn", "optional": true}, {"default": "{\"maxRuntimeInSeconds\":
-      86400}", "name": "stopping_condition", "optional": true}, {"name": "tags", "optional":
-      true}, {"name": "tensor_board_output_config", "optional": true}, {"default":
-      "kfp-ack-training-job-350523", "name": "training_job_name", "optional": true},
-      {"name": "vpc_config", "optional": true}], "name": "TrainingJob"}'}
+  generateName: hyperparametertuningjob-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9, pipelines.kubeflow.org/pipeline_compilation_time: '2022-07-28T14:36:37.549896',
+    pipelines.kubeflow.org/pipeline_spec: '{"description": "SageMaker HyperParameterTuningJob
+      component", "inputs": [{"default": "{\"hyperParameterTuningJobObjective\": {\"metricName\":
+      \"validation:error\", \"type_\": \"Minimize\"}, \"parameterRanges\": {\"categoricalParameterRanges\":
+      [], \"continuousParameterRanges\": [], \"integerParameterRanges\": [{\"maxValue\":
+      \"20\", \"minValue\": \"10\", \"name\": \"num_round\", \"scalingType\": \"Linear\"}]},
+      \"resourceLimits\": {\"maxNumberOfTrainingJobs\": 2, \"maxParallelTrainingJobs\":
+      1}, \"strategy\": \"Bayesian\"}", "name": "hyper_parameter_tuning_job_config",
+      "optional": true}, {"default": "kfp-ack-hpo-job-995182", "name": "hyper_parameter_tuning_job_name",
+      "optional": true}, {"name": "tags", "optional": true}, {"default": "{\"algorithmSpecification\":
+      {\"trainingImage\": \"632365934929.dkr.ecr.us-west-1.amazonaws.com/xgboost:1\",
+      \"trainingInputMode\": \"File\"}, \"enableInterContainerTrafficEncryption\":
+      false, \"enableNetworkIsolation\": true, \"inputDataConfig\": [{\"channelName\":
+      \"train\", \"compressionType\": \"None\", \"contentType\": \"text/libsvm\",
+      \"dataSource\": {\"s3DataSource\": {\"s3DataDistributionType\": \"FullyReplicated\",
+      \"s3DataType\": \"S3Prefix\", \"s3URI\": \"s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/train\"}},
+      \"inputMode\": \"File\", \"recordWrapperType\": \"None\"}, {\"channelName\":
+      \"validation\", \"compressionType\": \"None\", \"contentType\": \"text/libsvm\",
+      \"dataSource\": {\"s3DataSource\": {\"s3DataDistributionType\": \"FullyReplicated\",
+      \"s3DataType\": \"S3Prefix\", \"s3URI\": \"s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/validation\"}},
+      \"inputMode\": \"File\", \"recordWrapperType\": \"None\"}], \"outputDataConfig\":
+      {\"s3OutputPath\": \"s3://ack-sagemaker-bucket-402026529871\"}, \"resourceConfig\":
+      {\"instanceCount\": 1, \"instanceType\": \"ml.m4.xlarge\", \"volumeSizeInGB\":
+      25}, \"roleARN\": \"arn:aws:iam::402026529871:role/ack-sagemaker-execution-role-402026529871\",
+      \"staticHyperParameters\": {\"base_score\": \"0.5\", \"booster\": \"gbtree\",
+      \"csv_weights\": \"0\", \"dsplit\": \"row\", \"grow_policy\": \"depthwise\",
+      \"lambda_bias\": \"0.0\", \"max_bin\": \"256\", \"max_leaves\": \"0\", \"normalize_type\":
+      \"tree\", \"objective\": \"reg:linear\", \"one_drop\": \"0\", \"prob_buffer_row\":
+      \"1.0\", \"process_type\": \"default\", \"rate_drop\": \"0.0\", \"refresh_leaf\":
+      \"1\", \"sample_type\": \"uniform\", \"scale_pos_weight\": \"1.0\", \"silent\":
+      \"0\", \"sketch_eps\": \"0.03\", \"skip_drop\": \"0.0\", \"tree_method\": \"auto\",
+      \"tweedie_variance_power\": \"1.5\", \"updater\": \"grow_colmaker,prune\"},
+      \"stoppingCondition\": {\"maxRuntimeInSeconds\": 3600}}", "name": "training_job_definition",
+      "optional": true}, {"name": "training_job_definitions", "optional": true}, {"name":
+      "warm_start_config", "optional": true}], "name": "HyperParameterTuningJob"}'}
   labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.9}
 spec:
-  entrypoint: trainingjob
+  entrypoint: hyperparametertuningjob
   templates:
-  - name: sagemaker-trainingjob
+  - name: hyperparametertuningjob
+    inputs:
+      parameters:
+      - {name: hyper_parameter_tuning_job_config}
+      - {name: hyper_parameter_tuning_job_name}
+      - {name: tags}
+      - {name: training_job_definition}
+      - {name: training_job_definitions}
+      - {name: warm_start_config}
+    dag:
+      tasks:
+      - name: sagemaker-hyperparametertuningjob
+        template: sagemaker-hyperparametertuningjob
+        arguments:
+          parameters:
+          - {name: hyper_parameter_tuning_job_config, value: '{{inputs.parameters.hyper_parameter_tuning_job_config}}'}
+          - {name: hyper_parameter_tuning_job_name, value: '{{inputs.parameters.hyper_parameter_tuning_job_name}}'}
+          - {name: tags, value: '{{inputs.parameters.tags}}'}
+          - {name: training_job_definition, value: '{{inputs.parameters.training_job_definition}}'}
+          - {name: training_job_definitions, value: '{{inputs.parameters.training_job_definitions}}'}
+          - {name: warm_start_config, value: '{{inputs.parameters.warm_start_config}}'}
+  - name: sagemaker-hyperparametertuningjob
     container:
-      args: [code_gen/components/TrainingJob/src/TrainingJob_component.py, --algorithm_specification,
-        '{{inputs.parameters.algorithm_specification}}', --checkpoint_config, '{{inputs.parameters.checkpoint_config}}',
-        --debug_hook_config, '{{inputs.parameters.debug_hook_config}}', --debug_rule_configurations,
-        '{{inputs.parameters.debug_rule_configurations}}', --enable_inter_container_traffic_encryption,
-        '{{inputs.parameters.enable_inter_container_traffic_encryption}}', --enable_managed_spot_training,
-        '{{inputs.parameters.enable_managed_spot_training}}', --enable_network_isolation,
-        '{{inputs.parameters.enable_network_isolation}}', --environment, '{{inputs.parameters.environment}}',
-        --experiment_config, '{{inputs.parameters.experiment_config}}', --hyper_parameters,
-        '{{inputs.parameters.hyper_parameters}}', --input_data_config, '{{inputs.parameters.input_data_config}}',
-        --output_data_config, '{{inputs.parameters.output_data_config}}', --profiler_config,
-        '{{inputs.parameters.profiler_config}}', --profiler_rule_configurations, '{{inputs.parameters.profiler_rule_configurations}}',
-        --resource_config, '{{inputs.parameters.resource_config}}', --role_arn, '{{inputs.parameters.role_arn}}',
-        --stopping_condition, '{{inputs.parameters.stopping_condition}}', --tags,
-        '{{inputs.parameters.tags}}', --tensor_board_output_config, '{{inputs.parameters.tensor_board_output_config}}',
-        --training_job_name, '{{inputs.parameters.training_job_name}}', --vpc_config,
-        '{{inputs.parameters.vpc_config}}']
+      args: [code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_component.py,
+        --hyper_parameter_tuning_job_config, '{{inputs.parameters.hyper_parameter_tuning_job_config}}',
+        --hyper_parameter_tuning_job_name, '{{inputs.parameters.hyper_parameter_tuning_job_name}}',
+        --tags, '{{inputs.parameters.tags}}', --training_job_definition, '{{inputs.parameters.training_job_definition}}',
+        --training_job_definitions, '{{inputs.parameters.training_job_definitions}}',
+        --warm_start_config, '{{inputs.parameters.warm_start_config}}']
       command: [python3]
       env:
       - name: AWS_ACCESS_KEY_ID
@@ -62,233 +78,102 @@ spec:
       - name: AWS_SECRET_ACCESS_KEY
         valueFrom:
           secretKeyRef: {key: AWS_SECRET_ACCESS_KEY, name: aws-secret}
-      image: rdpen/kfp-component-sagemaker:49
+      image: rdpen/kfp-component-sagemaker:v2
     inputs:
       parameters:
-      - {name: algorithm_specification}
-      - {name: checkpoint_config}
-      - {name: debug_hook_config}
-      - {name: debug_rule_configurations}
-      - {name: enable_inter_container_traffic_encryption}
-      - {name: enable_managed_spot_training}
-      - {name: enable_network_isolation}
-      - {name: environment}
-      - {name: experiment_config}
-      - {name: hyper_parameters}
-      - {name: input_data_config}
-      - {name: output_data_config}
-      - {name: profiler_config}
-      - {name: profiler_rule_configurations}
-      - {name: resource_config}
-      - {name: role_arn}
-      - {name: stopping_condition}
+      - {name: hyper_parameter_tuning_job_config}
+      - {name: hyper_parameter_tuning_job_name}
       - {name: tags}
-      - {name: tensor_board_output_config}
-      - {name: training_job_name}
-      - {name: vpc_config}
+      - {name: training_job_definition}
+      - {name: training_job_definitions}
+      - {name: warm_start_config}
     outputs:
       artifacts:
-      - {name: sagemaker-trainingjob-ack_resource_metadata, path: /tmp/outputs/ack_resource_metadata/data}
-      - {name: sagemaker-trainingjob-conditions, path: /tmp/outputs/conditions/data}
-      - {name: sagemaker-trainingjob-debug_rule_evaluation_statuses, path: /tmp/outputs/debug_rule_evaluation_statuses/data}
-      - {name: sagemaker-trainingjob-failure_reason, path: /tmp/outputs/failure_reason/data}
-      - {name: sagemaker-trainingjob-model_artifacts, path: /tmp/outputs/model_artifacts/data}
-      - {name: sagemaker-trainingjob-profiler_rule_evaluation_statuses, path: /tmp/outputs/profiler_rule_evaluation_statuses/data}
-      - {name: sagemaker-trainingjob-secondary_status, path: /tmp/outputs/secondary_status/data}
-      - {name: sagemaker-trainingjob-training_job_status, path: /tmp/outputs/training_job_status/data}
+      - {name: sagemaker-hyperparametertuningjob-ack_resource_metadata, path: /tmp/outputs/ack_resource_metadata/data}
+      - {name: sagemaker-hyperparametertuningjob-best_training_job, path: /tmp/outputs/best_training_job/data}
+      - {name: sagemaker-hyperparametertuningjob-conditions, path: /tmp/outputs/conditions/data}
+      - {name: sagemaker-hyperparametertuningjob-failure_reason, path: /tmp/outputs/failure_reason/data}
+      - {name: sagemaker-hyperparametertuningjob-hyper_parameter_tuning_job_status,
+        path: /tmp/outputs/hyper_parameter_tuning_job_status/data}
+      - {name: sagemaker-hyperparametertuningjob-overall_best_training_job, path: /tmp/outputs/overall_best_training_job/data}
     metadata:
       labels:
         pipelines.kubeflow.org/kfp_sdk_version: 1.8.9
         pipelines.kubeflow.org/pipeline-sdk-type: kfp
         pipelines.kubeflow.org/enable_caching: "true"
       annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Create
-          TrainingJob", "implementation": {"container": {"args": ["code_gen/components/TrainingJob/src/TrainingJob_component.py",
-          "--algorithm_specification", {"inputValue": "algorithm_specification"},
-          "--checkpoint_config", {"inputValue": "checkpoint_config"}, "--debug_hook_config",
-          {"inputValue": "debug_hook_config"}, "--debug_rule_configurations", {"inputValue":
-          "debug_rule_configurations"}, "--enable_inter_container_traffic_encryption",
-          {"inputValue": "enable_inter_container_traffic_encryption"}, "--enable_managed_spot_training",
-          {"inputValue": "enable_managed_spot_training"}, "--enable_network_isolation",
-          {"inputValue": "enable_network_isolation"}, "--environment", {"inputValue":
-          "environment"}, "--experiment_config", {"inputValue": "experiment_config"},
-          "--hyper_parameters", {"inputValue": "hyper_parameters"}, "--input_data_config",
-          {"inputValue": "input_data_config"}, "--output_data_config", {"inputValue":
-          "output_data_config"}, "--profiler_config", {"inputValue": "profiler_config"},
-          "--profiler_rule_configurations", {"inputValue": "profiler_rule_configurations"},
-          "--resource_config", {"inputValue": "resource_config"}, "--role_arn", {"inputValue":
-          "role_arn"}, "--stopping_condition", {"inputValue": "stopping_condition"},
-          "--tags", {"inputValue": "tags"}, "--tensor_board_output_config", {"inputValue":
-          "tensor_board_output_config"}, "--training_job_name", {"inputValue": "training_job_name"},
-          "--vpc_config", {"inputValue": "vpc_config"}], "command": ["python3"], "image":
-          "rdpen/kfp-component-sagemaker:49"}}, "inputs": [{"default": "{}", "description":
-          "The registry path of the Docker image that contains the training algorithm
-          and algorithm-specific me", "name": "algorithm_specification", "type": "JsonObject"},
-          {"default": "{}", "description": "Contains information about the output
-          location for managed spot training checkpoint data.", "name": "checkpoint_config",
-          "type": "JsonObject"}, {"default": "{}", "description": "Configuration information
-          for the Debugger hook parameters, metric and tensor collections, and stora",
-          "name": "debug_hook_config", "type": "JsonObject"}, {"default": "[]", "description":
-          "Configuration information for Debugger rules for debugging output tensors.",
-          "name": "debug_rule_configurations", "type": "JsonArray"}, {"default": false,
-          "description": "To encrypt all communications between ML compute instances
-          in distributed training, choose True. Enc", "name": "enable_inter_container_traffic_encryption",
-          "type": "Bool"}, {"default": false, "description": "To train models using
-          managed spot training, choose True. Managed spot training provides a fully
-          man", "name": "enable_managed_spot_training", "type": "Bool"}, {"default":
-          false, "description": "Isolates the training container. No inbound or outbound
-          network calls can be made, except for calls", "name": "enable_network_isolation",
-          "type": "Bool"}, {"default": "{}", "description": "The environment variables
-          to set in the Docker container.", "name": "environment", "type": "JsonObject"},
-          {"default": "{}", "description": "Associates a SageMaker job as a trial
-          component with an experiment and trial. Specified when you cal", "name":
-          "experiment_config", "type": "JsonObject"}, {"default": "{}", "description":
-          "Algorithm-specific parameters that influence the quality of the model.
-          You set hyperparameters befor", "name": "hyper_parameters", "type": "JsonObject"},
-          {"default": "[]", "description": "An array of Channel objects. Each channel
-          is a named input source. InputDataConfig describes the inp", "name": "input_data_config",
-          "type": "JsonArray"}, {"default": "{}", "description": "Specifies the path
-          to the S3 location where you want to store model artifacts. Amazon SageMaker
-          crea", "name": "output_data_config", "type": "JsonObject"}, {"default":
-          "{}", "description": "Configuration information for Debugger system monitoring,
-          framework profiling, and storage paths.", "name": "profiler_config", "type":
-          "JsonObject"}, {"default": "[]", "description": "Configuration information
-          for Debugger rules for profiling system and framework metrics.", "name":
-          "profiler_rule_configurations", "type": "JsonArray"}, {"default": "{}",
-          "description": "The resources, including the ML compute instances and ML
-          storage volumes, to use for model training.", "name": "resource_config",
-          "type": "JsonObject"}, {"default": "", "description": "The Amazon Resource
-          Name (ARN) of an IAM role that Amazon SageMaker can assume to perform tasks
-          on y", "name": "role_arn", "type": "String"}, {"default": "{}", "description":
-          "Specifies a limit to how long a model training job can run. It also specifies
-          how long a managed Spo", "name": "stopping_condition", "type": "JsonObject"},
-          {"default": "[]", "description": "An array of key-value pairs. You can use
-          tags to categorize your Amazon Web Services resources in di", "name": "tags",
-          "type": "JsonArray"}, {"default": "{}", "description": "Configuration of
-          storage locations for the Debugger TensorBoard output data.", "name": "tensor_board_output_config",
-          "type": "JsonObject"}, {"default": "", "description": "The name of the training
-          job. The name must be unique within an Amazon Web Services Region in an
-          Ama", "name": "training_job_name", "type": "String"}, {"default": "{}",
-          "description": "A VpcConfig object that specifies the VPC that you want
-          your training job to connect to. Control acc", "name": "vpc_config", "type":
-          "JsonObject"}], "name": "Sagemaker - TrainingJob", "outputs": [{"description":
-          "All CRs managed by ACK have a common `Status.ACKResourceMetadata` member
-          that is used to contain res", "name": "ack_resource_metadata", "type": "JsonObject"},
+          HyperParameterTuningJob", "implementation": {"container": {"args": ["code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_component.py",
+          "--hyper_parameter_tuning_job_config", {"inputValue": "hyper_parameter_tuning_job_config"},
+          "--hyper_parameter_tuning_job_name", {"inputValue": "hyper_parameter_tuning_job_name"},
+          "--tags", {"inputValue": "tags"}, "--training_job_definition", {"inputValue":
+          "training_job_definition"}, "--training_job_definitions", {"inputValue":
+          "training_job_definitions"}, "--warm_start_config", {"inputValue": "warm_start_config"}],
+          "command": ["python3"], "image": "rdpen/kfp-component-sagemaker:v2"}}, "inputs":
+          [{"default": "{}", "description": "The HyperParameterTuningJobConfig object
+          that describes the tuning job, including the search strateg", "name": "hyper_parameter_tuning_job_config",
+          "type": "JsonObject"}, {"default": "", "description": "The name of the tuning
+          job. This name is the prefix for the names of all training jobs that this
+          tun", "name": "hyper_parameter_tuning_job_name", "type": "String"}, {"default":
+          "[]", "description": "An array of key-value pairs. You can use tags to categorize
+          your Amazon Web Services resources in di", "name": "tags", "type": "JsonArray"},
+          {"default": "{}", "description": "The HyperParameterTrainingJobDefinition
+          object that describes the training jobs that this tuning job", "name": "training_job_definition",
+          "type": "JsonObject"}, {"default": "[]", "description": "A list of the HyperParameterTrainingJobDefinition
+          objects launched for this tuning job.", "name": "training_job_definitions",
+          "type": "JsonArray"}, {"default": "{}", "description": "Specifies the configuration
+          for starting the hyperparameter tuning job using one or more previous tu",
+          "name": "warm_start_config", "type": "JsonObject"}], "name": "Sagemaker
+          - HyperParameterTuningJob", "outputs": [{"description": "All CRs managed
+          by ACK have a common `Status.ACKResourceMetadata` member that is used to
+          contain res", "name": "ack_resource_metadata", "type": "JsonObject"}, {"description":
+          "A TrainingJobSummary object that describes the training job that completed
+          with the best current Hyp", "name": "best_training_job", "type": "JsonObject"},
           {"description": "All CRS managed by ACK have a common `Status.Conditions`
           member that contains a collection of `ackv1", "name": "conditions", "type":
-          "JsonArray"}, {"description": "Evaluation status of Debugger rules for debugging
-          on a training job.", "name": "debug_rule_evaluation_statuses", "type": "JsonArray"},
-          {"description": "If the training job failed, the reason it failed.", "name":
-          "failure_reason", "type": "String"}, {"description": "Information about
-          the Amazon S3 location that is configured for storing model artifacts.",
-          "name": "model_artifacts", "type": "JsonObject"}, {"description": "Evaluation
-          status of Debugger rules for profiling on a training job.", "name": "profiler_rule_evaluation_statuses",
-          "type": "JsonArray"}, {"description": "Provides detailed information about
-          the state of the training job. For detailed information on the s", "name":
-          "secondary_status", "type": "String"}, {"description": "The status of the
-          training job.   Amazon SageMaker provides the following training job statuses:",
-          "name": "training_job_status", "type": "String"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
-          "a9d9ba699debf867e19eed3e5a656474e785328e5c4f447398715988debc056a", "url":
-          "code_gen/components/TrainingJob/component.yaml"}', pipelines.kubeflow.org/arguments.parameters: '{"algorithm_specification":
-          "{{inputs.parameters.algorithm_specification}}", "checkpoint_config": "{{inputs.parameters.checkpoint_config}}",
-          "debug_hook_config": "{{inputs.parameters.debug_hook_config}}", "debug_rule_configurations":
-          "{{inputs.parameters.debug_rule_configurations}}", "enable_inter_container_traffic_encryption":
-          "{{inputs.parameters.enable_inter_container_traffic_encryption}}", "enable_managed_spot_training":
-          "{{inputs.parameters.enable_managed_spot_training}}", "enable_network_isolation":
-          "{{inputs.parameters.enable_network_isolation}}", "environment": "{{inputs.parameters.environment}}",
-          "experiment_config": "{{inputs.parameters.experiment_config}}", "hyper_parameters":
-          "{{inputs.parameters.hyper_parameters}}", "input_data_config": "{{inputs.parameters.input_data_config}}",
-          "output_data_config": "{{inputs.parameters.output_data_config}}", "profiler_config":
-          "{{inputs.parameters.profiler_config}}", "profiler_rule_configurations":
-          "{{inputs.parameters.profiler_rule_configurations}}", "resource_config":
-          "{{inputs.parameters.resource_config}}", "role_arn": "{{inputs.parameters.role_arn}}",
-          "stopping_condition": "{{inputs.parameters.stopping_condition}}", "tags":
-          "{{inputs.parameters.tags}}", "tensor_board_output_config": "{{inputs.parameters.tensor_board_output_config}}",
-          "training_job_name": "{{inputs.parameters.training_job_name}}", "vpc_config":
-          "{{inputs.parameters.vpc_config}}"}'}
-  - name: trainingjob
-    inputs:
-      parameters:
-      - {name: algorithm_specification}
-      - {name: checkpoint_config}
-      - {name: debug_hook_config}
-      - {name: debug_rule_configurations}
-      - {name: enable_inter_container_traffic_encryption}
-      - {name: enable_managed_spot_training}
-      - {name: enable_network_isolation}
-      - {name: environment}
-      - {name: experiment_config}
-      - {name: hyper_parameters}
-      - {name: input_data_config}
-      - {name: output_data_config}
-      - {name: profiler_config}
-      - {name: profiler_rule_configurations}
-      - {name: resource_config}
-      - {name: role_arn}
-      - {name: stopping_condition}
-      - {name: tags}
-      - {name: tensor_board_output_config}
-      - {name: training_job_name}
-      - {name: vpc_config}
-    dag:
-      tasks:
-      - name: sagemaker-trainingjob
-        template: sagemaker-trainingjob
-        arguments:
-          parameters:
-          - {name: algorithm_specification, value: '{{inputs.parameters.algorithm_specification}}'}
-          - {name: checkpoint_config, value: '{{inputs.parameters.checkpoint_config}}'}
-          - {name: debug_hook_config, value: '{{inputs.parameters.debug_hook_config}}'}
-          - {name: debug_rule_configurations, value: '{{inputs.parameters.debug_rule_configurations}}'}
-          - {name: enable_inter_container_traffic_encryption, value: '{{inputs.parameters.enable_inter_container_traffic_encryption}}'}
-          - {name: enable_managed_spot_training, value: '{{inputs.parameters.enable_managed_spot_training}}'}
-          - {name: enable_network_isolation, value: '{{inputs.parameters.enable_network_isolation}}'}
-          - {name: environment, value: '{{inputs.parameters.environment}}'}
-          - {name: experiment_config, value: '{{inputs.parameters.experiment_config}}'}
-          - {name: hyper_parameters, value: '{{inputs.parameters.hyper_parameters}}'}
-          - {name: input_data_config, value: '{{inputs.parameters.input_data_config}}'}
-          - {name: output_data_config, value: '{{inputs.parameters.output_data_config}}'}
-          - {name: profiler_config, value: '{{inputs.parameters.profiler_config}}'}
-          - {name: profiler_rule_configurations, value: '{{inputs.parameters.profiler_rule_configurations}}'}
-          - {name: resource_config, value: '{{inputs.parameters.resource_config}}'}
-          - {name: role_arn, value: '{{inputs.parameters.role_arn}}'}
-          - {name: stopping_condition, value: '{{inputs.parameters.stopping_condition}}'}
-          - {name: tags, value: '{{inputs.parameters.tags}}'}
-          - {name: tensor_board_output_config, value: '{{inputs.parameters.tensor_board_output_config}}'}
-          - {name: training_job_name, value: '{{inputs.parameters.training_job_name}}'}
-          - {name: vpc_config, value: '{{inputs.parameters.vpc_config}}'}
+          "JsonArray"}, {"description": "If the tuning job failed, the reason it failed.",
+          "name": "failure_reason", "type": "String"}, {"description": "The status
+          of the tuning job: InProgress, Completed, Failed, Stopping, or Stopped.",
+          "name": "hyper_parameter_tuning_job_status", "type": "String"}, {"description":
+          "If the hyperparameter tuning job is an warm start tuning job with a WarmStartType
+          of IDENTICAL_DATA_", "name": "overall_best_training_job", "type": "JsonObject"}]}',
+        pipelines.kubeflow.org/component_ref: '{"digest": "b7b3131bec390d45f17e624883cbedb3f8285b07efd9ee63db28af8a57047aa0",
+          "url": "code_gen/components/HyperParameterTuningJob/component.yaml"}', pipelines.kubeflow.org/arguments.parameters: '{"hyper_parameter_tuning_job_config":
+          "{{inputs.parameters.hyper_parameter_tuning_job_config}}", "hyper_parameter_tuning_job_name":
+          "{{inputs.parameters.hyper_parameter_tuning_job_name}}", "tags": "{{inputs.parameters.tags}}",
+          "training_job_definition": "{{inputs.parameters.training_job_definition}}",
+          "training_job_definitions": "{{inputs.parameters.training_job_definitions}}",
+          "warm_start_config": "{{inputs.parameters.warm_start_config}}"}'}
   arguments:
     parameters:
-    - {name: algorithm_specification, value: '{"trainingImage": "746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.2-1",
-        "trainingInputMode": "File"}'}
-    - {name: checkpoint_config}
-    - {name: debug_hook_config}
-    - {name: debug_rule_configurations}
-    - name: enable_inter_container_traffic_encryption
-      value: "False"
-    - name: enable_managed_spot_training
-      value: "False"
-    - name: enable_network_isolation
-      value: "False"
-    - {name: environment}
-    - {name: experiment_config}
-    - {name: hyper_parameters, value: '{"eta": "0.3", "gamma": "10", "max_depth":
-        "2", "min_child_weight": "6", "num_class": "10", "num_round": "10", "objective":
-        "multi:softmax"}'}
-    - {name: input_data_config, value: '[{"channelName": "train", "compressionType":
-        "None", "contentType": "text/libsvm", "dataSource": {"s3DataSource": {"s3DataDistributionType":
-        "FullyReplicated", "s3DataType": "S3Prefix", "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/train"}}},
-        {"channelName": "validation", "compressionType": "None", "contentType": "text/libsvm",
-        "dataSource": {"s3DataSource": {"s3DataDistributionType": "FullyReplicated",
-        "s3DataType": "S3Prefix", "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/validation"}}}]'}
-    - {name: output_data_config, value: '{"s3OutputPath": "s3://ack-sagemaker-bucket-402026529871"}'}
-    - {name: profiler_config}
-    - {name: profiler_rule_configurations}
-    - {name: resource_config, value: '{"instanceCount": 1, "instanceType": "ml.m4.xlarge",
-        "volumeSizeInGB": 5}'}
-    - {name: role_arn, value: 'arn:aws:iam::402026529871:role/ack-sagemaker-execution-role-402026529871'}
-    - {name: stopping_condition, value: '{"maxRuntimeInSeconds": 86400}'}
+    - {name: hyper_parameter_tuning_job_config, value: '{"hyperParameterTuningJobObjective":
+        {"metricName": "validation:error", "type_": "Minimize"}, "parameterRanges":
+        {"categoricalParameterRanges": [], "continuousParameterRanges": [], "integerParameterRanges":
+        [{"maxValue": "20", "minValue": "10", "name": "num_round", "scalingType":
+        "Linear"}]}, "resourceLimits": {"maxNumberOfTrainingJobs": 2, "maxParallelTrainingJobs":
+        1}, "strategy": "Bayesian"}'}
+    - {name: hyper_parameter_tuning_job_name, value: kfp-ack-hpo-job-995182}
     - {name: tags}
-    - {name: tensor_board_output_config}
-    - {name: training_job_name, value: kfp-ack-training-job-350523}
-    - {name: vpc_config}
+    - {name: training_job_definition, value: '{"algorithmSpecification": {"trainingImage":
+        "632365934929.dkr.ecr.us-west-1.amazonaws.com/xgboost:1", "trainingInputMode":
+        "File"}, "enableInterContainerTrafficEncryption": false, "enableNetworkIsolation":
+        true, "inputDataConfig": [{"channelName": "train", "compressionType": "None",
+        "contentType": "text/libsvm", "dataSource": {"s3DataSource": {"s3DataDistributionType":
+        "FullyReplicated", "s3DataType": "S3Prefix", "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/train"}},
+        "inputMode": "File", "recordWrapperType": "None"}, {"channelName": "validation",
+        "compressionType": "None", "contentType": "text/libsvm", "dataSource": {"s3DataSource":
+        {"s3DataDistributionType": "FullyReplicated", "s3DataType": "S3Prefix", "s3URI":
+        "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/validation"}}, "inputMode":
+        "File", "recordWrapperType": "None"}], "outputDataConfig": {"s3OutputPath":
+        "s3://ack-sagemaker-bucket-402026529871"}, "resourceConfig": {"instanceCount":
+        1, "instanceType": "ml.m4.xlarge", "volumeSizeInGB": 25}, "roleARN": "arn:aws:iam::402026529871:role/ack-sagemaker-execution-role-402026529871",
+        "staticHyperParameters": {"base_score": "0.5", "booster": "gbtree", "csv_weights":
+        "0", "dsplit": "row", "grow_policy": "depthwise", "lambda_bias": "0.0", "max_bin":
+        "256", "max_leaves": "0", "normalize_type": "tree", "objective": "reg:linear",
+        "one_drop": "0", "prob_buffer_row": "1.0", "process_type": "default", "rate_drop":
+        "0.0", "refresh_leaf": "1", "sample_type": "uniform", "scale_pos_weight":
+        "1.0", "silent": "0", "sketch_eps": "0.03", "skip_drop": "0.0", "tree_method":
+        "auto", "tweedie_variance_power": "1.5", "updater": "grow_colmaker,prune"},
+        "stoppingCondition": {"maxRuntimeInSeconds": 3600}}'}
+    - {name: training_job_definitions}
+    - {name: warm_start_config}
   serviceAccountName: pipeline-runner

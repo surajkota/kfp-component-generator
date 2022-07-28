@@ -178,7 +178,7 @@ outputs:
 
 implementation:
   container:
-    image: rdpen/kfp-component-sagemaker:49
+    image: rdpen/kfp-component-sagemaker:v2
     command: [python3]
     args:
       - code_gen/components/TrainingJob/src/TrainingJob_component.py
