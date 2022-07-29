@@ -32,7 +32,7 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
         )
 
         self.cluster_region = "us-west-1"
-        self.cluster_name = "kf-ack-west-1"
+        self.cluster_name = "kfp-ack-bugbash-2"
 
         ############GENERATED SECTION BELOW############
         

@@ -41,11 +41,10 @@ algorithmSpecification = {
 
 # change it to your role with SageMaker and S3 access
 # example arn:aws:iam::1234567890:role/service-role/AmazonSageMaker-ExecutionRole
-roleARN = "arn:aws:iam::402026529871:role/ack-sagemaker-execution-role-402026529871"
+roleARN = "arn:aws:iam::740468203605:role/ack-sagemaker-execution-role"
 
 # change it to your bucket: s3://<YOUR BUCKET/OUTPUT> 
-outputDataConfig = {"s3OutputPath": "s3://ack-sagemaker-bucket-402026529871"}
-
+outputDataConfig = {"s3OutputPath": "s3://ack-sagemaker-bucket-740468203605"}
 resourceConfig = {
     "instanceCount": 1,
     "instanceType": "ml.m4.xlarge",
@@ -61,7 +60,7 @@ inputDataConfig = [
             "s3DataSource": {
                 "s3DataType": "S3Prefix",
                 # change it to your input path of the train data: s3://<YOUR BUCKET>/sagemaker/xgboost/train
-                "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/train",
+                "s3URI": "s3://ack-sagemaker-bucket-740468203605/sagemaker/xgboost/train",
                 "s3DataDistributionType": "FullyReplicated",
             },
         },
@@ -74,7 +73,7 @@ inputDataConfig = [
             "s3DataSource": {
                 "s3DataType": "S3Prefix",
                 # change it to your input path of the validation data: s3://<YOUR BUCKET>/sagemaker/xgboost/validation
-                "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/validation",
+                "s3URI": "s3://ack-sagemaker-bucket-740468203605/sagemaker/xgboost/validation",
                 "s3DataDistributionType": "FullyReplicated",
             },
         },

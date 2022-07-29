@@ -2,6 +2,10 @@ import os
 import random
 
 """
+export GEN_ROOT=$(pwd)
+export PYTHONPATH=$PYTHONPATH:$GEN_ROOT
+python3 code_gen/tests/call_components_locally/HyperParameterTuningJob-test.py
+
 Call component.py locally
 """
 
@@ -56,14 +60,14 @@ trainingJobDefinition = {
         "trainingImage": "632365934929.dkr.ecr.us-west-1.amazonaws.com/xgboost:1",
         "trainingInputMode": "File",
     },
-    "roleARN": "arn:aws:iam::402026529871:role/ack-sagemaker-execution-role-402026529871",
+    "roleARN": "arn:aws:iam::740468203605:role/ack-sagemaker-execution-role",
     "inputDataConfig": [
         {
             "channelName": "train",
             "dataSource": {
                 "s3DataSource": {
                     "s3DataType": "S3Prefix",
-                    "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/train",
+                    "s3URI": "s3://ack-sagemaker-bucket-740468203605/sagemaker/xgboost/train",
                     "s3DataDistributionType": "FullyReplicated",
                 }
             },
@@ -77,7 +81,7 @@ trainingJobDefinition = {
             "dataSource": {
                 "s3DataSource": {
                     "s3DataType": "S3Prefix",
-                    "s3URI": "s3://ack-sagemaker-bucket-402026529871/sagemaker/xgboost/validation",
+                    "s3URI": "s3://ack-sagemaker-bucket-740468203605/sagemaker/xgboost/validation",
                     "s3DataDistributionType": "FullyReplicated",
                 }
             },
@@ -87,7 +91,7 @@ trainingJobDefinition = {
             "inputMode": "File",
         },
     ],
-    "outputDataConfig": {"s3OutputPath": "s3://ack-sagemaker-bucket-402026529871"},
+    "outputDataConfig": {"s3OutputPath": "s3://ack-sagemaker-bucket-740468203605"},
     "resourceConfig": {
         "instanceType": "ml.m4.xlarge",
         "instanceCount": 1,
@@ -120,4 +124,4 @@ for key in REQUIRED_ARGS:
 file_loc = "code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_component.py"
 
 # os.system("pwd")
-os.system("python " + file_loc + arguments)
+os.system("python3 " + file_loc + arguments)
