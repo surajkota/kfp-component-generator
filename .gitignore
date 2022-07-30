@@ -85,5 +85,4 @@ __pycache__
 # Coverage
 .coverage
 .coverage*
-code_gen/tests/pipelines/pipeline.yaml
-
+pipeline.yaml

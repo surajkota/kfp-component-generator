@@ -32,7 +32,7 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
         )
 
         self.cluster_region = "us-west-1"
-        self.cluster_name = "kfp-ack-bugbash-2"
+        self.cluster_name = "kfp-ack-bugbash-4"
 
         ############GENERATED SECTION BELOW############
         
@@ -83,7 +83,7 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
 
     def _get_job_status(self):
         ack_statuses = super()._get_resource()["status"]
-        sm_job_status = ack_statuses["hyperParameterTuningJobStatus"]  # todo: developer customize
+        sm_job_status = ack_statuses["trainingJobStatus"]  # todo: developer customize
 
         # print("Sagemaker job status: " + sm_job_status)
 

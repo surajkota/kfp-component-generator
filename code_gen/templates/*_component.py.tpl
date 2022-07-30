@@ -32,7 +32,7 @@ class ${COMPONENT_CLASS_NAME}(SageMakerComponent):
         )
 
         self.cluster_region = "us-west-1"
-        self.cluster_name = "kf-ack-west-1"
+        self.cluster_name = "kfp-ack-bugbash-4"
 
         ############GENERATED SECTION BELOW############
         ${DO_PARAMETERS}
