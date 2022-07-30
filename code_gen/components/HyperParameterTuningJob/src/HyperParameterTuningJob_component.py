@@ -83,7 +83,7 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
 
     def _get_job_status(self):
         ack_statuses = super()._get_resource()["status"]
-        sm_job_status = ack_statuses["trainingJobStatus"]  # todo: developer customize
+        sm_job_status = ack_statuses["hyperParameterTuningJobStatus"]  # todo: developer customize
 
         # print("Sagemaker job status: " + sm_job_status)
 
@@ -124,32 +124,32 @@ class SageMakerHyperParameterTuningJobComponent(SageMakerComponent):
 
         ############GENERATED SECTION BELOW############
         
-        outputs.ack_resource_metadata = (
+        outputs.ack_resource_metadata = str(
             ack_statuses["ackResourceMetadata"]
             if "ackResourceMetadata" in ack_statuses
             else None
         )
-        outputs.best_training_job = (
+        outputs.best_training_job = str(
             ack_statuses["bestTrainingJob"]
             if "bestTrainingJob" in ack_statuses
             else None
         )
-        outputs.conditions = (
+        outputs.conditions = str(
             ack_statuses["conditions"]
             if "conditions" in ack_statuses
             else None
         )
-        outputs.failure_reason = (
+        outputs.failure_reason = str(
             ack_statuses["failureReason"]
             if "failureReason" in ack_statuses
             else None
         )
-        outputs.hyper_parameter_tuning_job_status = (
+        outputs.hyper_parameter_tuning_job_status = str(
             ack_statuses["hyperParameterTuningJobStatus"]
             if "hyperParameterTuningJobStatus" in ack_statuses
             else None
         )
-        outputs.overall_best_training_job = (
+        outputs.overall_best_training_job = str(
             ack_statuses["overallBestTrainingJob"]
             if "overallBestTrainingJob" in ack_statuses
             else None

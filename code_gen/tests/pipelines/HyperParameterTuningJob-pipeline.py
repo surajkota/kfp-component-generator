@@ -196,7 +196,11 @@ if __name__ == "__main__":
     print("Uploaded pipeline")
     
     # Run the pipeline in experiment
-    experiment_id = client.get_experiment(namespace=namespace, experiment_name=EXPERIMENT_NAME).id
+    try:
+        experiment_id = client.get_experiment(namespace=namespace, experiment_name=EXPERIMENT_NAME).id
+    except:
+        experiment_id = client.create_experiment(name=EXPERIMENT_NAME, namespace=namespace).id
+
     my_run = client.run_pipeline(experiment_id, RUN_JOB_NAME, __file__ + ".tar.gz")
     
     print("Created pipeline run: " + my_run.id)

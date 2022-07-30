@@ -124,42 +124,42 @@ class SageMakerTrainingJobComponent(SageMakerComponent):
 
         ############GENERATED SECTION BELOW############
         
-        outputs.ack_resource_metadata = (
+        outputs.ack_resource_metadata = str(
             ack_statuses["ackResourceMetadata"]
             if "ackResourceMetadata" in ack_statuses
             else None
         )
-        outputs.conditions = (
+        outputs.conditions = str(
             ack_statuses["conditions"]
             if "conditions" in ack_statuses
             else None
         )
-        outputs.debug_rule_evaluation_statuses = (
+        outputs.debug_rule_evaluation_statuses = str(
             ack_statuses["debugRuleEvaluationStatuses"]
             if "debugRuleEvaluationStatuses" in ack_statuses
             else None
         )
-        outputs.failure_reason = (
+        outputs.failure_reason = str(
             ack_statuses["failureReason"]
             if "failureReason" in ack_statuses
             else None
         )
-        outputs.model_artifacts = (
+        outputs.model_artifacts = str(
             ack_statuses["modelArtifacts"]
             if "modelArtifacts" in ack_statuses
             else None
         )
-        outputs.profiler_rule_evaluation_statuses = (
+        outputs.profiler_rule_evaluation_statuses = str(
             ack_statuses["profilerRuleEvaluationStatuses"]
             if "profilerRuleEvaluationStatuses" in ack_statuses
             else None
         )
-        outputs.secondary_status = (
+        outputs.secondary_status = str(
             ack_statuses["secondaryStatus"]
             if "secondaryStatus" in ack_statuses
             else None
         )
-        outputs.training_job_status = (
+        outputs.training_job_status = str(
             ack_statuses["trainingJobStatus"]
             if "trainingJobStatus" in ack_statuses
             else None

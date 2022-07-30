@@ -48,7 +48,7 @@ def get_output_prep_snippet(_output_statuses):
     for key in _output_statuses:
 
         _snippet += """
-        outputs.%s = (
+        outputs.%s = str(
             ack_statuses["%s"]
             if "%s" in ack_statuses
             else None
