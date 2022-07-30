@@ -78,7 +78,7 @@ outputs:
 
 implementation:
   container:
-    image: rdpen/kfp-component-sagemaker:v2
+    image: rdpen/kfp-component-sagemaker:v3
     command: [python3]
     args:
       - code_gen/components/HyperParameterTuningJob/src/HyperParameterTuningJob_component.py
