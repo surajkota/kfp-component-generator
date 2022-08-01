@@ -36,6 +36,7 @@ def test_get_spec_input_snippets():
     ), """
     )
 
+
 if __name__ == "__main__":
     (
         _spec_inputs_defi_snippet,

@@ -79,7 +79,7 @@ def write_snippet_to_file(_replace_dict, _template_path, _out_file_dir, _out_fil
     exist Write output file stream to file _out_file_path."""
 
     _out_file_path = _out_file_dir + _out_file_name
-    
+
     # open and replace placeholders in templates
     with open(_template_path) as t:
         template = string.Template(t.read())
@@ -106,16 +106,16 @@ def fetch_all_crds():
         print("Error fetching latest release, see response below")
         print(releases)
         return None
-    
+
     print("RETRIEVED: latest release name " + latest_release_ver_name)
-    
+
     latest_tag = requests.get(
         "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/git/ref/tags/"
         + latest_release_ver_name
     ).json()
     latest_tag_sha = latest_tag["object"]["sha"]
     latest_tag_type = latest_tag["object"]["type"]
-    
+
     print("RETRIEVED: latest tag type " + latest_tag_type)
 
     if latest_tag_type == "tag":
@@ -128,7 +128,7 @@ def fetch_all_crds():
         "https://api.github.com/repos/aws-controllers-k8s/sagemaker-controller/contents/config/crd/bases?ref="
         + latest_tag_commit_sha
     ).json()
-    
+
     print("RETRIEVED: all crds")
 
     return crds

@@ -81,4 +81,3 @@ output_statuses = {
         "type": "string",
     },
 }
-

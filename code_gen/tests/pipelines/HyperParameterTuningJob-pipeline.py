@@ -116,7 +116,7 @@ trainingJobDefinition = {
 
 sagemaker_HyperParameterTuningJob_op = components.load_component_from_file(
     # "../../components/HyperParameterTuningJob/component.yaml" # run in /pipeline
-    "code_gen/components/HyperParameterTuningJob/component.yaml" # run in source dir
+    "code_gen/components/HyperParameterTuningJob/component.yaml"  # run in source dir
 )
 
 
@@ -144,63 +144,72 @@ def HyperParameterTuningJob(
 
 if __name__ == "__main__":
     #### SET PARAMETERS HERE #####################################################
-    AUTHSERVICE_SESSION_COOKIE=""
+    AUTHSERVICE_SESSION_COOKIE = ""
     PIPELINE_NAME = "HyperParameterTuningJob-pipeline"
     EXPERIMENT_NAME = "HyperParameterTuningJob"
     NOW_TIME = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     RUN_JOB_NAME = "HPO-" + NOW_TIME
     ###############################################################################
-    
-    # compile the pipeline, unzip it and get pipeline.yaml 
+
+    # compile the pipeline, unzip it and get pipeline.yaml
     kfp.compiler.Compiler().compile(HyperParameterTuningJob, __file__ + ".tar.gz")
-    
+
     print("#####################Pipeline compiled########################")
-    
+
     with tarfile.open(__file__ + ".tar.gz") as tar:
         # tar.extractall()
         tar.extract("pipeline.yaml", "code_gen/tests/pipelines")
         tar.close()
 
     # configure kfp client
-    kubeflow_gateway_endpoint="localhost:8080" # "Domain" in your cookies. Eg: "localhost:8080" or "<ingress_alb_address>.elb.amazonaws.com"
-    authservice_session_cookie=AUTHSERVICE_SESSION_COOKIE
-    
-    namespace="kubeflow-user-example-com"
+    kubeflow_gateway_endpoint = "localhost:8080"  # "Domain" in your cookies. Eg: "localhost:8080" or "<ingress_alb_address>.elb.amazonaws.com"
+    authservice_session_cookie = AUTHSERVICE_SESSION_COOKIE
 
-    client = kfp.Client(host=f"http://{kubeflow_gateway_endpoint}/pipeline", cookies=f"authservice_session={authservice_session_cookie}")
-    
+    namespace = "kubeflow-user-example-com"
+
+    client = kfp.Client(
+        host=f"http://{kubeflow_gateway_endpoint}/pipeline",
+        cookies=f"authservice_session={authservice_session_cookie}",
+    )
+
     # print(client.list_experiments(namespace=namespace))
-    
+
     print("KFP Python client connected to Kubeflow")
 
     # Upload the pipeline to Kubeflow
-    pipeline_file_path = "code_gen/tests/pipelines/pipeline.yaml"    
+    pipeline_file_path = "code_gen/tests/pipelines/pipeline.yaml"
     pipeline_name = PIPELINE_NAME
-    
-    if not client.get_pipeline_id(name = pipeline_name): 
+
+    if not client.get_pipeline_id(name=pipeline_name):
         # if pipeline does not exist, upload pipeline
         pipeline_file = os.path.join(pipeline_file_path)
-        pipeline = client.pipeline_uploads.upload_pipeline(pipeline_file, name=pipeline_name)
-        
+        pipeline = client.pipeline_uploads.upload_pipeline(
+            pipeline_file, name=pipeline_name
+        )
+
     else:
         # if pipeline exist, upload new pipeline version
-        pipeline_id = client.get_pipeline_id(name = pipeline_name)
-        
-        pipeline_version_file_path = "code_gen/tests/pipelines/pipeline.yaml"    
+        pipeline_id = client.get_pipeline_id(name=pipeline_name)
+
+        pipeline_version_file_path = "code_gen/tests/pipelines/pipeline.yaml"
         pipeline_version_name = NOW_TIME
         pipeline_version_file = os.path.join(pipeline_version_file_path)
-        pipeline_version = client.pipeline_uploads.upload_pipeline_version(pipeline_version_file,
-                                                                        name=pipeline_version_name,
-                                                                        pipelineid=pipeline_id)
-        
+        pipeline_version = client.pipeline_uploads.upload_pipeline_version(
+            pipeline_version_file, name=pipeline_version_name, pipelineid=pipeline_id
+        )
+
     print("Uploaded pipeline")
-    
+
     # Run the pipeline in experiment
     try:
-        experiment_id = client.get_experiment(namespace=namespace, experiment_name=EXPERIMENT_NAME).id
+        experiment_id = client.get_experiment(
+            namespace=namespace, experiment_name=EXPERIMENT_NAME
+        ).id
     except:
-        experiment_id = client.create_experiment(name=EXPERIMENT_NAME, namespace=namespace).id
+        experiment_id = client.create_experiment(
+            name=EXPERIMENT_NAME, namespace=namespace
+        ).id
 
     my_run = client.run_pipeline(experiment_id, RUN_JOB_NAME, __file__ + ".tar.gz")
-    
+
     print("Created pipeline run: " + my_run.id)

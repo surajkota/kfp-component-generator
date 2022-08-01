@@ -52,7 +52,9 @@ if __name__ == "__main__":
     #     # "code_gen/ack_crd/sagemaker.services.k8s.aws_featuregroups.yaml"
     # )
 
-    COMPONENT_CONTAINER_IMAGE = args.container_image or "rdpen/kfp-component-sagemaker:"
+    COMPONENT_CONTAINER_IMAGE = (
+        args.container_image or "rdpen/kfp-component-sagemaker:v3"
+    )
 
     ## From ACK CRD YAML, parse fields needed
     input_spec_required, input_spec_all, output_statuses, crd_name = parse_crd(
@@ -63,12 +65,11 @@ if __name__ == "__main__":
     ## set up output file directory
     output_component_dir = "code_gen/components/" + crd_name + "/"
     output_src_dir = output_component_dir + "src/"
-    
+
     output_spec_name = crd_name + "_spec.py"
     output_component_name = crd_name + "_component.py"
     output_job_request_outline_name = crd_name + "_request.yaml.tpl"
     output_component_yaml_name = "component.yaml"
-
 
     ## prepare code snippets
     (
@@ -120,7 +121,7 @@ if __name__ == "__main__":
         spec_replace,
         "code_gen/templates/*_spec.py.tpl",
         output_src_dir,
-        output_spec_name
+        output_spec_name,
     )
 
     component_replace = {
@@ -137,7 +138,7 @@ if __name__ == "__main__":
         component_replace,
         "code_gen/templates/*_component.py.tpl",
         output_src_dir,
-        output_component_name
+        output_component_name,
     )
 
     ack_job_request_replace = {

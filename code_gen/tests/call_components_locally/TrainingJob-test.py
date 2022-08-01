@@ -59,7 +59,7 @@ algorithmSpecification = {
 # example arn:aws:iam::1234567890:role/service-role/AmazonSageMaker-ExecutionRole
 roleARN = "arn:aws:iam::740468203605:role/ack-sagemaker-execution-role"
 
-# change it to your bucket: s3://<YOUR BUCKET/OUTPUT> 
+# change it to your bucket: s3://<YOUR BUCKET/OUTPUT>
 outputDataConfig = {"s3OutputPath": "s3://ack-sagemaker-bucket-740468203605"}
 resourceConfig = {
     "instanceCount": 1,
